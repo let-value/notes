@@ -3,7 +3,6 @@ module.exports = {
         "eslint:recommended",
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
-        "plugin:import/recommended",
         "plugin:jsx-a11y/recommended",
         "plugin:@typescript-eslint/recommended",
         "eslint-config-prettier",
@@ -11,12 +10,6 @@ module.exports = {
     settings: {
         react: {
             version: "18.0",
-        },
-        "import/resolver": {
-            node: {
-                paths: ["src"],
-                extensions: [".js", ".jsx", ".ts", ".tsx"],
-            },
         },
     },
     rules: {
