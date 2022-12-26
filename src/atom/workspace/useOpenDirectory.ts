@@ -1,7 +1,7 @@
 import { useRecoilCallback } from "recoil";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../../db";
-import { Workspace } from "../../domain/DirectoryHandle";
+import { Workspace } from "../../domain/Workspace";
 import { incrementFileNameIfExist } from "../../utils/incrementFileNameIfExist";
 import { workspacesSelector } from "../workspaces/workspacesSelector";
 import { mode } from "./DirectoryPermissionMode";

@@ -1,5 +1,5 @@
 import { DBSchema, openDB } from "idb";
-import { Workspace } from "./domain/DirectoryHandle";
+import { Workspace } from "./domain/Workspace";
 
 interface DataBase extends DBSchema {
     workspaces: {

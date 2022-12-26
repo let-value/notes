@@ -1,18 +1,17 @@
-import { AnnotationIcon, Button, FolderCloseIcon, Menu, Popover, Position } from "evergreen-ui";
+import { Button, Menu, Popover, Position } from "evergreen-ui";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { useOpenDirectory } from "./atom/workspace/useOpenDirectory";
 import { useOpenWorkspace } from "./atom/workspace/useOpenWorkspace";
-import { directorySelector, fileState, useSelectFile } from "./atom/workspace/workspace";
+import { workspaceState } from "./atom/workspace/workspace";
 import { workspacesSelector } from "./atom/workspaces/workspacesSelector";
+import { Explorer } from "./components/Explorer/Explorer";
 
 export function Directory() {
     const workspaces = useRecoilValueLoadable(workspacesSelector);
-    const directory = useRecoilValue(directorySelector);
-    const file = useRecoilValue(fileState);
+    const workspace = useRecoilValue(workspaceState);
 
     const handleOpen = useOpenDirectory();
     const handleRequestPermission = useOpenWorkspace();
-    const handleSelect = useSelectFile();
 
     return (
         <>
@@ -33,18 +32,7 @@ export function Directory() {
                     <Button>Open prev</Button>
                 </Popover>
             )}
-            <Menu>
-                {directory?.map((item, index) => (
-                    <Menu.Item
-                        key={index}
-                        icon={item.kind === "directory" ? FolderCloseIcon : AnnotationIcon}
-                        aria-checked={item === file}
-                        onSelect={() => handleSelect(item)}
-                    >
-                        {item.name}
-                    </Menu.Item>
-                ))}
-            </Menu>
+            {workspace && <Explorer workspace={workspace} />}
         </>
     );
 }

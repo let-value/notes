@@ -1,10 +1,12 @@
-import { atom, selector, useRecoilCallback } from "recoil";
-import { Workspace } from "../../domain/DirectoryHandle";
+import { atom, selector } from "recoil";
+import { Workspace } from "../../domain/Workspace";
 import { mode } from "./DirectoryPermissionMode";
+import { workspaceSelectEffect } from "./workspaceSelectEffect";
 
 export const workspaceState = atom<Workspace | undefined>({
     key: "workspace",
     default: undefined,
+    effects: [workspaceSelectEffect],
 });
 
 export const permissionSelector = selector({
@@ -19,17 +21,6 @@ export const permissionSelector = selector({
     },
 });
 
-const getFilesRecursively = async function* (entry: FileSystemHandle): AsyncGenerator<FileSystemHandle> {
-    if (entry.kind === "directory") {
-        yield entry;
-        for await (const handle of (entry as FileSystemDirectoryHandle).values()) {
-            yield* getFilesRecursively(handle);
-        }
-    } else {
-        yield entry;
-    }
-};
-
 export const directorySelector = selector({
     key: "directories",
     get: async ({ get }) => {
@@ -42,30 +33,5 @@ export const directorySelector = selector({
         if (!workspace) {
             return undefined;
         }
-
-        const files: FileSystemHandle[] = [];
-
-        for await (const fileHandle of getFilesRecursively(workspace.handle)) {
-            files.push(fileHandle);
-        }
-
-        return files;
     },
 });
-
-export const fileState = atom<FileSystemFileHandle | null>({
-    key: "file",
-    default: null,
-});
-
-export const useSelectFile = () =>
-    useRecoilCallback(
-        ({ set }) =>
-            async (handle: FileSystemHandle) => {
-                if (handle.kind !== "file") {
-                    return;
-                }
-                set(fileState, handle as FileSystemFileHandle);
-            },
-        [],
-    );

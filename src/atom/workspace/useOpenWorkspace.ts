@@ -1,5 +1,5 @@
 import { useRecoilCallback } from "recoil";
-import { WorkspaceId } from "../../domain/DirectoryHandle";
+import { WorkspaceId } from "../../domain/Workspace";
 import { workspaceLookupSelector } from "../workspaces/workspacesSelector";
 import { mode } from "./DirectoryPermissionMode";
 import { workspaceState } from "./workspace";

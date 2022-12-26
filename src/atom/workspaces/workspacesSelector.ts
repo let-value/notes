@@ -1,12 +1,18 @@
-import { selector } from "recoil";
-import { db } from "../../db";
-import { Workspace, WorkspaceId } from "../../domain/DirectoryHandle";
+import { atom, selector } from "recoil";
+import { call } from "../../backend/api";
+import { methods } from "../../backend/methods";
+import { Workspace, WorkspaceId } from "../../domain/Workspace";
+import { createBroadcastEffect } from "../createBroadcastEffect";
 
-export const workspacesSelector = selector<Workspace[]>({
+export const workspacesSelector = atom<Workspace[]>({
     key: "workspaces",
-    get: async () => {
-        return await db.getAll("workspaces");
-    },
+    default: selector({
+        key: "workspaces/initial",
+        get: async () => {
+            return await call(methods.workspaces, undefined);
+        },
+    }),
+    effects: [createBroadcastEffect(methods.workspaces)],
 });
 
 export const workspaceLookupSelector = selector<Map<WorkspaceId, Workspace>>({
