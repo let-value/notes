@@ -15,7 +15,8 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
-        "types": ["@types/wicg-file-system-access"]
+        "types": ["@types/wicg-file-system-access"],
+        "experimentalDecorators": true
     },
     "include": ["src"],
     "references": [{ "path": "./tsconfig.node.json" }]

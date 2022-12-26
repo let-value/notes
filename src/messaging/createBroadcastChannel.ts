@@ -7,10 +7,5 @@ export const createBroadcastChannel = () => {
         webWorkerSupport: true,
     });
 
-    console.log("createBroadcast", broadcastChannel);
-    broadcastChannel.addEventListener("message", (message) => {
-        console.log("global log", broadcastChannel, message);
-    });
-
     return broadcastChannel;
 };

@@ -1,18 +1,17 @@
 import { atom, selector } from "recoil";
-import { call } from "../../backend/api";
-import { methods } from "../../backend/methods";
 import { Workspace, WorkspaceId } from "../../domain/Workspace";
-import { createBroadcastEffect } from "../createBroadcastEffect";
+import { backend } from "../../messaging";
+import { createQueryEffect } from "../createQueryEffect";
 
 export const workspacesSelector = atom<Workspace[]>({
     key: "workspaces",
     default: selector({
         key: "workspaces/initial",
         get: async () => {
-            return await call(methods.workspaces, undefined);
+            return await backend.workspaces.call(undefined);
         },
     }),
-    effects: [createBroadcastEffect(methods.workspaces)],
+    effects: [createQueryEffect(backend.workspaces)],
 });
 
 export const workspaceLookupSelector = selector<Map<WorkspaceId, Workspace>>({

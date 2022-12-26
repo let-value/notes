@@ -1,15 +1,15 @@
 import { atom, selector } from "recoil";
-import { call } from "../backend/api";
-import { methods } from "../backend/methods";
-import { createBroadcastEffect } from "./createBroadcastEffect";
+
+import { backend } from "../messaging";
+import { createQueryEffect } from "./createQueryEffect";
 
 export const workerState = atom<string>({
     key: "worker",
     default: selector({
         key: "worker/initial",
         get: async () => {
-            return await call(methods.worker, undefined);
+            return await backend.leader.call(undefined);
         },
     }),
-    effects: [createBroadcastEffect(methods.worker)],
+    effects: [createQueryEffect(backend.leader)],
 });

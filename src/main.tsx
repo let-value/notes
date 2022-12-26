@@ -3,8 +3,8 @@ import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import { App } from "./App";
+import "./features";
 import "./index.css";
-import "./monacoWorker";
 import "./workers";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
