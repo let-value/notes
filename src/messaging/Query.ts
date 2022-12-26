@@ -17,6 +17,12 @@ export class Query<TResult, TArgs = unknown> {
         };
     }
 
+    selfQuery(args: TArgs, recieverId?: string): BroadcastMessage<"query", TArgs> {
+        const query = this.query(args, recieverId);
+        query.senderId = "";
+        return query;
+    }
+
     response(
         result: TResult,
         query?: BroadcastMessage<"query", TArgs>,

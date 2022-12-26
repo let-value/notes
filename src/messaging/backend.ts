@@ -5,7 +5,7 @@ export const backend = {
     leader: new Query<string>("leader"),
     workspace: {
         openDirectory: new Query<Workspace>("workspace/openDirectory"),
-        open: new Query<Workspace>("workspace/open"),
+        open: new Query<Workspace, string>("workspace/open"),
     },
     workspaces: new Query<Workspace[]>("workspaces"),
 };

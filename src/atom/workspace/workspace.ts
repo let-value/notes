@@ -1,12 +1,10 @@
 import { atom, selector } from "recoil";
 import { Workspace } from "../../domain/Workspace";
 import { mode } from "./DirectoryPermissionMode";
-import { workspaceSelectEffect } from "./workspaceSelectEffect";
 
 export const workspaceState = atom<Workspace | undefined>({
     key: "workspace",
     default: undefined,
-    effects: [workspaceSelectEffect],
 });
 
 export const permissionSelector = selector({

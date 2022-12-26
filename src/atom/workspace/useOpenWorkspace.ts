@@ -1,24 +1,14 @@
 import { useRecoilCallback } from "recoil";
-import { WorkspaceId } from "../../domain/Workspace";
-import { workspaceLookupSelector } from "../workspaces/workspacesSelector";
-import { mode } from "./DirectoryPermissionMode";
+import { WorkspaceId } from "../../domain";
+import { backend } from "../../messaging";
 import { workspaceState } from "./workspace";
 
 export const useOpenWorkspace = () =>
     useRecoilCallback(
-        ({ snapshot, set }) =>
+        ({ set }) =>
             async (id: WorkspaceId) => {
-                const workspaces = await snapshot.getPromise(workspaceLookupSelector);
-                const workspace = workspaces.get(id);
-
-                if (!workspace) {
-                    return;
-                }
-
-                const permission = await workspace.handle.requestPermission({ mode });
-                if (permission == "granted") {
-                    set(workspaceState, workspace);
-                }
+                const workspace = await backend.workspace.open.call(id);
+                set(workspaceState, workspace);
             },
         [],
     );

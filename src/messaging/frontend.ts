@@ -1,5 +1,6 @@
 import { Query } from "./Query";
 
 export const frontend = {
-    pickDirectory: new Query<FileSystemDirectoryHandle, FileSystemPermissionMode>("pickDirectory"),
+    requestPermission: new Query<PermissionState, FileSystemDirectoryHandle>("requestPermission"),
+    pickDirectory: new Query<FileSystemDirectoryHandle>("pickDirectory"),
 };
