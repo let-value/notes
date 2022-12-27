@@ -15,8 +15,14 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
-        "types": ["@types/wicg-file-system-access"],
-        "experimentalDecorators": true
+        "types": ["@types/wicg-file-system-access", "node"],
+        "experimentalDecorators": true,
+        "paths": {
+            "@/*": ["./src/*"],
+            "@/messaging": ["./src/messaging"],
+            "@/domain": ["./src/domain"],
+            "@/utils": ["./src/utils"]
+        }
     },
     "include": ["src"],
     "references": [{ "path": "./tsconfig.node.json" }]

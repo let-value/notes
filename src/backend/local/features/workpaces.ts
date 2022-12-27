@@ -1,7 +1,7 @@
+import { Workspace } from "@/domain";
+import { backend, matchQuery, mediator } from "@/messaging";
 import { concatMap, firstValueFrom } from "rxjs";
-import { Workspace } from "../../domain";
-import { backend, matchQuery, mediator } from "../../messaging";
-import { database } from "../rdb/database";
+import { database } from "../db/database";
 
 mediator.pipe(matchQuery(backend.workspaces)).subscribe(async (query) => {
     const workspaces = await firstValueFrom(

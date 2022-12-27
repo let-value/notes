@@ -1,9 +1,3 @@
-import { id } from "./tabId";
-
-export const worker = new Worker(new URL("./backend/worker.ts", import.meta.url), { type: "module" });
-
-worker.postMessage(id);
-
 import * as monaco from "monaco-editor";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";

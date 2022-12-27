@@ -6,8 +6,3 @@ import { schema } from "./schema";
 self.window = self;
 
 export const database = ReactiveIDBDatabase.create({ name: "reactiveDatabase", schema: [schema] }).pipe(shareReplay(1));
-
-database.subscribe({
-    next: (db) => console.log("something", db),
-    error: (err) => console.error("error", err),
-});

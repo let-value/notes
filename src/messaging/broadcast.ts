@@ -1,21 +1,15 @@
 import { filter, take } from "rxjs";
-import { id } from "../tabId";
 import { BroadcastMessage } from "./BroadcastMessage";
 import { BroadcastMessageType } from "./BroadcastMessageType";
-import { createBroadcastChannel } from "./createBroadcastChannel";
-import { mediator, setSource } from "./mediator";
+import { mediator, source } from "./mediator";
 import { Query } from "./Query";
 
-export const broadcastChannel = createBroadcastChannel();
-setSource(broadcastChannel);
-
 export const send = <TPayload, TType extends BroadcastMessageType>(message: BroadcastMessage<TType, TPayload>) => {
-    console.log("send", message);
-    return broadcastChannel.postMessage(message);
+    return source.pipe(take(1)).subscribe((channel) => channel?.postMessage(message));
 };
 
-mediator.subscribe((message) => {
-    console.log("recieved", id, message);
+mediator.subscribe(() => {
+    //a
 });
 
 export const call = <TResult, TArgs = void>(

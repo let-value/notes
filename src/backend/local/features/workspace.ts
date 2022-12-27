@@ -1,9 +1,9 @@
+import { Workspace, WorkspaceHandle } from "@/domain";
+import { backend, dispatch, frontend, matchQuery, mediator } from "@/messaging";
+import { incrementFileNameIfExist } from "@/utils";
 import { concatMap, firstValueFrom, lastValueFrom } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
-import { Workspace } from "../../domain";
-import { backend, dispatch, frontend, matchQuery, mediator } from "../../messaging";
-import { incrementFileNameIfExist } from "../../utils/incrementFileNameIfExist";
-import { database } from "../rdb/database";
+import { database } from "../db/database";
 
 mediator.pipe(matchQuery(backend.workspace.openDirectory)).subscribe(async (query) => {
     const handle = await frontend.pickDirectory.call(undefined, query.senderId);
@@ -11,7 +11,7 @@ mediator.pipe(matchQuery(backend.workspace.openDirectory)).subscribe(async (quer
     const workspaces = await firstValueFrom(
         database.pipe(
             concatMap((db) => db.transaction$(["workspaces"], "readonly")),
-            concatMap((transaction) => transaction.objectStore<Workspace>("workspaces").getAll$()),
+            concatMap((transaction) => transaction.objectStore<WorkspaceHandle>("workspaces").getAll$()),
         ),
     );
 
@@ -53,7 +53,7 @@ mediator.pipe(matchQuery(backend.workspace.open)).subscribe(async (query) => {
         const workspace = await firstValueFrom(
             database.pipe(
                 concatMap((db) => db.transaction$(["workspaces"], "readonly")),
-                concatMap((transaction) => transaction.objectStore<Workspace>("workspaces").get$(query.payload)),
+                concatMap((transaction) => transaction.objectStore<WorkspaceHandle>("workspaces").get$(query.payload)),
             ),
         );
 

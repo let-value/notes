@@ -3,7 +3,7 @@ export * from "./broadcast";
 export * from "./BroadcastMessage";
 export * from "./BroadcastMessageType";
 export * from "./Command";
-export * from "./createBroadcastChannel";
+export * from "./EventTransport";
 export * from "./frontend";
 export * from "./match";
 export * from "./mediator";

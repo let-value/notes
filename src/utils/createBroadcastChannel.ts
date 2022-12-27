@@ -1,5 +1,5 @@
 import { BroadcastChannel } from "broadcast-channel";
-import { BroadcastMessage } from "./BroadcastMessage";
+import { BroadcastMessage } from "../messaging/BroadcastMessage";
 
 export const createBroadcastChannel = () => {
     const broadcastChannel = new BroadcastChannel<BroadcastMessage>("foobar", {
