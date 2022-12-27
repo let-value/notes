@@ -1,9 +1,19 @@
-import { Workspace, WorkspaceHandle } from "@/domain";
+import { Item, Workspace, WorkspaceHandle } from "@/domain";
 import { backend, dispatch, frontend, matchQuery, mediator } from "@/messaging";
 import { incrementFileNameIfExist } from "@/utils";
+import path from "path";
 import { concatMap, firstValueFrom, lastValueFrom } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
 import { database } from "../db/database";
+
+function getWorkspace(id: string) {
+    return firstValueFrom(
+        database.pipe(
+            concatMap((db) => db.transaction$(["workspaces"], "readonly")),
+            concatMap((transaction) => transaction.objectStore<WorkspaceHandle>("workspaces").get$(id)),
+        ),
+    );
+}
 
 mediator.pipe(matchQuery(backend.workspace.openDirectory)).subscribe(async (query) => {
     const handle = await frontend.pickDirectory.call(undefined, query.senderId);
@@ -50,12 +60,7 @@ mediator.pipe(matchQuery(backend.workspace.openDirectory)).subscribe(async (quer
 
 mediator.pipe(matchQuery(backend.workspace.open)).subscribe(async (query) => {
     try {
-        const workspace = await firstValueFrom(
-            database.pipe(
-                concatMap((db) => db.transaction$(["workspaces"], "readonly")),
-                concatMap((transaction) => transaction.objectStore<WorkspaceHandle>("workspaces").get$(query.payload)),
-            ),
-        );
+        const workspace = await getWorkspace(query.payload);
 
         if (!workspace) {
             throw new Error("Workspace not found");
@@ -77,5 +82,42 @@ mediator.pipe(matchQuery(backend.workspace.open)).subscribe(async (query) => {
         await backend.workspace.open.respond(query, workspace);
     } catch (error) {
         await backend.workspace.open.respondError(query, error);
+    }
+});
+
+self.process = { cwd: () => "" } as never;
+const getItemsRecursively = async function* (
+    entry: FileSystemHandle,
+    parentPath: string,
+): AsyncGenerator<[FileSystemHandle, string]> {
+    const newPath = path.resolve(parentPath, entry.name);
+
+    if (entry.kind === "directory") {
+        yield [entry, newPath];
+
+        for await (const handle of (entry as FileSystemDirectoryHandle).values()) {
+            yield* getItemsRecursively(handle, newPath);
+        }
+    } else {
+        yield [entry, newPath];
+    }
+};
+
+mediator.pipe(matchQuery(backend.workspace.treeItems)).subscribe(async (query) => {
+    try {
+        const workspace = await getWorkspace(query.payload);
+
+        if (!workspace) {
+            throw new Error("Workspace not found");
+        }
+
+        const items: Item[] = [];
+        for await (const [handle, parentPath] of getItemsRecursively(workspace.handle, "/")) {
+            items.push({ name: handle.name, path: parentPath, isDirectory: handle.kind === "directory" });
+        }
+
+        await backend.workspace.treeItems.respond(query, items);
+    } catch (error) {
+        await backend.workspace.treeItems.respondError(query, error);
     }
 });

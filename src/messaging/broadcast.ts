@@ -30,6 +30,7 @@ export const call = <TResult, TArgs = void>(
                     reject(message.payload);
                     return;
                 }
+
                 resolve(message.payload as TResult);
             });
 

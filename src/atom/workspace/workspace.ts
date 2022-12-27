@@ -1,35 +1,22 @@
-import { atom, selector } from "recoil";
-import { Workspace } from "../../domain/Workspace";
-import { mode } from "./DirectoryPermissionMode";
+import { Workspace, WorkspaceId } from "@/domain";
+import { backend, frontend } from "@/messaging";
+import { atom, atomFamily, selectorFamily } from "recoil";
+import { createCommandEffect } from "../createQueryEffect";
 
 export const workspaceState = atom<Workspace | undefined>({
     key: "workspace",
     default: undefined,
 });
 
-export const permissionSelector = selector({
-    key: "permission",
-    get: async ({ get }) => {
-        const workspace = get(workspaceState);
-        if (!workspace) {
-            return undefined;
-        }
-
-        return await workspace.handle.queryPermission({ mode });
-    },
-});
-
-export const directorySelector = selector({
+export const directoriesState = atomFamily({
     key: "directories",
-    get: async ({ get }) => {
-        const permissionGranted = get(permissionSelector);
-        if (permissionGranted !== "granted") {
-            return undefined;
-        }
-
-        const workspace = get(workspaceState);
-        if (!workspace) {
-            return undefined;
-        }
-    },
+    default: selectorFamily({
+        key: "directories/initial",
+        get: (workspaceId: WorkspaceId) => async () => {
+            return await backend.workspace.treeItems.call(workspaceId);
+        },
+    }),
+    effects: (workspaceId: WorkspaceId) => [
+        createCommandEffect(frontend.workspace.updateTreeItems, (x) => x.meta === workspaceId),
+    ],
 });

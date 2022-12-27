@@ -1,7 +1,5 @@
 export interface Item {
-    id: string;
-    parentId?: string;
+    path: string;
     name: string;
     isDirectory: boolean;
-    workspaceId: string;
 }

@@ -1,48 +1,33 @@
+import { directoriesState } from "@/atom/workspace/workspace";
+import { AnnotationIcon, FolderCloseIcon, Menu, Pane, Spinner } from "evergreen-ui";
 import { FC } from "react";
+import { useRecoilValueLoadable } from "recoil";
 import { Workspace } from "../../domain/Workspace";
 
 interface ExplorerProps {
     workspace: Workspace | undefined;
 }
 
-// const getItemsRecursively = async function* (entry: FileSystemHandle): AsyncGenerator<FileSystemHandle> {
-//     if (entry.kind === "directory") {
-//         yield entry;
-//         for await (const handle of (entry as FileSystemDirectoryHandle).values()) {
-//             yield* getItemsRecursively(handle);
-//         }
-//     } else {
-//         yield entry;
-//     }
-// };
+export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
+    const tree = useRecoilValueLoadable(directoriesState(workspace?.id ?? ""));
 
-export const Explorer: FC<ExplorerProps> = () => {
-    return null;
-    // const file = useRecoilValue(fileState);
-    // const [files, setFiles] = useState<(File | Directory)[]>([]);
+    if (!workspace) {
+        return null;
+    }
 
-    // const loadFiles = useCallback(async () => {
-    //     for await (const handle of getItemsRecursively(workspace.handle)) {
-    //         result.push({ handle });
-    //     }
-    // }, []);
+    console.log(tree.contents);
 
-    // const handleSelect = useSelectFile();
-
-    // return (
-    //     <Pane height="100%" width="100%">
-    //         <Menu>
-    //             {files?.map((item, index) => (
-    //                 <Menu.Item
-    //                     key={index}
-    //                     icon={item.handle.kind === "directory" ? FolderCloseIcon : AnnotationIcon}
-    //                     aria-checked={item.id === file?.id}
-    //                     onSelect={() => handleSelect(item as File)}
-    //                 >
-    //                     {item.handle.name}
-    //                 </Menu.Item>
-    //             ))}
-    //         </Menu>
-    //     </Pane>
-    // );
+    return (
+        <Pane height="100%" width="100%">
+            <Menu>
+                {tree.state === "loading" && <Spinner />}
+                {tree.state === "hasValue" &&
+                    tree.contents.map((item, index) => (
+                        <Menu.Item key={index} icon={item.isDirectory ? FolderCloseIcon : AnnotationIcon}>
+                            {item.name}
+                        </Menu.Item>
+                    ))}
+            </Menu>
+        </Pane>
+    );
 };

@@ -7,6 +7,7 @@ import eslint from "vite-plugin-eslint";
 export default defineConfig({
     resolve: {
         alias: {
+            path: "path-browserify",
             "@": path.resolve(__dirname, "./src"),
             "@/messaging": path.resolve(__dirname, "./src/messaging"),
             "@/domain": path.resolve(__dirname, "./src/domain"),
