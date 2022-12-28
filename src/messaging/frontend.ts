@@ -6,6 +6,6 @@ export const frontend = {
     requestPermission: new Query<PermissionState, FileSystemDirectoryHandle>("requestPermission"),
     pickDirectory: new Query<FileSystemDirectoryHandle>("pickDirectory"),
     workspace: {
-        updateTreeItems: new Command<Item[], string>("workspace/updateTreeItems"),
+        files: new Command<Item[], string>("workspace/updateTreeItems"),
     },
 };

@@ -1,33 +1,133 @@
-import { directoriesState } from "@/atom/workspace/workspace";
-import { AnnotationIcon, FolderCloseIcon, Menu, Pane, Spinner } from "evergreen-ui";
-import { FC } from "react";
+import { filesTree } from "@/atom/files/filesState";
+import { Item, TreeItem } from "@/domain";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { AnnotationIcon, FolderCloseIcon, FolderOpenIcon, Menu, Pane } from "evergreen-ui";
+import { join } from "lodash-es";
+import { FC, useCallback, useMemo, useRef } from "react";
 import { useRecoilValueLoadable } from "recoil";
+import { useMap } from "usehooks-ts";
 import { Workspace } from "../../domain/Workspace";
+import styles from "./Explorer.module.css";
+
+interface QueueItem {
+    collapsed: Item[];
+    item: TreeItem;
+    depth: number;
+}
+
+interface ListItem extends Item {
+    collapsed?: Item[];
+    depth: number;
+}
 
 interface ExplorerProps {
-    workspace: Workspace | undefined;
+    workspace: Workspace;
 }
 
 export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
-    const tree = useRecoilValueLoadable(directoriesState(workspace?.id ?? ""));
+    const tree = useRecoilValueLoadable(filesTree(workspace.id));
+
+    const parentRef = useRef<HTMLDivElement>(null);
+
+    const [expand, { set: expandFolder }] = useMap<string, boolean>();
+
+    const list = useMemo(() => {
+        const result: ListItem[] = [];
+
+        if (tree.state !== "hasValue" || !tree.contents) {
+            return result;
+        }
+
+        const queue: QueueItem[] = [{ collapsed: [], item: tree.contents, depth: 0 }];
+
+        while (queue.length) {
+            const branch = queue.shift();
+
+            if (!branch) {
+                continue;
+            }
+
+            if (branch.item.isDirectory && branch.item.children?.length === 1) {
+                queue.unshift({
+                    collapsed: [...branch.collapsed, branch.item],
+                    item: branch.item.children[0],
+                    depth: branch.depth,
+                });
+                continue;
+            }
+
+            result.push({
+                ...branch.item,
+                collapsed: branch.collapsed,
+                depth: branch.depth,
+            });
+
+            if (branch.item.isDirectory && branch.item.children && expand.get(branch.item.path)) {
+                const newItems = branch.item.children.map((item) => ({ collapsed: [], item, depth: branch.depth + 1 }));
+                queue.unshift(...newItems);
+            }
+        }
+
+        return result;
+    }, [expand, tree.contents]);
+
+    const rowVirtualizer = useVirtualizer({
+        count: list.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 40,
+        overscan: 5,
+    });
+
+    const handleClick = useCallback(
+        (item: Item) => {
+            if (item.isDirectory) {
+                expandFolder(item.path, !expand.get(item.path));
+            }
+        },
+        [expand, expandFolder],
+    );
 
     if (!workspace) {
         return null;
     }
 
-    console.log(tree.contents);
-
     return (
         <Pane height="100%" width="100%">
-            <Menu>
-                {tree.state === "loading" && <Spinner />}
-                {tree.state === "hasValue" &&
-                    tree.contents.map((item, index) => (
-                        <Menu.Item key={index} icon={item.isDirectory ? FolderCloseIcon : AnnotationIcon}>
-                            {item.name}
-                        </Menu.Item>
-                    ))}
-            </Menu>
+            <Pane ref={parentRef} overflowY="auto" overflowX="hidden" height="100%">
+                <Pane className={styles.tree} height={rowVirtualizer.getTotalSize()} position="relative">
+                    {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                        const item = list[virtualRow.index];
+
+                        const segments = ([] as string[])
+                            .concat((item.collapsed ?? []).map((item) => item.name))
+                            .concat(item.name);
+
+                        return (
+                            <Menu.Item
+                                key={virtualRow.index}
+                                icon={
+                                    item.isDirectory
+                                        ? expand.get(item.path)
+                                            ? FolderOpenIcon
+                                            : FolderCloseIcon
+                                        : AnnotationIcon
+                                }
+                                position="absolute"
+                                whiteSpace="nowrap"
+                                top={0}
+                                left={0}
+                                width="100%"
+                                height={virtualRow.size}
+                                paddingLeft={`calc(${item.depth} * var(--indentation-size))`}
+                                transform={`translateY(${virtualRow.start}px)`}
+                                onClick={() => handleClick(item)}
+                            >
+                                {join(segments, " / ")}
+                            </Menu.Item>
+                        );
+                    })}
+                </Pane>
+            </Pane>
         </Pane>
     );
 };

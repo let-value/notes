@@ -11,9 +11,10 @@ self.addEventListener("message", (message) => {
 });
 
 const broadcastChannel = createBroadcastChannel();
-setSource(broadcastChannel as EventTransport);
 
 const elector = createLeaderElection(broadcastChannel);
 await elector.awaitLeadership();
+
+setSource(broadcastChannel as EventTransport);
 
 await send(backend.leader.response(id, undefined));

@@ -12,13 +12,14 @@ mediator.subscribe(() => {
     //a
 });
 
-export const call = <TResult, TArgs = void>(
-    method: Query<TResult, TArgs>,
+export const call = <TResult, TArgs = void, TMeta = void>(
+    method: Query<TResult, TArgs, TMeta>,
     args: TArgs,
+    meta?: TMeta,
     recieverId?: string,
 ): Promise<TResult> =>
     new Promise((resolve, reject) => {
-        const query = method.query(args, recieverId);
+        const query = method.query(args, meta, recieverId);
 
         mediator
             .pipe(

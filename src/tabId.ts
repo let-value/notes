@@ -10,4 +10,4 @@ try {
     isWindow = false;
 }
 
-console.log(isWindow ? "window" : "worker", id);
+console.info(isWindow ? "window" : "worker", id);

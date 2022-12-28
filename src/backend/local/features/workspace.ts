@@ -16,7 +16,7 @@ function getWorkspace(id: string) {
 }
 
 mediator.pipe(matchQuery(backend.workspace.openDirectory)).subscribe(async (query) => {
-    const handle = await frontend.pickDirectory.call(undefined, query.senderId);
+    const handle = await frontend.pickDirectory.call(undefined, undefined, query.senderId);
 
     const workspaces = await firstValueFrom(
         database.pipe(
@@ -72,7 +72,7 @@ mediator.pipe(matchQuery(backend.workspace.open)).subscribe(async (query) => {
         }
 
         if (permission === "prompt") {
-            const newPermission = await frontend.requestPermission.call(workspace.handle, query.senderId);
+            const newPermission = await frontend.requestPermission.call(workspace.handle, undefined, query.senderId);
 
             if (newPermission !== "granted") {
                 throw new Error("Permission denied");
@@ -103,7 +103,7 @@ const getItemsRecursively = async function* (
     }
 };
 
-mediator.pipe(matchQuery(backend.workspace.treeItems)).subscribe(async (query) => {
+mediator.pipe(matchQuery(backend.workspace.files)).subscribe(async (query) => {
     try {
         const workspace = await getWorkspace(query.payload);
 
@@ -116,8 +116,8 @@ mediator.pipe(matchQuery(backend.workspace.treeItems)).subscribe(async (query) =
             items.push({ name: handle.name, path: parentPath, isDirectory: handle.kind === "directory" });
         }
 
-        await backend.workspace.treeItems.respond(query, items);
+        await backend.workspace.files.respond(query, items, query.payload);
     } catch (error) {
-        await backend.workspace.treeItems.respondError(query, error);
+        await backend.workspace.files.respondError(query, error);
     }
 });

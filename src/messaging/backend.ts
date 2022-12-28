@@ -6,7 +6,7 @@ export const backend = {
     workspace: {
         openDirectory: new Query<Workspace>("workspace/openDirectory"),
         open: new Query<Workspace, string>("workspace/open"),
-        treeItems: new Query<Item[], string>("workspace/getTree"),
+        files: new Query<Item[], string, string>("workspace/getTree"),
     },
     workspaces: new Query<Workspace[]>("workspaces"),
 };

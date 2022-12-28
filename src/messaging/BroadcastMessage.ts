@@ -9,7 +9,7 @@ export interface BroadcastMessage<
     type: TType;
     correlationId?: string;
     payload: TPayload;
-    meta: TMeta;
+    meta?: TMeta;
     senderId: string;
     recieverId?: string;
 }

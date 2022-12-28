@@ -10,8 +10,6 @@ export function Directory() {
     const workspaces = useRecoilValueLoadable(workspacesSelector);
     const workspace = useRecoilValue(workspaceState);
 
-    console.log(workspace);
-
     const handleOpen = useOpenDirectory();
     const handleRequestPermission = useOpenWorkspace();
 

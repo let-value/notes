@@ -3,3 +3,7 @@ export interface Item {
     name: string;
     isDirectory: boolean;
 }
+
+export interface TreeItem extends Item {
+    children?: TreeItem[];
+}
