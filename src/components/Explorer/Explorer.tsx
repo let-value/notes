@@ -1,3 +1,4 @@
+import { useSelectFile } from "@/atom/file/useSelectFile";
 import { filesTree } from "@/atom/files/filesState";
 import { Item, TreeItem } from "@/domain";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -78,10 +79,14 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
         overscan: 5,
     });
 
+    const handleSelectFile = useSelectFile();
+
     const handleClick = useCallback(
         (item: Item) => {
             if (item.isDirectory) {
                 expandFolder(item.path, !expand.get(item.path));
+            } else {
+                handleSelectFile(item);
             }
         },
         [expand, expandFolder],
@@ -92,7 +97,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
     }
 
     return (
-        <Pane height="100%" width="100%">
+        <Pane flex={1} height="100%" width="100%" overflow="hidden">
             <Pane ref={parentRef} overflowY="auto" overflowX="hidden" height="100%">
                 <Pane className={styles.tree} height={rowVirtualizer.getTotalSize()} position="relative">
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => {

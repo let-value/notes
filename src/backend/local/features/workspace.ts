@@ -88,9 +88,9 @@ mediator.pipe(matchQuery(backend.workspace.open)).subscribe(async (query) => {
 self.process = { cwd: () => "" } as never;
 const getItemsRecursively = async function* (
     entry: FileSystemHandle,
-    parentPath: string,
+    parentPath?: string,
 ): AsyncGenerator<[FileSystemHandle, string]> {
-    const newPath = path.resolve(parentPath, entry.name);
+    const newPath = parentPath ? path.resolve(parentPath, entry.name) : "/";
 
     if (entry.kind === "directory") {
         yield [entry, newPath];
@@ -112,12 +112,44 @@ mediator.pipe(matchQuery(backend.workspace.files)).subscribe(async (query) => {
         }
 
         const items: Item[] = [];
-        for await (const [handle, parentPath] of getItemsRecursively(workspace.handle, "/")) {
+        for await (const [handle, parentPath] of getItemsRecursively(workspace.handle)) {
             items.push({ name: handle.name, path: parentPath, isDirectory: handle.kind === "directory" });
         }
 
         await backend.workspace.files.respond(query, items, query.payload);
     } catch (error) {
         await backend.workspace.files.respondError(query, error);
+    }
+});
+
+mediator.pipe(matchQuery(backend.workspace.readFile)).subscribe(async (query) => {
+    try {
+        const workspace = await getWorkspace(query.payload.workspaceId);
+
+        if (!workspace) {
+            throw new Error("Workspace not found");
+        }
+
+        const parsedPath = path.parse(query.payload.path);
+
+        const queue = parsedPath.dir.split(path.sep).filter((dir) => dir !== "");
+
+        let directoryHandle = workspace.handle as FileSystemDirectoryHandle;
+        while (queue.length > 0) {
+            const dir = queue.shift();
+
+            if (!dir) {
+                continue;
+            }
+
+            directoryHandle = await directoryHandle.getDirectoryHandle(dir);
+        }
+
+        const fileHandle = await directoryHandle.getFileHandle(parsedPath.base);
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        await backend.workspace.readFile.respond(query, text);
+    } catch (error) {
+        await backend.workspace.readFile.respondError(query, error);
     }
 });

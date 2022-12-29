@@ -1,16 +1,16 @@
+import { Item } from "@/domain";
 import { useRecoilCallback } from "recoil";
-import { File } from "../../domain/File";
 import { fileState } from "./fileState";
 
 export const useSelectFile = () =>
     useRecoilCallback(
         ({ set }) =>
-            async (file: File) => {
-                if (file.handle.kind !== "file") {
+            async (item: Item) => {
+                if (item.isDirectory) {
                     return;
                 }
 
-                set(fileState, file);
+                set(fileState, item);
             },
         [],
     );

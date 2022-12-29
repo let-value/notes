@@ -1,43 +1,7 @@
 /* eslint-disable no-useless-escape */
 import { languages } from "monaco-editor";
 
-export const languageId = "myMarkdown";
-
-export const language: languages.ILanguageExtensionPoint = {
-    id: languageId,
-    extensions: [".md", ".markdown", ".mdown", ".mkdn", ".mkd", ".mdwn", ".mdtxt", ".mdtext"],
-    aliases: ["Markdown", "markdown"],
-};
-
-export const languageConfiguration: languages.LanguageConfiguration = {
-    comments: {
-        blockComment: ["<!--", "-->"],
-    },
-    brackets: [
-        ["{", "}"],
-        ["[", "]"],
-        ["(", ")"],
-    ],
-    autoClosingPairs: [
-        { open: "{", close: "}" },
-        { open: "[", close: "]" },
-        { open: "(", close: ")" },
-        { open: "<", close: ">", notIn: ["string"] },
-    ],
-    surroundingPairs: [
-        { open: "(", close: ")" },
-        { open: "[", close: "]" },
-        { open: "`", close: "`" },
-    ],
-    folding: {
-        markers: {
-            start: new RegExp("^\\s*<!--\\s*#?region\\b.*-->"),
-            end: new RegExp("^\\s*<!--\\s*#?endregion\\b.*-->"),
-        },
-    },
-};
-
-export const monarchLanguage = <languages.IMonarchLanguage>{
+export const customMonarchMarkdownLanguage = <languages.IMonarchLanguage>{
     defaultToken: "",
     tokenPostfix: ".md",
 
@@ -135,7 +99,10 @@ export const monarchLanguage = <languages.IMonarchLanguage>{
             [/\*([^\\*]|@escapes)+\*/, "emphasis"],
             [/`([^\\`]|@escapes)+`/, "variable"],
 
-            [/\[\[+[^\]]+\]\]+/, "backlink"],
+            // backlinks
+            [/\[\[+([^\]]+)\]\]+/, "backlink"],
+
+            [/\#\[+([^\]]+)\]+/, "date"],
 
             // links
             [/\{+[^}]+\}+/, "string.target"],

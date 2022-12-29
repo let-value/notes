@@ -1,9 +1,26 @@
-import { atom } from "recoil";
-import { File } from "../../domain/File";
-import { fileSelectEffect } from "./fileSelectEffect";
+import { Item } from "@/domain";
+import { backend, ReadFileQuery } from "@/messaging";
+import { atom, atomFamily, selectorFamily } from "recoil";
 
-export const fileState = atom<File | undefined>({
+export const fileState = atom<Item | undefined>({
     key: "file",
     default: undefined,
-    effects: [fileSelectEffect],
+});
+
+export const fileContentState = atomFamily({
+    key: "file/content",
+    default: selectorFamily({
+        key: "file/content/initial",
+        get: (query: Readonly<Partial<ReadFileQuery>>) => async () => {
+            if (!query.workspaceId || !query.path) {
+                return undefined;
+            }
+
+            try {
+                return await backend.workspace.readFile.call(query as ReadFileQuery);
+            } catch {
+                return undefined;
+            }
+        },
+    }),
 });
