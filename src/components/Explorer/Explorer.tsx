@@ -70,7 +70,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
         }
 
         return result;
-    }, [expand, tree.contents]);
+    }, [expand, tree.contents, tree.state]);
 
     const rowVirtualizer = useVirtualizer({
         count: list.length,

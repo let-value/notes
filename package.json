@@ -11,6 +11,7 @@
         "lint": "eslint . --ext .ts,.tsx"
     },
     "dependencies": {
+        "@ampproject/worker-dom": "^0.34.0",
         "@creasource/reactive-idb": "^1.2.1",
         "@monaco-editor/react": "^4.4.6",
         "@nozbe/watermelondb": "^0.24.0",
@@ -20,6 +21,8 @@
         "flat": "^5.0.2",
         "hyperformula": "^2.3.0",
         "idb": "^7.1.1",
+        "language-detect": "^1.1.0",
+        "language-map": "^1.5.0",
         "lodash-es": "^4.17.21",
         "luxon": "^1.28.0",
         "luxon-parser": "^0.9.3",

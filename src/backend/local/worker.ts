@@ -2,7 +2,9 @@ import { backend, EventTransport, send, setSource } from "@/messaging";
 import { id } from "@/tabId";
 import { createBroadcastChannel } from "@/utils";
 import { createLeaderElection } from "broadcast-channel";
-import "./features";
+
+await import("./dom/setupDom");
+await import("./features");
 
 export let tabId: string | undefined = undefined;
 

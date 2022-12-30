@@ -1,4 +1,5 @@
 import { BroadcastMessage, frontend } from "@/messaging";
+import { queue } from "@/queue/schedule";
 import { WorkspaceStore } from "./WorkspaceStore";
 
 export class WorkspacePermissionHelper {
@@ -22,16 +23,21 @@ export class WorkspacePermissionHelper {
     }
 
     async request(query?: BroadcastMessage) {
-        const newPermission = await frontend.requestPermission.call(
-            this.store.workspace.handle,
-            undefined,
-            query?.senderId,
-        );
+        const taskId = `${this.store.workspace.id}/requestPermission`;
+        const task = async () => {
+            const newPermission = await frontend.requestPermission.call(
+                this.store.workspace.handle,
+                undefined,
+                query?.senderId,
+            );
 
-        if (newPermission !== "granted") {
-            throw new Error("Permission denied");
-        }
+            if (newPermission !== "granted") {
+                throw new Error("Permission denied");
+            }
 
-        return newPermission;
+            return newPermission;
+        };
+
+        return await queue.add(task, { priority: 4, type: taskId });
     }
 }

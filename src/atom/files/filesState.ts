@@ -1,6 +1,6 @@
-import { TreeItem, WorkspaceId } from "@/domain";
+import { WorkspaceId } from "@/domain";
 import { backend, frontend } from "@/messaging";
-import path from "path";
+import { filesToTree } from "@/utils/itemsToTree";
 import { atomFamily, selectorFamily } from "recoil";
 import { createCommandEffect, createQueryEffect } from "../createQueryEffect";
 
@@ -25,44 +25,6 @@ export const filesTree = selectorFamily({
         async ({ get }) => {
             const files = get(filesState(workspaceId));
 
-            const lookup = new Map<string, TreeItem>();
-
-            const root: TreeItem = {
-                name: workspaceId,
-                path: "/",
-                isDirectory: true,
-                children: [],
-            };
-
-            lookup.set(root.path, root);
-
-            const queue = [...files];
-
-            while (queue.length > 0) {
-                const item = queue.shift();
-
-                if (!item) {
-                    continue;
-                }
-
-                const parentNode = lookup.get(path.dirname(item.path));
-                if (!parentNode) {
-                    queue.push(item);
-                    continue;
-                }
-
-                const node: TreeItem = {
-                    ...item,
-                };
-
-                if (node.isDirectory) {
-                    node.children = [];
-                    lookup.set(item.path, node);
-                }
-
-                parentNode.children?.push(node);
-            }
-
-            return lookup.get(root.path);
+            return filesToTree(workspaceId, files);
         },
 });

@@ -26,7 +26,6 @@ export class QueueLine implements Queue<RunFunction, LineOptions> {
         return item?.run;
     }
     promote(type: string, newPriority = 1) {
-        console.log("promote", type, newPriority);
         const item = this.items.find((element) => element.options?.type === type);
         if (!item) {
             return;
