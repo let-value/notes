@@ -1,7 +1,6 @@
 import { Item } from "@/domain";
 import { BroadcastMessage } from "@/messaging";
-import { queue } from "@/queue/queue";
-import { pendingPromise } from "@/utils";
+import { queue } from "@/queue/schedule";
 import path from "path";
 import { getItemsRecursively } from "./getItemsRecursively";
 import { WorkspaceStore } from "./WorkspaceStore";
@@ -10,7 +9,6 @@ export class WorkspaceFilesHelper {
     files?: Item[];
     constructor(private store: WorkspaceStore) {}
 
-    @pendingPromise()
     async getFiles(query?: BroadcastMessage) {
         if (this.files) {
             return this.files;
@@ -18,50 +16,48 @@ export class WorkspaceFilesHelper {
 
         await this.store.permission.check(query);
 
-        const files = await queue.add(
-            async () => {
-                const items: Item[] = [];
-                for await (const [handle, parentPath] of getItemsRecursively(this.store.workspace.handle)) {
-                    items.push({ name: handle.name, path: parentPath, isDirectory: handle.kind === "directory" });
-                }
+        const taskId = `${this.store.workspace.id}/getFiles`;
+        const getFilesTask = async () => {
+            const items: Item[] = [];
+            for await (const [handle, parentPath] of getItemsRecursively(this.store.workspace.handle)) {
+                items.push({ name: handle.name, path: parentPath, isDirectory: handle.kind === "directory" });
+            }
 
-                return items;
-            },
-            { priority: 4 },
-        );
+            return items;
+        };
+
+        const files = await queue.add(getFilesTask, { priority: query ? 4 : 1, type: taskId });
 
         this.files = files;
         return files;
     }
 
-    @pendingPromise()
     async readFile(payload: string, query?: BroadcastMessage) {
         await this.store.permission.check(query);
 
-        return await queue.add(
-            async () => {
-                await this.store.permission.check(query);
+        const taskId = `${this.store.workspace.id}/readFile/${payload}`;
+        const readFileTask = async () => {
+            await this.store.permission.check(query);
 
-                const parsedPath = path.parse(payload);
+            const parsedPath = path.parse(payload);
 
-                const folders = parsedPath.dir.split(path.sep).filter((dir) => dir !== "");
+            const folders = parsedPath.dir.split(path.sep).filter((dir) => dir !== "");
 
-                let directoryHandle = this.store.workspace.handle as FileSystemDirectoryHandle;
-                while (folders.length > 0) {
-                    const dir = folders.shift();
+            let directoryHandle = this.store.workspace.handle as FileSystemDirectoryHandle;
+            while (folders.length > 0) {
+                const dir = folders.shift();
 
-                    if (!dir) {
-                        continue;
-                    }
-
-                    directoryHandle = await directoryHandle.getDirectoryHandle(dir);
+                if (!dir) {
+                    continue;
                 }
 
-                const fileHandle = await directoryHandle.getFileHandle(parsedPath.base);
-                const file = await fileHandle.getFile();
-                return await file.text();
-            },
-            { priority: 4 },
-        );
+                directoryHandle = await directoryHandle.getDirectoryHandle(dir);
+            }
+
+            const fileHandle = await directoryHandle.getFileHandle(parsedPath.base);
+            const file = await fileHandle.getFile();
+            return await file.text();
+        };
+        return await queue.add(readFileTask, { priority: query ? 4 : 1, type: taskId });
     }
 }

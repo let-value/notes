@@ -8,9 +8,11 @@ export function pendingPromise() {
                     return pending;
                 }
                 pending = original.apply(this, args);
-                const result = await pending;
-                pending = undefined;
-                return result;
+                try {
+                    return await pending;
+                } finally {
+                    pending = undefined;
+                }
             };
         }
         return descriptor;
