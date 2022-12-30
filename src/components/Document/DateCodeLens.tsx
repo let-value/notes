@@ -1,4 +1,5 @@
 import { Token } from "@/domain";
+import { DateWidget } from "@/editor/widgets";
 import { useWhyDidYouUpdate } from "@/utils/useWhyDidYouUpdate";
 import { Text } from "evergreen-ui";
 import { groupBy, isEqual } from "lodash-es";
@@ -6,7 +7,6 @@ import { editor } from "monaco-editor";
 import { FC, RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { filter, map, mergeMap, Observable } from "rxjs";
-import { DateMonacoWidget } from "./DateMonacoWidget";
 import { getModelTokensSubject } from "./tokensRepository";
 
 interface DateWidgetProps {
@@ -14,7 +14,7 @@ interface DateWidgetProps {
     widget: editor.IContentWidget | undefined;
 }
 
-export const DateWidget: FC<DateWidgetProps> = ({ token, widget }) => {
+export const RenderDateWidget: FC<DateWidgetProps> = ({ token, widget }) => {
     const target = widget?.getDomNode();
 
     if (!target) {
@@ -30,7 +30,7 @@ interface DateLineWidgetsProps {
 }
 
 const DateLineWidgets: FC<DateLineWidgetsProps> = ({ editor, tokens }) => {
-    const [widget] = useState(() => new DateMonacoWidget());
+    const [widget] = useState(() => new DateWidget(editor.current, tokens));
 
     useWhyDidYouUpdate("DateLineWidgets", { editor, tokens, widget });
 
@@ -48,7 +48,7 @@ const DateLineWidgets: FC<DateLineWidgetsProps> = ({ editor, tokens }) => {
     return (
         <>
             {tokens.map((token, index) => (
-                <DateWidget key={index} token={token} widget={widget?.getContentWidget(index)} />
+                <RenderDateWidget key={index} token={token} widget={widget?.getContentWidget(index)} />
             ))}
         </>
     );
