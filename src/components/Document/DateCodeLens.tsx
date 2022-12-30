@@ -1,6 +1,5 @@
 import { Token } from "@/domain";
 import { DateWidget } from "@/editor/widgets";
-import { useWhyDidYouUpdate } from "@/utils/useWhyDidYouUpdate";
 import { Text } from "evergreen-ui";
 import { groupBy, isEqual } from "lodash-es";
 import { editor } from "monaco-editor";
@@ -31,8 +30,6 @@ interface DateLineWidgetsProps {
 
 const DateLineWidgets: FC<DateLineWidgetsProps> = ({ editor, tokens }) => {
     const [widget] = useState(() => new DateWidget(editor.current, tokens));
-
-    useWhyDidYouUpdate("DateLineWidgets", { editor, tokens, widget });
 
     useEffect(() => {
         widget.updateTokens(editor.current, tokens);

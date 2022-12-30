@@ -24,13 +24,14 @@
 </div>
 
 Backlinks are supported too: [[backlinks]] or [[backlink#id-goes-here]]
-Dates are supported too: #[2020-01-01] or #[2020-01-01#id-goes-here]
 
 -   Bullet lists are easy too
 
 *   Another one
 
 -   Another one
+
+Dates are supported too: #[2020-01-01] or #[2020-01-01#id-goes-here]
 
 This is a paragraph, which is text surrounded by
 whitespace. Paragraphs can be on one
