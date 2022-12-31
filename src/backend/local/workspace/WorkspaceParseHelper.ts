@@ -12,9 +12,9 @@ languages.setMonarchTokensProvider("markdown", customMonarchMarkdownLanguage);
 export class WorkspaceParseHelper {
     constructor(private store: WorkspaceStore) {}
     async start() {
-        const files = await this.store.fs.getFiles();
-        const tree = filesToTree(this.store.workspace.id, files);
-        this.parseItem(tree);
+        const files = await this.store.fs.getItems();
+        const { root, lookup } = filesToTree(this.store.workspace.id, files);
+        this.parseItem(root);
     }
     async parseItem(tree: TreeItem | undefined) {
         if (!tree) {

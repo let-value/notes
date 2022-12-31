@@ -23,12 +23,9 @@ export const Document: FC = () => {
                 onMount={handleRef}
                 height="100%"
                 width="100%"
+                path={file?.path ?? "default.md"}
                 defaultValue={fileContent ?? defaultValue}
-                defaultLanguage="markdown"
                 theme="backlink"
-                options={{
-                    scrollBeyondLastLine: false,
-                }}
             />
             <DateCodeLens editor={editorRef} model={model} />
         </>

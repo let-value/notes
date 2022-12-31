@@ -1,6 +1,9 @@
 import path from "path";
 
-self.process = { cwd: () => "" } as never;
+if (!self.process) {
+    self.process = { cwd: () => "" } as never;
+}
+
 export const getItemsRecursively = async function* (
     entry: FileSystemHandle,
     parentPath?: string,

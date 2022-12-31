@@ -5,11 +5,11 @@ import path from "path";
 import { getItemsRecursively } from "./getItemsRecursively";
 import { WorkspaceStore } from "./WorkspaceStore";
 
-export class WorkspaceFilesHelper {
+export class WorkspaceItemsHelper {
     files?: Item[];
     constructor(private store: WorkspaceStore) {}
 
-    async getFiles(query?: BroadcastMessage) {
+    async getItems(query?: BroadcastMessage) {
         if (this.files) {
             return this.files;
         }

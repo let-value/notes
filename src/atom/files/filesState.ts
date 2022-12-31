@@ -25,6 +25,8 @@ export const filesTree = selectorFamily({
         async ({ get }) => {
             const files = get(filesState(workspaceId));
 
-            return filesToTree(workspaceId, files);
+            const { root } = filesToTree(workspaceId, files);
+
+            return root;
         },
 });

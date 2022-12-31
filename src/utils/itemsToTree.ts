@@ -34,11 +34,11 @@ export function filesToTree(workspaceId: WorkspaceId, files: Item[]) {
 
         if (node.isDirectory) {
             node.children = [];
-            lookup.set(item.path, node);
         }
 
+        lookup.set(item.path, node);
         parentNode.children?.push(node);
     }
 
-    return lookup.get(root.path);
+    return { lookup, root: lookup.get(root.path) };
 }
