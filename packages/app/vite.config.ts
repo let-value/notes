@@ -1,10 +1,9 @@
 import react from "@vitejs/plugin-react";
 import path from "path";
-import { defineConfig } from "vite";
+import { defineConfig, UserConfig } from "vite";
 import eslint from "vite-plugin-eslint";
 
-// https://vitejs.dev/config/
-export default defineConfig({
+export const config: UserConfig = {
     resolve: {
         alias: {
             path: "path-browserify",
@@ -24,4 +23,6 @@ export default defineConfig({
             },
         }),
     ],
-});
+};
+
+export default defineConfig(config);

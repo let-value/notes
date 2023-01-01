@@ -6,7 +6,7 @@ export class WorkspacePermissionHelper {
     constructor(private store: WorkspaceStore) {}
 
     async check(query?: BroadcastMessage) {
-        const permission = await this.store.workspace.handle.queryPermission({ mode: "readwrite" });
+        const permission = await this.store.workspace.handle.queryPermission({ mode: "read" });
         if (permission === "denied") {
             throw new Error("Permission denied");
         }

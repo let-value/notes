@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "noEmit": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "outDir": "./dist",
+        "paths": {
+            "#preload": ["../preload/src/index"]
+        }
+    },
+    "references": [{ "path": "../../../app/tsconfig.base.json" }]
+}

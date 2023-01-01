@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "composite": true,
         "target": "ESNext",
         "useDefineForClassFields": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
@@ -13,10 +14,11 @@
         "moduleResolution": "Node",
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "noEmit": true,
         "jsx": "react-jsx",
         "types": ["@types/wicg-file-system-access", "node"],
         "experimentalDecorators": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
         "paths": {
             "@/*": ["./src/*"],
             "@/messaging": ["./src/messaging"],
