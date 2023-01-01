@@ -1,5 +1,4 @@
 export * from "./backend";
-export * from "./broadcast";
 export * from "./BroadcastMessage";
 export * from "./BroadcastMessageType";
 export * from "./Command";
@@ -8,3 +7,4 @@ export * from "./frontend";
 export * from "./match";
 export * from "./mediator";
 export * from "./Query";
+export * from "./service";

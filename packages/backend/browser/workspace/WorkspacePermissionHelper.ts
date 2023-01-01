@@ -1,5 +1,5 @@
-import { BroadcastMessage, frontend } from "@/messaging";
-import { queue } from "@/queue/schedule";
+import { BroadcastMessage, frontend } from "messaging";
+import { queue } from "queue";
 import { WorkspaceStore } from "./WorkspaceStore";
 
 export class WorkspacePermissionHelper {

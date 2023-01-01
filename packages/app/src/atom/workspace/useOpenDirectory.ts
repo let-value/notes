@@ -1,5 +1,5 @@
 import { useRecoilCallback } from "recoil";
-import { backend } from "../../messaging";
+import { backend } from "messaging";
 import { workspaceState } from "./workspace";
 
 export const useOpenDirectory = () =>

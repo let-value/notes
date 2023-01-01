@@ -1,6 +1,6 @@
-import { Workspace, WorkspaceHandle, WorkspaceId } from "@/domain";
-import { BroadcastMessage, frontend } from "@/messaging";
 import { incrementFileNameIfExist } from "@/utils";
+import { BroadcastMessage, frontend } from "messaging";
+import { Workspace, WorkspaceHandle, WorkspaceId } from "models";
 import { v4 as uuidv4 } from "uuid";
 import { addWorkspace, getWorkspace, getWorkspaces } from "../db/repositories";
 import { WorkspaceItemsHelper } from "./WorkspaceItemsHelper";

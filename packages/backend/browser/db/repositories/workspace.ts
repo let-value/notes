@@ -1,4 +1,4 @@
-import { WorkspaceHandle } from "@/domain";
+import { WorkspaceHandle } from "models";
 import { concatMap, firstValueFrom, lastValueFrom } from "rxjs";
 import { database } from "../database";
 

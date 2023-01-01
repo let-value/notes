@@ -1,0 +1,18 @@
+{
+    "name": "backend-broser",
+    "version": "1.0.0",
+    "description": "",
+    "main": "worker.ts",
+    "dependencies": {
+        "@ampproject/worker-dom": "^0.34.0",
+        "@creasource/reactive-idb": "^1.2.1",
+        "iti": "^0.6.0",
+        "language-detect": "^1.1.0",
+        "language-map": "^1.5.0",
+        "messaging": "file:../../messaging",
+        "models": "file:../../domain",
+        "monaco-editor": "^0.34.1",
+        "queue": "file:../../queue",
+        "rxjs": "^7.8.0"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "folders": [
+        {
+            "path": "packages/app"
+        },
+        {
+            "path": "packages/electron"
+        },
+        { "name": "root", "path": "." }
+    ]
+}

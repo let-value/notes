@@ -1,10 +1,10 @@
 import { customMonarchMarkdownLanguage } from "@/components/Document/customMonarchMarkdownLanguage";
-import { TreeItem } from "@/domain";
-import { queue } from "@/queue/schedule";
 import { filesToTree } from "@/utils/itemsToTree";
 import { filename } from "language-detect";
 import map from "language-map";
+import { TreeItem } from "models";
 import { editor, languages } from "monaco-editor/esm/vs/editor/editor.api";
+import { queue } from "queue";
 import { WorkspaceStore } from "./WorkspaceStore";
 
 languages.setMonarchTokensProvider("markdown", customMonarchMarkdownLanguage);

@@ -1,4 +1,4 @@
-import { Item, Workspace, WorkspaceId } from "@/domain";
+import { Item, Workspace, WorkspaceId } from "models";
 import { Query } from "./Query";
 
 export interface ReadFileQuery {

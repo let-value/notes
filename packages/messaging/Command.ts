@@ -1,4 +1,3 @@
-import { id } from "../tabId";
 import { BroadcastMessage } from "./BroadcastMessage";
 
 export class Command<TPayload, TMeta = unknown> {
@@ -9,7 +8,6 @@ export class Command<TPayload, TMeta = unknown> {
             type: "command",
             payload,
             meta,
-            senderId: id,
             recieverId,
         };
     }

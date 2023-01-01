@@ -1,7 +1,7 @@
 import PQueue, { Options } from "p-queue";
 import { LineOptions, QueueLine, Task } from "./QueueLine";
 
-class Queue extends PQueue<QueueLine, LineOptions> {
+export class Queue extends PQueue<QueueLine, LineOptions> {
     line: QueueLine;
     pendingPromises = new Map<string, Promise<unknown>>();
     constructor(options: Options<QueueLine, LineOptions>) {
@@ -42,9 +42,3 @@ class Queue extends PQueue<QueueLine, LineOptions> {
 }
 
 export const queue = new Queue({ concurrency: 1 });
-queue.on("add", () => {
-    console.log(`Task is added.  Size: ${queue.size}  Pending: ${queue.pending}`);
-});
-queue.on("next", () => {
-    console.log(`Task is completed.  Size: ${queue.size}  Pending: ${queue.pending}`);
-});

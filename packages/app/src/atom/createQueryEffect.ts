@@ -1,6 +1,6 @@
 import { AtomEffect } from "recoil";
 import { filter } from "rxjs";
-import { BroadcastMessage, Command, matchCommand, matchResponse, mediator, Query } from "../messaging";
+import { BroadcastMessage, Command, matchCommand, matchResponse, mediator, Query } from "messaging";
 
 export const createQueryEffect =
     <T>(query: Query<T>, predicate?: Parameters<typeof filter<BroadcastMessage<"response", T>>>[0]): AtomEffect<T> =>

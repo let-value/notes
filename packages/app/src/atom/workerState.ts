@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
 
-import { backend } from "../messaging";
+import { backend } from "messaging";
 import { createQueryEffect } from "./createQueryEffect";
 
 export const workerState = atom<string>({

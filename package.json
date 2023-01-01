@@ -2,6 +2,10 @@
     "name": "notes-workspace",
     "type": "module",
     "workspaces": [
+        "packages/domain",
+        "packages/messaging",
+        "packages/queue",
+        "packages/backend/browser",
         "packages/app",
         "packages/electron"
     ]

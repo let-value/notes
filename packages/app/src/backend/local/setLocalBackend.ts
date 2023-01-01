@@ -1,4 +1,4 @@
-import { EventTransport, setSource } from "@/messaging";
+import { EventTransport, setSource } from "messaging";
 import { id } from "@/tabId";
 import { createBroadcastChannel } from "@/utils";
 

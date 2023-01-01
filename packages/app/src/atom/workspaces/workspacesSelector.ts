@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
-import { Workspace, WorkspaceId } from "../../domain/Workspace";
-import { backend } from "../../messaging";
+import { Workspace, WorkspaceId } from "models";
+import { backend } from "messaging";
 import { createQueryEffect } from "../createQueryEffect";
 
 export const workspacesSelector = atom<Workspace[]>({

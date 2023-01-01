@@ -10,6 +10,6 @@ export interface BroadcastMessage<
     correlationId?: string;
     payload: TPayload;
     meta?: TMeta;
-    senderId: string;
+    senderId?: string;
     recieverId?: string;
 }

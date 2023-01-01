@@ -1,4 +1,4 @@
-import { Item } from "@/domain";
+import { Item } from "models";
 import { Command } from "./Command";
 import { Query } from "./Query";
 

@@ -1,6 +1,6 @@
 import { useRecoilCallback } from "recoil";
-import { WorkspaceId } from "../../domain";
-import { backend } from "../../messaging";
+import { WorkspaceId } from "models";
+import { backend } from "messaging";
 import { workspaceState } from "./workspace";
 
 export const useOpenWorkspace = () =>

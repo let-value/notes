@@ -1,4 +1,4 @@
-import { backend, matchQuery, mediator } from "@/messaging";
+import { backend, matchQuery, mediator } from "messaging";
 import { WorkspaceStore } from "../workspace/WorkspaceStore";
 
 mediator.pipe(matchQuery(backend.workspace.openDirectory)).subscribe(async (query) => {
