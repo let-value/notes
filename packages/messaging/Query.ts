@@ -52,16 +52,4 @@ export class Query<TResult, TArgs = unknown, TMeta = unknown> {
             recieverId,
         };
     }
-
-    // respond(query: BroadcastMessage<"query", TArgs>, result: TResult, meta?: TMeta) {
-    //     return send(this.response(result, query, meta, query.senderId));
-    // }
-
-    // respondError(query: BroadcastMessage<"query", TArgs>, result: unknown, meta?: TMeta) {
-    //     return send(this.error(result, query, meta, query.senderId));
-    // }
-
-    // call(args: TArgs, meta?: TMeta, recieverId?: string) {
-    //     return call<TResult, TArgs, TMeta>(this, args, meta, recieverId);
-    // }
 }

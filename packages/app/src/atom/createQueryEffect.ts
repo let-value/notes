@@ -1,6 +1,9 @@
+import { container } from "@/container";
+import { BroadcastMessage, Command, matchCommand, matchResponse, Query } from "messaging";
 import { AtomEffect } from "recoil";
 import { filter } from "rxjs";
-import { BroadcastMessage, Command, matchCommand, matchResponse, mediator, Query } from "messaging";
+
+const mediator = container.get("mediator");
 
 export const createQueryEffect =
     <T>(query: Query<T>, predicate?: Parameters<typeof filter<BroadcastMessage<"response", T>>>[0]): AtomEffect<T> =>

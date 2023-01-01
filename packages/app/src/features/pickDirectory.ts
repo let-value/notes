@@ -1,6 +1,10 @@
-import { frontend, matchQuery, mediator } from "messaging";
+import { container } from "@/container";
+import { frontend, matchQuery } from "messaging";
+
+const mediator = container.get("mediator");
+const dispatcher = container.get("dispatcher");
 
 mediator.pipe(matchQuery(frontend.pickDirectory)).subscribe(async (query) => {
     const handle = await window.showDirectoryPicker({ mode: "read" });
-    await frontend.pickDirectory.respond(query, handle);
+    await dispatcher.send(frontend.pickDirectory.response(handle, query));
 });

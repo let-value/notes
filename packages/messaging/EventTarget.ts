@@ -1,14 +1,10 @@
 import { BroadcastMessage } from "./BroadcastMessage";
 
 type EventType = "message";
-type MessageHandler = ((this: EventTransport, ev: BroadcastMessage) => unknown) | null;
+type MessageHandler = ((this: EventTarget, ev: BroadcastMessage) => unknown) | null;
 
-export type EventTransport = {
-    readonly name: string;
-    readonly isClosed: boolean;
-
+export type EventTarget = {
     postMessage(msg: BroadcastMessage): Promise<void>;
-    close(): Promise<void>;
 
     onmessage: MessageHandler;
 

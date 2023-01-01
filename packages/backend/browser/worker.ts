@@ -1,22 +1,27 @@
-import { backend, EventTransport, send, setSource } from "@/messaging";
-import { id } from "@/tabId";
-import { createBroadcastChannel } from "@/utils";
-import { createLeaderElection } from "broadcast-channel";
+import { BroadcastChannel, createLeaderElection } from "broadcast-channel";
+import { backend, BroadcastMessage } from "messaging";
+import { container } from "./container";
+
+const tabId = await new Promise<string>((resolve) =>
+    self.addEventListener("message", (message) => resolve(message.data), { once: true }),
+);
+
+container.upsert({ tabId });
+
+const id = container.get("id");
+const broadcastChannel = container.get("eventTarget");
+
+const elector = createLeaderElection(broadcastChannel as BroadcastChannel<BroadcastMessage>);
+await elector.awaitLeadership();
+
+console.log("leader", id, tabId);
 
 await import("./dom/setupDom");
 await import("./features");
 
-export let tabId: string | undefined = undefined;
+const dispatcher = container.get("dispatcher");
+const response = backend.leader.response(id, undefined);
 
-self.addEventListener("message", (message) => {
-    tabId = message.data;
-});
+console.log("response", response);
 
-const broadcastChannel = createBroadcastChannel();
-
-const elector = createLeaderElection(broadcastChannel);
-await elector.awaitLeadership();
-
-setSource(broadcastChannel as EventTransport);
-
-await send(backend.leader.response(id, undefined));
+dispatcher.send(response);

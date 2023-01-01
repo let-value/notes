@@ -1,15 +1,18 @@
-import { WorkspaceId } from "@/domain";
-import { backend, frontend } from "@/messaging";
+import { container } from "@/container";
 import { filesToTree } from "@/utils/itemsToTree";
+import { backend, frontend } from "messaging";
+import { WorkspaceId } from "models";
 import { atomFamily, selectorFamily } from "recoil";
 import { createCommandEffect, createQueryEffect } from "../createQueryEffect";
+
+const dispatcher = container.get("dispatcher");
 
 export const filesState = atomFamily({
     key: "files",
     default: selectorFamily({
         key: "files/initial",
         get: (workspaceId: WorkspaceId) => async () => {
-            return await backend.workspace.files.call(workspaceId);
+            return await dispatcher.call(backend.workspace.files, workspaceId);
         },
     }),
     effects: (workspaceId: WorkspaceId) => [

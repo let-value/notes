@@ -1,12 +1,14 @@
-import { incrementFileNameIfExist } from "@/utils";
+import { incrementFileNameIfExist } from "app/src/utils";
 import { BroadcastMessage, frontend } from "messaging";
 import { Workspace, WorkspaceHandle, WorkspaceId } from "models";
 import { v4 as uuidv4 } from "uuid";
+import { container } from "../container";
 import { addWorkspace, getWorkspace, getWorkspaces } from "../db/repositories";
 import { WorkspaceItemsHelper } from "./WorkspaceItemsHelper";
 import { WorkspaceParseHelper } from "./WorkspaceParseHelper";
 import { WorkspacePermissionHelper } from "./WorkspacePermissionHelper";
 
+const dispatcher = container.get("dispatcher");
 const workspaceStores = new Map<WorkspaceId, WorkspaceStore>();
 
 export class WorkspaceStore {
@@ -36,7 +38,7 @@ export class WorkspaceStore {
     }
 
     static async createWorkspace(query: BroadcastMessage) {
-        const handle = await frontend.pickDirectory.call(undefined, undefined, query.senderId);
+        const handle = await dispatcher.call(frontend.pickDirectory, undefined, undefined, query.senderId);
 
         const workspaces = await getWorkspaces();
 

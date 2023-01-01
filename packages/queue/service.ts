@@ -1,5 +1,7 @@
 import { Queue } from "./queue";
 
+export class QueueService extends Queue {}
+
 export const queueService = {
-    queue: () => new Queue({ concurrency: 1 }),
+    queue: (): QueueService => new Queue({ concurrency: 1 }),
 };

@@ -1,11 +1,12 @@
 {
-    "name": "backend-broser",
+    "name": "backend-browser",
     "version": "1.0.0",
     "description": "",
     "main": "worker.ts",
     "dependencies": {
         "@ampproject/worker-dom": "^0.34.0",
         "@creasource/reactive-idb": "^1.2.1",
+        "app": "file:../../app",
         "iti": "^0.6.0",
         "language-detect": "^1.1.0",
         "language-map": "^1.5.0",

@@ -1,3 +1,3 @@
-export * from "./lader";
+export * from "./leader";
 export * from "./workpaces";
 export * from "./workspace";

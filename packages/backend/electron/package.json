@@ -1,0 +1,9 @@
+{
+    "name": "backend-electron",
+    "version": "1.0.0",
+    "description": "",
+    "main": "worker.ts",
+    "dependencies": {
+        "backend-browser": "file:../browser"
+    }
+}

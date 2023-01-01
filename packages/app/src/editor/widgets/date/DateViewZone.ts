@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Editor } from "@/editor";
 import { editor } from "monaco-editor";
 

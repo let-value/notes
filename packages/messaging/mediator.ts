@@ -1,21 +1,28 @@
 import { BehaviorSubject, filter, fromEvent, map, merge, mergeMap, Subject } from "rxjs";
 import { BroadcastMessage } from "./BroadcastMessage";
-import { EventTransport } from "./EventTransport";
+import { EventTarget } from "./EventTarget";
 
-export function createMediator() {
-    const source = new BehaviorSubject<EventTransport | undefined>(undefined);
-    const dispatch = new Subject<BroadcastMessage>();
+export function createMediator(recieverId?: string) {
+    const source = new BehaviorSubject<EventTarget | undefined>(undefined);
+    const dispatcher = new Subject<BroadcastMessage>();
     const pipeline = source.pipe(
         filter(Boolean),
         map((transport) => fromEvent(transport, "message")),
         mergeMap((observable) => observable),
     );
 
-    function setSource(broadcastChannel: EventTransport) {
+    function dispatch(message: BroadcastMessage) {
+        dispatcher.next(message);
+    }
+
+    function setSource(broadcastChannel: EventTarget) {
         source.next(broadcastChannel);
     }
 
-    const mediator = merge(dispatch, pipeline);
+    const mediator = merge(dispatcher, pipeline).pipe(
+        filter((message) => (message.recieverId && recieverId ? message.recieverId == recieverId : true)),
+    );
+
     return {
         dispatch,
         mediator,
@@ -24,8 +31,3 @@ export function createMediator() {
 }
 
 export type MediatorFactoryResult = ReturnType<typeof createMediator>;
-
-export const { dispatch, mediator, setSource } = createMediator();
-// .pipe(
-//     filter((message) => (message.recieverId ? message.recieverId == id : true)),
-// );

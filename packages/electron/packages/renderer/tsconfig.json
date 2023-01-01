@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
+        "module": "ESNext",
         "noEmit": true,
+        "moduleResolution": "Node",
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "outDir": "./dist",

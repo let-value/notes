@@ -1,6 +1,9 @@
-import { Item } from "@/domain";
-import { backend, ReadFileQuery } from "@/messaging";
+import { container } from "@/container";
+import { backend, ReadFileQuery } from "messaging";
+import { Item } from "models";
 import { atom, atomFamily, selectorFamily } from "recoil";
+
+const dispatcher = container.get("dispatcher");
 
 export const fileState = atom<Item | undefined>({
     key: "file",
@@ -17,7 +20,7 @@ export const fileContentState = atomFamily({
             }
 
             try {
-                return await backend.workspace.readFile.call(query as ReadFileQuery);
+                return await dispatcher.call(backend.workspace.readFile, query as ReadFileQuery);
             } catch {
                 return undefined;
             }

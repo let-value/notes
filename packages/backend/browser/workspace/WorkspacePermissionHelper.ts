@@ -1,6 +1,9 @@
 import { BroadcastMessage, frontend } from "messaging";
 import { queue } from "queue";
+import { container } from "../container";
 import { WorkspaceStore } from "./WorkspaceStore";
+
+const dispatcher = container.get("dispatcher");
 
 export class WorkspacePermissionHelper {
     constructor(private store: WorkspaceStore) {}
@@ -25,7 +28,8 @@ export class WorkspacePermissionHelper {
     async request(query?: BroadcastMessage) {
         const taskId = `${this.store.workspace.id}/requestPermission`;
         const task = async () => {
-            const newPermission = await frontend.requestPermission.call(
+            const newPermission = await dispatcher.call(
+                frontend.requestPermission,
                 this.store.workspace.handle,
                 undefined,
                 query?.senderId,

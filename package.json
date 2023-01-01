@@ -6,6 +6,7 @@
         "packages/messaging",
         "packages/queue",
         "packages/backend/browser",
+        "packages/backend/electron",
         "packages/app",
         "packages/electron"
     ]

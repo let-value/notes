@@ -1,5 +1,5 @@
-import { customMonarchMarkdownLanguage } from "@/components/Document/customMonarchMarkdownLanguage";
-import { filesToTree } from "@/utils/itemsToTree";
+import { customMonarchMarkdownLanguage } from "app/src/components/Document/customMonarchMarkdownLanguage";
+import { filesToTree } from "app/src/utils/itemsToTree";
 import { filename } from "language-detect";
 import map from "language-map";
 import { TreeItem } from "models";

@@ -1,14 +1,17 @@
-import { atom, selector } from "recoil";
-import { Workspace, WorkspaceId } from "models";
+import { container } from "@/container";
 import { backend } from "messaging";
+import { Workspace, WorkspaceId } from "models";
+import { atom, selector } from "recoil";
 import { createQueryEffect } from "../createQueryEffect";
+
+const dispatcher = container.get("dispatcher");
 
 export const workspacesSelector = atom<Workspace[]>({
     key: "workspaces",
     default: selector({
         key: "workspaces/initial",
         get: async () => {
-            return await backend.workspaces.call(undefined);
+            return await dispatcher.call(backend.workspaces, undefined);
         },
     }),
     effects: [createQueryEffect(backend.workspaces)],
