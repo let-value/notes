@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
+        "allowJs": false,
+        "skipLibCheck": true,
+        "esModuleInterop": false,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "types": ["@types/wicg-file-system-access", "node"],
+        "experimentalDecorators": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@/messaging": ["./src/messaging"],
+            "@/domain": ["./src/domain"],
+            "@/utils": ["./src/utils"]
+        }
+    },
+    "include": ["src"],
+    "references": [{ "path": "./tsconfig.node.json" }]
+}
