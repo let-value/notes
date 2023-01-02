@@ -1,5 +1,5 @@
-import { Token } from "@/domain";
 import { isEqual } from "lodash-es";
+import { Token } from "models";
 import { editor } from "monaco-editor";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { map, mergeMap, Observable } from "rxjs";

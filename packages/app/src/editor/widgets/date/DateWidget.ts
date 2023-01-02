@@ -1,4 +1,4 @@
-import { Token } from "@/domain";
+import { Token } from "models";
 import { editor } from "monaco-editor";
 import { DateContentWidget } from "./DateContentWidget";
 import { DateViewZone } from "./DateViewZone";

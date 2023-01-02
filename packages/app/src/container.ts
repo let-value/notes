@@ -1,7 +1,7 @@
 import { createContainer } from "iti";
 import { createDispatcherService, createMessagingService } from "messaging";
 
-import { browserBackend } from "./backend/browser";
+import { browserBackend } from "./backend";
 import { id } from "./tabId";
 
 export const container = createContainer()

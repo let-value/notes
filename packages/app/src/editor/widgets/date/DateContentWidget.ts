@@ -1,6 +1,6 @@
-import { Token } from "@/domain";
 import { Editor } from "@/editor";
 import { isEqual } from "lodash-es";
+import { Token } from "models";
 import { editor as monacoEditor } from "monaco-editor";
 import { v4 as uuidv4 } from "uuid";
 

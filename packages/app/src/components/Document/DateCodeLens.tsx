@@ -1,7 +1,7 @@
-import { Token } from "@/domain";
 import { DateWidget } from "@/editor/widgets";
 import { Text } from "evergreen-ui";
 import { groupBy, isEqual } from "lodash-es";
+import { Token } from "models";
 import { editor } from "monaco-editor";
 import { FC, RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";

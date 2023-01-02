@@ -9,6 +9,7 @@ self.document = createDocument();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const element: any = self.document.createElement("div");
 element.prototype = self.document.createElement("div");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (self.Element as any) = element;
 
 const noop = () => {

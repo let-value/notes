@@ -3,4 +3,6 @@ import { electronBackend } from "./backend";
 
 container.upsert(electronBackend);
 
+container.get("eventTarget");
+
 import("app/src/main");

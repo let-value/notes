@@ -1,4 +1,4 @@
-import { Item, TreeItem, WorkspaceId } from "@/domain";
+import { Item, TreeItem, WorkspaceId } from "models";
 import path from "path";
 
 export function filesToTree(workspaceId: WorkspaceId, files: Item[]) {

@@ -1,4 +1,4 @@
-import { Item } from "@/domain";
+import { Item } from "models";
 import { useRecoilCallback } from "recoil";
 import { fileState } from "./fileState";
 

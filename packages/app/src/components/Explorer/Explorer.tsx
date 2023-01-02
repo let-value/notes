@@ -1,13 +1,12 @@
 import { useSelectFile } from "@/atom/file/useSelectFile";
 import { filesTree } from "@/atom/files/filesState";
-import { Item, TreeItem } from "@/domain";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { AnnotationIcon, FolderCloseIcon, FolderOpenIcon, Menu, Pane } from "evergreen-ui";
 import { join } from "lodash-es";
+import { Item, TreeItem, Workspace } from "models";
 import { FC, useCallback, useMemo, useRef } from "react";
 import { useRecoilValueLoadable } from "recoil";
 import { useMap } from "usehooks-ts";
-import { Workspace } from "../../domain/Workspace";
 import styles from "./Explorer.module.css";
 
 interface QueueItem {
@@ -89,7 +88,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
                 handleSelectFile(item);
             }
         },
-        [expand, expandFolder],
+        [expand, expandFolder, handleSelectFile],
     );
 
     if (!workspace) {

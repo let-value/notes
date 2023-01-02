@@ -9,3 +9,4 @@ export * from "./match";
 export * from "./mediator";
 export * from "./messagingService";
 export * from "./Query";
+export * from "./WorkerEventTarget";

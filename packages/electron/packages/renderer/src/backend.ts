@@ -1,11 +1,11 @@
-import { EventTarget } from "messaging";
-
-export const worker = new Worker(new URL("../../../../backend/electron/worker.ts", import.meta.url), {
-    type: "module",
-});
+import { EventTarget, WorkerEventTarget } from "messaging";
 
 export const electronBackend = {
     eventTarget: (): EventTarget => {
-        return worker as unknown as EventTarget;
+        const worker = new Worker(new URL("../../../../backend/electron/worker.ts", import.meta.url), {
+            type: "module",
+        });
+
+        return new WorkerEventTarget(worker);
     },
 };

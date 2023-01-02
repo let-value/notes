@@ -1,4 +1,4 @@
-import { Token } from "@/domain";
+import { Token } from "models";
 import { editor } from "monaco-editor";
 import { BehaviorSubject, Subject } from "rxjs";
 

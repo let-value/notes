@@ -1,4 +1,4 @@
-import { Token } from "@/domain";
+import { Token } from "models";
 import { editor } from "monaco-editor";
 import { RefObject, useCallback, useEffect } from "react";
 import { Observable } from "rxjs";
