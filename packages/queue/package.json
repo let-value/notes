@@ -1,0 +1,9 @@
+{
+    "name": "queue",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.ts",
+    "dependencies": {
+        "p-queue": "^7.3.0"
+    }
+}
