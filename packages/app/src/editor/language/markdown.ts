@@ -1,7 +1,9 @@
 /* eslint-disable no-useless-escape */
 import { languages } from "monaco-editor";
 
-export const customMonarchMarkdownLanguage = <languages.IMonarchLanguage>{
+export const backlinkRegex = /\[\[+([^\]\|]+)(?:\|)?([^\]]+)?\]\]/;
+
+export const markdown = <languages.IMonarchLanguage>{
     defaultToken: "",
     tokenPostfix: ".md",
 
@@ -100,7 +102,7 @@ export const customMonarchMarkdownLanguage = <languages.IMonarchLanguage>{
             [/`([^\\`]|@escapes)+`/, "variable"],
 
             // backlinks
-            [/\[\[+([^\]]+)\]\]+/, "backlink"],
+            [backlinkRegex, "backlink"],
 
             [/\#\[+([^\]]+)\]+/, "date"],
 

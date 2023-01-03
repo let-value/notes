@@ -5,8 +5,6 @@ import { editor as monacoEditor } from "monaco-editor";
 import { v4 as uuidv4 } from "uuid";
 
 export class DateContentWidget implements monacoEditor.IContentWidget {
-    allowEditorOverflow?: boolean | undefined;
-    suppressMouseDown?: boolean | undefined;
     private id?: string;
     private domNode: HTMLDivElement;
     private position?: monacoEditor.IContentWidgetPosition;

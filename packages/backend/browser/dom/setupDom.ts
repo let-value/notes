@@ -1,16 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createDocument } from "@ampproject/worker-dom/dist/server-lib.mjs";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-var
 self.window = self;
 
 self.document = createDocument();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (self.document as any).head = self.document.createDocumentFragment();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(self.window as any).HTMLIFrameElement = self.document.createElement("iframe").constructor;
 const element: any = self.document.createElement("div");
 element.prototype = self.document.createElement("div");
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (self.Element as any) = element;
+self.document.queryCommandSupported = () => false;
 
 const noop = () => {
     //noop

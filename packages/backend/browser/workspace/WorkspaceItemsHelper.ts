@@ -1,9 +1,11 @@
 import { BroadcastMessage } from "messaging";
 import { Item } from "models";
 import path from "path";
-import { queue } from "queue";
+import { container } from "../container";
 import { getItemsRecursively } from "./getItemsRecursively";
 import { WorkspaceStore } from "./WorkspaceStore";
+
+const queue = container.get("queue");
 
 export class WorkspaceItemsHelper {
     files?: Item[];

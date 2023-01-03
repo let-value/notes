@@ -20,8 +20,6 @@ export class WorkspaceStore {
         this.permission = new WorkspacePermissionHelper(this);
         this.fs = new WorkspaceItemsHelper(this);
         this.parse = new WorkspaceParseHelper(this);
-
-        this.parse.start();
     }
 
     static async getInstance(id: WorkspaceId) {

@@ -25,6 +25,7 @@ export const config = {
                     plugins: ["decorators-legacy", "classProperties"],
                 },
             },
+            exclude: /backend\/browser/,
         }),
     ],
 };

@@ -1,7 +1,7 @@
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import { customMonarchMarkdownLanguage } from "./components/Document/customMonarchMarkdownLanguage";
+import { markdown } from "./editor/language/markdown";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -14,7 +14,7 @@ self.MonacoEnvironment = {
 loader.config({ monaco });
 
 monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-monaco.languages.setMonarchTokensProvider("markdown", customMonarchMarkdownLanguage);
+monaco.languages.setMonarchTokensProvider("markdown", markdown);
 
 monaco.editor.defineTheme("backlink", {
     base: "vs",

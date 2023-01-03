@@ -1,8 +1,8 @@
 import { BroadcastMessage, frontend } from "messaging";
-import { queue } from "queue";
 import { container } from "../container";
 import { WorkspaceStore } from "./WorkspaceStore";
 
+const queue = container.get("queue");
 const dispatcher = container.get("dispatcher");
 
 export class WorkspacePermissionHelper {
