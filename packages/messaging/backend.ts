@@ -1,4 +1,4 @@
-import { Item, Workspace, WorkspaceId } from "models";
+import { Item, Token, Workspace, WorkspaceId } from "models";
 import { Query } from "./Query";
 
 export interface ReadFileQuery {
@@ -12,7 +12,8 @@ export const backend = {
         openDirectory: new Query<Workspace>("workspace/openDirectory"),
         open: new Query<Workspace, string>("workspace/open"),
         files: new Query<Item[], string, string>("workspace/getTree"),
-        readFile: new Query<string, ReadFileQuery>("workspace/readFile"),
+        fileContent: new Query<string, ReadFileQuery>("workspace/fileContent"),
+        fileTokens: new Query<Token[], ReadFileQuery>("workspace/readFileTokens"),
     },
     workspaces: new Query<Workspace[]>("workspaces"),
 };

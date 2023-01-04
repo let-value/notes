@@ -6,6 +6,7 @@ self.window = self;
 
 self.document = createDocument();
 (self.document as any).head = self.document.createDocumentFragment();
+(self.document as any).body = self.document.createDocumentFragment();
 (self.window as any).HTMLIFrameElement = self.document.createElement("iframe").constructor;
 const element: any = self.document.createElement("div");
 element.prototype = self.document.createElement("div");

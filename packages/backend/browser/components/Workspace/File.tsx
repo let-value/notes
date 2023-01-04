@@ -1,15 +1,24 @@
-import { TreeItem } from "models";
-import { useContext, useMemo } from "react";
+import { useAsyncMemo } from "app/src/utils";
+import { Item } from "models";
+import { memo, useContext, useMemo } from "react";
+import { useBoolean } from "usehooks-ts";
+import { getLanguage } from "../../utils/getLanguage";
 import { fileComponent } from "../Document";
+import { useWorkspaceItem } from "./useWorkspaceItem";
 import { WorkspaceContext } from "./WorkspaceContext";
 
 export interface FileProps {
-    item: TreeItem;
+    item: Item<false>;
 }
 
-export function File({ item }: FileProps) {
+export const File = memo(function File({ item }: FileProps) {
+    const suspended = useBoolean();
     const store = useContext(WorkspaceContext);
-    const language = useMemo(() => store.parse.getLanguage(item), [item, store.parse]);
+    const language = useMemo(() => getLanguage(item), [item]);
+    const tokens = useAsyncMemo(() => store.parse.getTokens(item, language), [item, language, store.parse]);
+    const instance = useMemo(() => ({ suspended, language, tokens }), [language, suspended, tokens]);
+
+    useWorkspaceItem(item, instance);
 
     const Component = fileComponent[language];
 
@@ -18,4 +27,4 @@ export function File({ item }: FileProps) {
     }
 
     return <Component item={item} />;
-}
+});

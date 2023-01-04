@@ -1,4 +1,4 @@
-import { backlinkRegex } from "app/src/editor/language/markdown";
+import { wikilinkRegex } from "app/src/editor/language/markdown";
 import { useAsyncMemo } from "app/src/utils";
 import { Token, TreeItem } from "models";
 import { useContext, useMemo } from "react";
@@ -11,7 +11,7 @@ interface MarkdownBacklinkProps {
 
 export function MarkdownBacklink({ from, token }: MarkdownBacklinkProps) {
     const store = useContext(WorkspaceContext);
-    const [, path, name] = useMemo(() => backlinkRegex.exec(token.value), [token.value]);
+    const [, embed, path, name] = useMemo(() => wikilinkRegex.exec(token.value), [token.value]);
     const to = useAsyncMemo(async () => {
         const files = await store.fs.getItems();
         return files.find((file) => file.path.includes(path) && !file.isDirectory);

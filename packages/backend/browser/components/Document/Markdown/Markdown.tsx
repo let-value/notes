@@ -1,4 +1,3 @@
-import { useAsyncMemo } from "app/src/utils";
 import { TreeItem } from "models";
 import { useContext, useMemo } from "react";
 import { WorkspaceContext } from "../../Workspace/WorkspaceContext";
@@ -10,8 +9,7 @@ interface MarkdownProps {
 
 export function Markdown({ item }: MarkdownProps) {
     const store = useContext(WorkspaceContext);
-    const tokens = useAsyncMemo(() => store.parse.getTokens(item), [item, store.parse], undefined);
-    const backlinks = useMemo(() => tokens?.filter((token) => token.type.startsWith("backlink")), [tokens]);
+    const backlinks = useMemo(() => tokens?.filter((token) => token.type.startsWith("wikilink")), [tokens]);
 
     return (
         <>

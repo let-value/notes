@@ -5,6 +5,7 @@ container.upsert({ eventTarget: () => new WorkerEventTarget(self) });
 
 const id = container.get("id");
 
+await import("app/src/editor/setupMonaco");
 await import("backend-browser/dom/setupDom");
 await import("backend-browser/features");
 

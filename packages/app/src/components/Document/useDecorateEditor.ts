@@ -1,34 +1,31 @@
+import { container } from "@/container";
 import { Monaco } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
-import { MutableRefObject, useCallback, useRef } from "react";
+import { useCallback, useState } from "react";
 import { BehaviorSubject } from "rxjs";
-import { setEditorMetadata } from "./editorMetadata";
-import { setModelEditor } from "./modelEditorRelation";
+
+const modelToEditor = container.get("modelToEditor");
+const editorMeta = container.get("editorMeta");
 
 export function useDecorateEditor() {
-    const editorRef = useRef<editor.IStandaloneCodeEditor>(null) as MutableRefObject<editor.IStandaloneCodeEditor>;
-    const editor = useRef(new BehaviorSubject<editor.IStandaloneCodeEditor | null>(null));
-    const model = useRef(new BehaviorSubject<editor.ITextModel | null>(null));
+    const [editorSubject] = useState(() => new BehaviorSubject<editor.IStandaloneCodeEditor | undefined>(undefined));
 
     const handleContentChange = useCallback(() => {
-        if (!editorRef.current) {
+        if (!editorSubject.value) {
             return;
         }
 
-        const newModel = editorRef.current.getModel();
-
-        if (!newModel) {
+        const model = editorSubject.value.getModel();
+        if (!model) {
             return;
         }
 
-        setModelEditor(newModel, editorRef.current);
-        model.current.next(newModel);
-    }, []);
+        modelToEditor.setEditor(model, editorSubject.value);
+    }, [editorSubject]);
 
     const handleRef = useCallback(
         (ref: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            editorRef.current = ref;
-            editor.current.next(ref);
+            editorSubject.next(ref);
 
             ref.addCommand(
                 monaco.KeyMod.chord(
@@ -49,13 +46,13 @@ export function useDecorateEditor() {
                 "",
             );
 
-            setEditorMetadata(ref, { commandId });
+            editorMeta.set(ref, { commandId });
 
             ref.onDidChangeModelContent(handleContentChange);
             handleContentChange();
         },
-        [handleContentChange],
+        [editorSubject, handleContentChange],
     );
 
-    return { editorRef, editor, model, handleRef };
+    return { editor: editorSubject, handleRef };
 }

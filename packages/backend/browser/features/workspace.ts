@@ -25,9 +25,9 @@ mediator.pipe(matchQuery(backend.workspace.open)).subscribe(async (query) => {
 
 mediator.pipe(matchQuery(backend.workspace.files)).subscribe(async (query) => {
     try {
-        const workspace = await WorkspaceStore.getInstance(query.payload);
+        const store = await WorkspaceStore.getInstance(query.payload);
 
-        const items = await workspace.fs.getItems(query);
+        const items = await store.fs.getItems(query);
 
         await dispatcher.send(backend.workspace.files.response(items, query, query.payload));
     } catch (error) {
@@ -35,14 +35,26 @@ mediator.pipe(matchQuery(backend.workspace.files)).subscribe(async (query) => {
     }
 });
 
-mediator.pipe(matchQuery(backend.workspace.readFile)).subscribe(async (query) => {
+mediator.pipe(matchQuery(backend.workspace.fileContent)).subscribe(async (query) => {
     try {
-        const workspace = await WorkspaceStore.getInstance(query.payload.workspaceId);
+        const store = await WorkspaceStore.getInstance(query.payload.workspaceId);
 
-        const text = await workspace.fs.readFile(query.payload.path, query);
+        const text = await store.fs.readFile(query.payload.path, query);
 
-        await dispatcher.send(backend.workspace.readFile.response(text, query));
+        await dispatcher.send(backend.workspace.fileContent.response(text, query));
     } catch (error) {
-        await dispatcher.send(backend.workspace.readFile.error(error, query));
+        await dispatcher.send(backend.workspace.fileContent.error(error, query));
+    }
+});
+
+mediator.pipe(matchQuery(backend.workspace.fileTokens)).subscribe(async (query) => {
+    try {
+        const store = await WorkspaceStore.getInstance(query.payload.workspaceId);
+
+        const tokens = await store.getFile(query.payload.path);
+
+        await dispatcher.send(backend.workspace.fileTokens.response(tokens, query));
+    } catch (error) {
+        await dispatcher.send(backend.workspace.fileTokens.error(error, query));
     }
 });

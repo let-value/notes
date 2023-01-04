@@ -20,7 +20,25 @@ export const fileContentState = atomFamily({
             }
 
             try {
-                return await dispatcher.call(backend.workspace.readFile, query as ReadFileQuery);
+                return await dispatcher.call(backend.workspace.fileContent, query as ReadFileQuery);
+            } catch {
+                return undefined;
+            }
+        },
+    }),
+});
+
+export const fileTokensState = atomFamily({
+    key: "file/tokens",
+    default: selectorFamily({
+        key: "file/tokens/initial",
+        get: (query: Readonly<Partial<ReadFileQuery>>) => async () => {
+            if (!query.workspaceId || !query.path) {
+                return undefined;
+            }
+
+            try {
+                return await dispatcher.call(backend.workspace.fileTokens, query as ReadFileQuery);
             } catch {
                 return undefined;
             }

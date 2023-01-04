@@ -17,6 +17,7 @@ await elector.awaitLeadership();
 console.log("leader", id, tabId);
 
 await import("./dom/setupDom");
+await import("app/src/editor/setupMonaco");
 await import("./features");
 
 const dispatcher = container.get("dispatcher");

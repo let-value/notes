@@ -1,7 +1,7 @@
 import "./container";
 
 await import("./features");
-await import("./monacoSetup");
+await import("./editor/setupMonacoEditor");
 await import("./ui");
 
 export {};

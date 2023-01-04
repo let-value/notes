@@ -1,10 +1,7 @@
 import { Token } from "models";
 import { editor } from "monaco-editor";
-import { RefObject, useCallback, useEffect } from "react";
-import { Observable } from "rxjs";
-import { getModelTokensSubject } from "./tokensRepository";
 
-export function getModelTokens(model: editor.ITextModel) {
+export function parseModelTokens(model: editor.ITextModel) {
     const result: Token[] = [];
 
     const language = model.getLanguageId();
@@ -39,20 +36,4 @@ export function getModelTokens(model: editor.ITextModel) {
     }
 
     return result;
-}
-
-export function useDocumentTokens(model: RefObject<Observable<editor.ITextModel | null>>) {
-    const handleUpdateTokens = useCallback((model: editor.ITextModel | null) => {
-        if (!model) return;
-        const tokensSubject = getModelTokensSubject(model);
-        const tokens = getModelTokens(model);
-        tokensSubject?.next(tokens);
-    }, []);
-
-    useEffect(() => {
-        const subscription = model.current?.subscribe(handleUpdateTokens);
-        return () => subscription?.unsubscribe();
-    }, [handleUpdateTokens, model]);
-
-    return { handleUpdateTokens };
 }

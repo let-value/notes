@@ -1,5 +1,5 @@
 import { BroadcastMessage } from "messaging";
-import { Item } from "models";
+import { Item, ItemHandle } from "models";
 import path from "path";
 import { container } from "../container";
 import { getItemsRecursively } from "./getItemsRecursively";
@@ -10,6 +10,23 @@ const queue = container.get("queue");
 export class WorkspaceItemsHelper {
     files?: Item[];
     constructor(private store: WorkspaceStore) {}
+
+    async getWorkspaceItem(): Promise<ItemHandle<true>> {
+        await this.store.permission.check();
+        const handle = this.store.workspace.handle;
+        return { name: handle.name, path: "/", isDirectory: true, handle };
+    }
+
+    async getDirectoryItems(item: ItemHandle<true>): Promise<ItemHandle[]> {
+        await this.store.permission.check();
+
+        const items: ItemHandle[] = [];
+        for await (const handle of item.handle.values()) {
+            items.push({ name: handle.name, path: item.path, isDirectory: handle.kind === "directory", handle });
+        }
+
+        return items;
+    }
 
     async getItems(query?: BroadcastMessage) {
         if (this.files) {

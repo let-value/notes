@@ -1,7 +1,9 @@
-import { filesToTree, useAsyncMemo } from "app/src/utils";
+import { useAsyncMemo } from "app/src/utils";
 import { useMemo } from "react";
+import { useBoolean } from "usehooks-ts";
 import { WorkspaceStore } from "../../workspace/WorkspaceStore";
 import { Directory } from "./Directory";
+import { NestedItemsContext, useWorkspace } from "./useWorkspaceItem";
 import { WorkspaceContext } from "./WorkspaceContext";
 
 interface WorkspaceProps {
@@ -9,17 +11,21 @@ interface WorkspaceProps {
 }
 
 export function Workspace({ store }: WorkspaceProps) {
-    const files = useAsyncMemo(() => store.fs.getItems(), [store], undefined);
-    const root = useMemo(() => {
-        if (!files) {
-            return undefined;
-        }
+    const suspended = useBoolean();
+    const root = useAsyncMemo(() => store.fs.getWorkspaceItem(), [store], undefined);
+    const instance = useMemo(() => ({ suspended }), [suspended]);
 
-        const { root } = filesToTree(store.workspace.id, files);
-        return root;
-    }, [files, store]);
+    const { treeNode } = useWorkspace(root, instance);
 
-    console.log("Workspace", files, root);
+    if (!root || suspended.value) {
+        return null;
+    }
 
-    return <WorkspaceContext.Provider value={store}>{root && <Directory item={root} />}</WorkspaceContext.Provider>;
+    return (
+        <WorkspaceContext.Provider value={store}>
+            <NestedItemsContext.Provider value={treeNode}>
+                <Directory item={root} />
+            </NestedItemsContext.Provider>
+        </WorkspaceContext.Provider>
+    );
 }
