@@ -22,7 +22,8 @@ export class WorkspaceItemsHelper {
 
         const items: ItemHandle[] = [];
         for await (const handle of item.handle.values()) {
-            items.push({ name: handle.name, path: item.path, isDirectory: handle.kind === "directory", handle });
+            const name = handle.name;
+            items.push({ name, path: path.resolve(item.path, name), isDirectory: handle.kind === "directory", handle });
         }
 
         return items;

@@ -1,12 +1,13 @@
 import { Item } from "models";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useBoolean, useMap } from "usehooks-ts";
+import { useBoolean } from "usehooks-ts";
 
 export interface TreeComponent {
     suspended: ReturnType<typeof useBoolean>;
 }
 
 export interface TreeNode {
+    root?: TreeNode;
     parent?: TreeNode;
     item: Item;
     component: TreeComponent;
@@ -16,54 +17,31 @@ export interface TreeNode {
 
 export const NestedItemsContext = createContext<TreeNode>(null);
 
-export function useWorkspace(item: Item, component: TreeComponent) {
-    const [root, setRoot] = useState<TreeNode>();
-
-    const register = useCallback((node: TreeNode) => {
-        setRoot(node);
-    }, []);
-
-    const unregister = useCallback(() => {
-        setRoot(undefined);
-    }, []);
-
-    const treeNode = useMemo<TreeNode>(
-        () => ({
-            item,
-            component,
-            register,
-            unregister,
-        }),
-        [component, item, register, unregister],
-    );
-
-    return { treeNode };
-}
-
 export function useWorkspaceItem(item: Item, component: TreeComponent) {
     const parent = useContext(NestedItemsContext);
+    const root = parent?.root ?? parent;
 
-    const [map, actions] = useMap<string, TreeNode>();
+    const [map] = useState(new Map<string, TreeNode>());
 
     const register = useCallback(
         (node: TreeNode) => {
-            const path = node.item.path.replace(item.path, "");
-            actions.set(path, node);
+            map.set(node.item.path, node);
+            root?.register(node);
         },
-        [actions, item.path],
+        [map, root],
     );
 
     const unregister = useCallback(
         (node: TreeNode) => {
-            const path = node.item.path.replace(item.path, "");
-            actions.remove(path);
+            map.delete(node.item.path);
+            root?.unregister(node);
         },
-        [actions, item.path],
+        [map, root],
     );
 
     const treeNode = useMemo<TreeNode>(
-        () => ({ parent, item, component, register, unregister }),
-        [component, item, parent, register, unregister],
+        () => ({ component, item, map, parent, register, root, unregister }),
+        [component, item, map, parent, register, root, unregister],
     );
 
     useEffect(() => {

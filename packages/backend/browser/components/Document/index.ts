@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { FileProps } from "../Workspace/File";
+import { FileComponentProps } from "./FileComponentProps";
 import { Markdown } from "./Markdown/Markdown";
 
-export const fileComponent: Record<string, FC<FileProps>> = {
+export const fileComponent: Record<string, FC<FileComponentProps>> = {
     markdown: Markdown,
 };

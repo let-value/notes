@@ -4,6 +4,7 @@ import { parseModelTokens } from "app/src/editor/tokens/parseModelTokens";
 import { TreeItem } from "models";
 import { editor, Uri } from "monaco-editor/esm/vs/editor/editor.api";
 import ReactDOM from "react-dom/client";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Workspace } from "../components/Workspace/Workspace";
 import { container } from "../container";
 import { WorkspaceStore } from "./WorkspaceStore";
@@ -18,7 +19,11 @@ export class WorkspaceParseHelper {
         this.document = createDocument();
         this.container = this.document.createElement("div");
         this.root = ReactDOM.createRoot(this.container);
-        this.root.render(<Workspace store={store} />);
+        this.root.render(
+            <ErrorBoundary>
+                <Workspace store={store} />
+            </ErrorBoundary>,
+        );
     }
 
     dispose() {

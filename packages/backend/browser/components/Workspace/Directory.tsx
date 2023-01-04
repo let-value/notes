@@ -6,18 +6,14 @@ import { File } from "./File";
 import { NestedItemsContext, useWorkspaceItem } from "./useWorkspaceItem";
 import { WorkspaceContext } from "./WorkspaceContext";
 
-interface DirectoryProps {
-    item: ItemHandle<true>;
-}
-
-export const Directory = memo(function Directory({ item }: DirectoryProps) {
+export const Directory = memo(function Directory(item: ItemHandle<true>) {
     const store = useContext(WorkspaceContext);
     const suspended = useBoolean();
 
     const instance = useMemo(() => ({ suspended }), [suspended]);
     const { treeNode } = useWorkspaceItem(item, instance);
 
-    const root = useAsyncMemo(() => store.fs.getDirectoryItems(item), [store], undefined);
+    const children = useAsyncMemo(() => store.fs.getDirectoryItems(item), [store], undefined);
 
     if (!item.isDirectory || suspended.value) {
         return null;
@@ -25,11 +21,11 @@ export const Directory = memo(function Directory({ item }: DirectoryProps) {
 
     return (
         <NestedItemsContext.Provider value={treeNode}>
-            {root.map((child) => {
+            {children?.map((child) => {
                 if (child.isDirectory) {
-                    return <Directory key={child.path} item={child} />;
+                    return <Directory key={child.path} {...(child as ItemHandle<true>)} />;
                 } else {
-                    return <File key={child.path} item={child} />;
+                    return <File key={child.path} {...(child as ItemHandle<false>)} />;
                 }
             })}
         </NestedItemsContext.Provider>

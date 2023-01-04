@@ -1,24 +1,16 @@
-import { useAsyncMemo } from "app/src/utils";
-import { Item } from "models";
-import { memo, useContext, useMemo } from "react";
+import { ItemHandle } from "models";
+import { memo, useMemo } from "react";
 import { useBoolean } from "usehooks-ts";
 import { getLanguage } from "../../utils/getLanguage";
 import { fileComponent } from "../Document";
-import { useWorkspaceItem } from "./useWorkspaceItem";
-import { WorkspaceContext } from "./WorkspaceContext";
+import { NestedItemsContext, useWorkspaceItem } from "./useWorkspaceItem";
 
-export interface FileProps {
-    item: Item<false>;
-}
-
-export const File = memo(function File({ item }: FileProps) {
+export const File = memo(function File(item: ItemHandle<false>) {
     const suspended = useBoolean();
-    const store = useContext(WorkspaceContext);
     const language = useMemo(() => getLanguage(item), [item]);
-    const tokens = useAsyncMemo(() => store.parse.getTokens(item, language), [item, language, store.parse]);
-    const instance = useMemo(() => ({ suspended, language, tokens }), [language, suspended, tokens]);
+    const instance = useMemo(() => ({ suspended }), [suspended]);
 
-    useWorkspaceItem(item, instance);
+    const { treeNode } = useWorkspaceItem(item, instance);
 
     const Component = fileComponent[language];
 
@@ -26,5 +18,9 @@ export const File = memo(function File({ item }: FileProps) {
         return null;
     }
 
-    return <Component item={item} />;
+    return (
+        <NestedItemsContext.Provider value={treeNode}>
+            <Component {...item} language={language} />
+        </NestedItemsContext.Provider>
+    );
 });
