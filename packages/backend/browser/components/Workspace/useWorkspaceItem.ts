@@ -1,56 +1,66 @@
 import { Item } from "models";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useBoolean } from "usehooks-ts";
+import { ReactiveMap } from "../../utils/ReactiveMap";
+import { ReactiveValue } from "../../utils/ReactiveValue";
 
 export interface TreeComponent {
     suspended: ReturnType<typeof useBoolean>;
 }
 
-export interface TreeNode {
-    root?: TreeNode;
-    parent?: TreeNode;
-    item: Item;
-    component: TreeComponent;
-    register: (item: TreeNode) => void;
-    unregister: (item: TreeNode) => void;
+export class TreeNode {
+    component = new ReactiveValue<TreeComponent>();
+    children = new ReactiveValue<Item[]>();
+    nested = new ReactiveMap<string, TreeNode>();
+    constructor(public item: Item, public parent?: TreeNode, public root?: TreeNode) {}
+    static getNested(ctx: TreeNode, path: string) {
+        return ctx.nested.get(path).lastValue;
+    }
+
+    static register(ctx: TreeNode, item: TreeNode) {
+        if (!ctx) {
+            return;
+        }
+        ctx.nested.setValue(item.item.path, item);
+        if (ctx.root) {
+            TreeNode.register(ctx.root, item);
+        }
+    }
+
+    static unregister(ctx: TreeNode, item: TreeNode) {
+        if (!ctx) {
+            return;
+        }
+        ctx.nested.setValue(item.item.path, undefined);
+        if (ctx.root) {
+            TreeNode.unregister(ctx.root, item);
+        }
+    }
 }
 
 export const NestedItemsContext = createContext<TreeNode>(null);
 
-export function useWorkspaceItem(item: Item, component: TreeComponent) {
+export function useWorkspaceItem(item: Item, component: TreeComponent, children?: Item[]) {
     const parent = useContext(NestedItemsContext);
     const root = parent?.root ?? parent;
 
-    const [map] = useState(new Map<string, TreeNode>());
+    const [treeNode] = useState(() => new TreeNode(item, parent, root));
 
-    const register = useCallback(
-        (node: TreeNode) => {
-            map.set(node.item.path, node);
-            root?.register(node);
-        },
-        [map, root],
-    );
+    useEffect(() => {
+        treeNode.component.next(component);
+    }, [component, treeNode.component]);
 
-    const unregister = useCallback(
-        (node: TreeNode) => {
-            map.delete(node.item.path);
-            root?.unregister(node);
-        },
-        [map, root],
-    );
-
-    const treeNode = useMemo<TreeNode>(
-        () => ({ component, item, map, parent, register, root, unregister }),
-        [component, item, map, parent, register, root, unregister],
-    );
+    useEffect(() => {
+        treeNode.children.next(children);
+    }, [children, treeNode.children]);
 
     useEffect(() => {
         const parentNode = parent;
-        parentNode?.register(treeNode);
+        TreeNode.register(parentNode, treeNode);
         return () => {
-            parentNode?.unregister(treeNode);
+            TreeNode.unregister(parentNode, treeNode);
         };
-    }, [treeNode, item, parent]);
+    }, [treeNode, parent]);
 
     return { treeNode };
 }

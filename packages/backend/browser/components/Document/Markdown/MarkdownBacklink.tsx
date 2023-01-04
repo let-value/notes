@@ -16,7 +16,6 @@ export function MarkdownBacklink({ from, token }: MarkdownBacklinkProps) {
         const files = await store.fs.getItems();
         return files.find((file) => file.path.includes(path) && !file.isDirectory);
     }, [store.fs]);
-    console.log("Backlink", from, to, token);
 
     return null;
 }

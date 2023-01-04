@@ -11,9 +11,10 @@ export const Directory = memo(function Directory(item: ItemHandle<true>) {
     const suspended = useBoolean();
 
     const instance = useMemo(() => ({ suspended }), [suspended]);
-    const { treeNode } = useWorkspaceItem(item, instance);
 
     const children = useAsyncMemo(() => store.fs.getDirectoryItems(item), [store], undefined);
+
+    const { treeNode } = useWorkspaceItem(item, instance, children);
 
     if (!item.isDirectory || suspended.value) {
         return null;

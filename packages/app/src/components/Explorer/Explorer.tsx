@@ -1,10 +1,10 @@
 import { useSelectFile } from "@/atom/file/useSelectFile";
-import { filesTree } from "@/atom/files/filesState";
+import { workspaceTree } from "@/atom/files/filesState";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { AnnotationIcon, FolderCloseIcon, FolderOpenIcon, Menu, Pane } from "evergreen-ui";
 import { join } from "lodash-es";
 import { Item, TreeItem, Workspace } from "models";
-import { FC, useCallback, useMemo, useRef } from "react";
+import { FC, useCallback, useRef } from "react";
 import { useRecoilValueLoadable } from "recoil";
 import { useMap } from "usehooks-ts";
 import styles from "./Explorer.module.css";
@@ -25,54 +25,15 @@ interface ExplorerProps {
 }
 
 export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
-    const tree = useRecoilValueLoadable(filesTree(workspace.id));
-
     const parentRef = useRef<HTMLDivElement>(null);
 
-    const [expand, { set: expandFolder }] = useMap<string, boolean>();
-
-    const list = useMemo(() => {
-        const result: ListItem[] = [];
-
-        if (tree.state !== "hasValue" || !tree.contents) {
-            return result;
-        }
-
-        const queue: QueueItem[] = [{ collapsed: [], item: tree.contents, depth: 0 }];
-
-        while (queue.length) {
-            const branch = queue.shift();
-
-            if (!branch) {
-                continue;
-            }
-
-            if (branch.item.isDirectory && branch.item.children?.length === 1) {
-                queue.unshift({
-                    collapsed: [...branch.collapsed, branch.item],
-                    item: branch.item.children[0],
-                    depth: branch.depth,
-                });
-                continue;
-            }
-
-            result.push({
-                ...branch.item,
-                collapsed: branch.collapsed,
-                depth: branch.depth,
-            });
-
-            if (branch.item.isDirectory && branch.item.children && expand.get(branch.item.path)) {
-                const newItems = branch.item.children.map((item) => ({ collapsed: [], item, depth: branch.depth + 1 }));
-                queue.unshift(...newItems);
-            }
-        }
-
-        return result;
-    }, [expand, tree.contents, tree.state]);
+    const [expand, { set: expandFolder, remove: collapseFolder }] = useMap<string, boolean>();
+    const tree = useRecoilValueLoadable(
+        workspaceTree({ workspaceId: workspace.id, expanded: Array.from(expand.keys()) }),
+    );
 
     const rowVirtualizer = useVirtualizer({
-        count: list.length,
+        count: tree.contents?.length ?? 0,
         getScrollElement: () => parentRef.current,
         estimateSize: () => 40,
         overscan: 5,
@@ -83,15 +44,20 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
     const handleClick = useCallback(
         (item: Item) => {
             if (item.isDirectory) {
-                expandFolder(item.path, !expand.get(item.path));
+                const expanded = expand.get(item.path);
+                if (expanded) {
+                    collapseFolder(item.path);
+                } else {
+                    expandFolder(item.path, true);
+                }
             } else {
                 handleSelectFile(item);
             }
         },
-        [expand, expandFolder, handleSelectFile],
+        [collapseFolder, expand, expandFolder, handleSelectFile],
     );
 
-    if (!workspace) {
+    if (!workspace || tree.state !== "hasValue") {
         return null;
     }
 
@@ -100,7 +66,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
             <Pane ref={parentRef} overflowY="auto" overflowX="hidden" height="100%">
                 <Pane className={styles.tree} height={rowVirtualizer.getTotalSize()} position="relative">
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                        const item = list[virtualRow.index];
+                        const item = tree.contents?.[virtualRow.index];
 
                         const segments = ([] as string[])
                             .concat((item.collapsed ?? []).map((item) => item.name))

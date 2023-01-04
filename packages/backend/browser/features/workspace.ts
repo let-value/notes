@@ -47,14 +47,27 @@ mediator.pipe(matchQuery(backend.workspace.fileContent)).subscribe(async (query)
     }
 });
 
-mediator.pipe(matchQuery(backend.workspace.fileTokens)).subscribe(async (query) => {
+// mediator.pipe(matchQuery(backend.workspace.fileTokens)).subscribe(async (query) => {
+//     try {
+//         const store = await WorkspaceStore.getInstance(query.payload.workspaceId);
+
+//         const tokens = await store.getFile(query.payload.path);
+
+//         await dispatcher.send(backend.workspace.fileTokens.response(tokens, query));
+//     } catch (error) {
+//         await dispatcher.send(backend.workspace.fileTokens.error(error, query));
+//     }
+// });
+
+mediator.pipe(matchQuery(backend.workspace.items)).subscribe(async (query) => {
     try {
         const store = await WorkspaceStore.getInstance(query.payload.workspaceId);
 
-        const tokens = await store.getFile(query.payload.path);
+        const node = await store.getItemByPath(query.payload.path);
+        const items = await node.children.lastValue;
 
-        await dispatcher.send(backend.workspace.fileTokens.response(tokens, query));
+        await dispatcher.send(backend.workspace.items.response(items, query));
     } catch (error) {
-        await dispatcher.send(backend.workspace.fileTokens.error(error, query));
+        await dispatcher.send(backend.workspace.items.error(error, query));
     }
 });

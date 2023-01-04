@@ -1,7 +1,9 @@
 import { incrementFileNameIfExist } from "app/src/utils";
 import { BroadcastMessage, frontend } from "messaging";
 import { Workspace, WorkspaceHandle, WorkspaceId } from "models";
+import { BehaviorSubject, filter, firstValueFrom, Observable } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
+import { TreeNode } from "../components/Workspace/useWorkspaceItem";
 import { container } from "../container";
 import { addWorkspace, getWorkspace, getWorkspaces } from "../db/repositories";
 import { WorkspaceItemsHelper } from "./WorkspaceItemsHelper";
@@ -12,14 +14,24 @@ const dispatcher = container.get("dispatcher");
 const workspaceStores = new Map<WorkspaceId, WorkspaceStore>();
 
 export class WorkspaceStore {
+    treeSource: BehaviorSubject<TreeNode>;
+    private root: Observable<TreeNode>;
+
     permission: WorkspacePermissionHelper;
     fs: WorkspaceItemsHelper;
     parse: WorkspaceParseHelper;
 
     constructor(public workspace: WorkspaceHandle) {
+        this.treeSource = new BehaviorSubject<TreeNode | undefined>(undefined);
+        this.root = this.treeSource.pipe(filter(Boolean));
         this.permission = new WorkspacePermissionHelper(this);
         this.fs = new WorkspaceItemsHelper(this);
         this.parse = new WorkspaceParseHelper(this);
+    }
+
+    async getItemByPath(path: string) {
+        const root = await firstValueFrom(this.root);
+        return await TreeNode.getNested(root, path);
     }
 
     static async getInstance(id: WorkspaceId) {

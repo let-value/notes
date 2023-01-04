@@ -1,5 +1,5 @@
 import { useAsyncMemo } from "app/src/utils";
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { useBoolean } from "usehooks-ts";
 import { WorkspaceStore } from "../../workspace/WorkspaceStore";
 import { Directory } from "./Directory";
@@ -16,6 +16,13 @@ export const Workspace = memo(function Workspace({ store }: WorkspaceProps) {
     const instance = useMemo(() => ({ suspended }), [suspended]);
 
     const { treeNode } = useWorkspaceItem(root, instance);
+
+    useEffect(() => {
+        store.treeSource.next(treeNode);
+        return () => {
+            store.treeSource.next(undefined);
+        };
+    }, [store.treeSource, treeNode]);
 
     if (!root || suspended.value) {
         return null;
