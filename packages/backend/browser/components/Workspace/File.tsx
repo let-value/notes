@@ -1,16 +1,20 @@
-import { ItemHandle } from "models";
-import { memo, useMemo } from "react";
-import { useBoolean } from "usehooks-ts";
+import { Item, ItemHandle } from "models";
+import { memo, useContext, useMemo } from "react";
 import { getLanguage } from "../../utils/getLanguage";
 import { fileComponent } from "../Document";
-import { NestedItemsContext, useWorkspaceItem } from "./useWorkspaceItem";
+import { TreeContext } from "../TreeContext";
+import { TreeNode } from "../TreeNode";
+
+export class TreeFileNode extends TreeNode {
+    constructor(public language: string, item: Item, parent?: TreeNode) {
+        super(item, parent);
+    }
+}
 
 export const File = memo(function File(item: ItemHandle<false>) {
-    const suspended = useBoolean();
+    const parent = useContext(TreeContext);
     const language = useMemo(() => getLanguage(item), [item]);
-    const instance = useMemo(() => ({ suspended }), [suspended]);
-
-    const { treeNode } = useWorkspaceItem(item, instance);
+    const instance = useMemo(() => new TreeFileNode(language, item, parent), [item, language, parent]);
 
     const Component = fileComponent[language];
 
@@ -19,8 +23,8 @@ export const File = memo(function File(item: ItemHandle<false>) {
     }
 
     return (
-        <NestedItemsContext.Provider value={treeNode}>
+        <TreeContext.Provider value={instance}>
             <Component {...item} language={language} />
-        </NestedItemsContext.Provider>
+        </TreeContext.Provider>
     );
 });

@@ -11,8 +11,7 @@ export class WorkspaceItemsHelper {
     files?: Item[];
     constructor(private store: WorkspaceStore) {}
 
-    async getWorkspaceItem(): Promise<ItemHandle<true>> {
-        await this.store.permission.check();
+    getWorkspaceItem(): ItemHandle<true> {
         const handle = this.store.workspace.handle;
         return { name: handle.name, path: "/", isDirectory: true, handle };
     }
@@ -29,6 +28,11 @@ export class WorkspaceItemsHelper {
         return items;
     }
 
+    /**
+     * @deprecated use getItems instead
+     * @param query
+     * @returns
+     */
     async getItems(query?: BroadcastMessage) {
         if (this.files) {
             return this.files;

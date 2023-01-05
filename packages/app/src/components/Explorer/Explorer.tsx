@@ -3,22 +3,11 @@ import { workspaceTree } from "@/atom/files/filesState";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { AnnotationIcon, FolderCloseIcon, FolderOpenIcon, Menu, Pane } from "evergreen-ui";
 import { join } from "lodash-es";
-import { Item, TreeItem, Workspace } from "models";
+import { Item, Workspace } from "models";
 import { FC, useCallback, useRef } from "react";
 import { useRecoilValueLoadable } from "recoil";
 import { useMap } from "usehooks-ts";
 import styles from "./Explorer.module.css";
-
-interface QueueItem {
-    collapsed: Item[];
-    item: TreeItem;
-    depth: number;
-}
-
-interface ListItem extends Item {
-    collapsed?: Item[];
-    depth: number;
-}
 
 interface ExplorerProps {
     workspace: Workspace;

@@ -1,27 +1,47 @@
 import { useAsyncMemo } from "app/src/utils";
-import { ItemHandle } from "models";
-import { memo, useContext, useMemo } from "react";
-import { useBoolean } from "usehooks-ts";
+import { Item, ItemHandle } from "models";
+
+import { memo, useContext, useEffect, useState } from "react";
+import { combineLatest, filter, lastValueFrom, map } from "rxjs";
+import { ReactiveValue } from "../../utils/ReactiveValue";
+import { useReactiveValue } from "../../utils/useReactiveValue";
+import { TreeContext } from "../TreeContext";
+import { TreeNode } from "../TreeNode";
+
 import { File } from "./File";
-import { NestedItemsContext, useWorkspaceItem } from "./useWorkspaceItem";
+
 import { WorkspaceContext } from "./WorkspaceContext";
 
-export const Directory = memo(function Directory(item: ItemHandle<true>) {
-    const store = useContext(WorkspaceContext);
-    const suspended = useBoolean();
+export class TreeDirectoryNode extends TreeNode {
+    children = new ReactiveValue<Item[]>();
+    get mounted() {
+        const childs = this.nested.observable.pipe(map((x) => Array.from(x.values())));
+        const pipeline = combineLatest([this.children.valuePipe, childs]).pipe(
+            map(([children, values]) => children?.length === values?.filter((x) => x.value).length),
+            filter(Boolean),
+        );
+        return lastValueFrom(pipeline);
+    }
+}
 
-    const instance = useMemo(() => ({ suspended }), [suspended]);
+export const Directory = memo(function Directory(item: ItemHandle<true>) {
+    const parent = useContext(TreeContext);
+    const store = useContext(WorkspaceContext);
+
+    const [instance] = useState(() => new TreeDirectoryNode(item, parent));
+    const [suspended] = useReactiveValue(instance.suspended, false);
 
     const children = useAsyncMemo(() => store.fs.getDirectoryItems(item), [store], undefined);
+    useEffect(() => instance.children.next(children), [children, instance]);
 
-    const { treeNode } = useWorkspaceItem(item, instance, children);
-
-    if (!item.isDirectory || suspended.value) {
+    if (!item.isDirectory || suspended) {
         return null;
     }
 
+    console.log(instance);
+
     return (
-        <NestedItemsContext.Provider value={treeNode}>
+        <TreeContext.Provider value={instance}>
             {children?.map((child) => {
                 if (child.isDirectory) {
                     return <Directory key={child.path} {...(child as ItemHandle<true>)} />;
@@ -29,6 +49,6 @@ export const Directory = memo(function Directory(item: ItemHandle<true>) {
                     return <File key={child.path} {...(child as ItemHandle<false>)} />;
                 }
             })}
-        </NestedItemsContext.Provider>
+        </TreeContext.Provider>
     );
 });

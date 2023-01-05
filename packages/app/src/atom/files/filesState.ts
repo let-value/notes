@@ -1,44 +1,14 @@
 import { container } from "@/container";
-import { filesToTree } from "@/utils/itemsToTree";
-import { backend, frontend, ReadFileQuery } from "messaging";
+import { backend, ReadFileQuery } from "messaging";
 import { Item, WorkspaceId } from "models";
-import { atomFamily, selectorFamily } from "recoil";
-import { createCommandEffect, createQueryEffect } from "../createQueryEffect";
+import { noWait, selectorFamily } from "recoil";
 
 const dispatcher = container.get("dispatcher");
 
-export const filesState = atomFamily({
-    key: "files",
-    default: selectorFamily({
-        key: "files/initial",
-        get: (workspaceId: WorkspaceId) => async () => {
-            return await dispatcher.call(backend.workspace.files, workspaceId);
-        },
-    }),
-    effects: (workspaceId: WorkspaceId) => [
-        createCommandEffect(frontend.workspace.files, (x) => x.meta === workspaceId),
-        createQueryEffect(backend.workspace.files, (x) => x.meta === workspaceId),
-    ],
-});
-
-export const filesTree = selectorFamily({
-    key: "filesTree",
-    get:
-        (workspaceId: WorkspaceId) =>
-        async ({ get }) => {
-            const files = get(filesState(workspaceId));
-
-            const { root } = filesToTree(workspaceId, files);
-
-            return root;
-        },
-});
-
 export const workspaceItems = selectorFamily({
     key: "workspace/items",
-    get: (query: Readonly<ReadFileQuery>) => async () => {
-        console.log("workspace/items", query);
-        return await dispatcher.call(backend.workspace.items, query);
+    get: (query: Readonly<ReadFileQuery>) => () => {
+        return dispatcher.call(backend.workspace.items, query);
     },
 });
 
@@ -57,8 +27,9 @@ export const workspaceTree = selectorFamily({
     get:
         (query: Readonly<WorkspaceTreeReqest>) =>
         async ({ get }) => {
-            console.log(query);
-            const rootItems = get(workspaceItems({ workspaceId: query.workspaceId, path: "/" }));
+            const rootItems = await get(
+                noWait(workspaceItems({ workspaceId: query.workspaceId, path: "/" })),
+            ).toPromise();
 
             const queue: ListItem[] = rootItems.map((x) => ({ ...x, depth: 0 }));
 
@@ -71,7 +42,9 @@ export const workspaceTree = selectorFamily({
                 }
 
                 if (item?.isDirectory && query.expanded.includes(item.path)) {
-                    const items = get(workspaceItems({ workspaceId: query.workspaceId, path: item.path }));
+                    const items = await get(
+                        noWait(workspaceItems({ workspaceId: query.workspaceId, path: item.path })),
+                    ).toPromise();
                     const firstItem = items?.[0];
                     if (items.length === 1 && firstItem?.isDirectory) {
                         queue.unshift({

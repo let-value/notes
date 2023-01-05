@@ -4,7 +4,10 @@ export class ReactiveValue<TValue> extends BehaviorSubject<TValue | undefined> {
     constructor(value?: TValue) {
         super(value);
     }
+    get valuePipe() {
+        return this.pipe(filter((x) => x !== undefined));
+    }
     get lastValue() {
-        return firstValueFrom(this.pipe(filter((x) => x !== undefined)));
+        return firstValueFrom(this.valuePipe);
     }
 }

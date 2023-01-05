@@ -1,4 +1,5 @@
 import { backend, matchQuery } from "messaging";
+import { TreeDirectoryNode } from "../components/Workspace/Directory";
 import { container } from "../container";
 import { WorkspaceStore } from "../workspace/WorkspaceStore";
 
@@ -63,7 +64,10 @@ mediator.pipe(matchQuery(backend.workspace.items)).subscribe(async (query) => {
     try {
         const store = await WorkspaceStore.getInstance(query.payload.workspaceId);
 
-        const node = await store.getItemByPath(query.payload.path);
+        const node = await store.findNodeByPath(query.payload.path);
+        if (!(node instanceof TreeDirectoryNode)) {
+            throw new Error("Not a directory");
+        }
         const items = await node.children.lastValue;
 
         await dispatcher.send(backend.workspace.items.response(items, query));
