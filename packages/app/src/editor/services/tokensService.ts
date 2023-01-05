@@ -5,15 +5,25 @@ import { filter, map } from "rxjs";
 import { parseModelTokens } from "../tokens/parseModelTokens";
 import { ModelToEditorService } from "./modelToEditorService";
 
-const modelTokens = new WeakMap<editor.ITextModel, Token[]>();
+interface ModelTokens {
+    version: number;
+    tokens: Token[];
+}
 
-export function getModelTokens(model: editor.ITextModel) {
-    let tokens = modelTokens.get(model);
-    if (!tokens) {
-        tokens = parseModelTokens(model);
-        modelTokens.set(model, tokens);
+const modelTokens = new WeakMap<editor.IStandaloneCodeEditor, ModelTokens>();
+
+export function getModelTokens(editor: editor.IStandaloneCodeEditor, model: editor.ITextModel) {
+    const version = model.getVersionId();
+    let currentTokens = modelTokens.get(editor);
+    if (!currentTokens || currentTokens.version !== version) {
+        const tokens = parseModelTokens(model);
+        currentTokens = {
+            version,
+            tokens,
+        };
+        modelTokens.set(editor, currentTokens);
     }
-    return tokens;
+    return currentTokens.tokens;
 }
 
 export const tokensService = (
@@ -27,7 +37,7 @@ export const tokensService = (
         function getEditorTokens(editor: editor.IStandaloneCodeEditor) {
             return modelToEditor.getModel(editor).pipe(
                 filter(Boolean),
-                map((model) => getModelTokens(model)),
+                map((model) => getModelTokens(editor, model)),
             );
         }
 

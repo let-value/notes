@@ -14,7 +14,7 @@ const broadcastChannel = container.get("eventTarget");
 const elector = createLeaderElection(broadcastChannel as BroadcastChannel<BroadcastMessage>);
 await elector.awaitLeadership();
 
-console.log("leader", id, tabId);
+console.trace("leader", id, tabId);
 
 await import("./dom/setupDom");
 await import("app/src/editor/setupMonaco");
@@ -22,7 +22,5 @@ await import("./features");
 
 const dispatcher = container.get("dispatcher");
 const response = backend.leader.response(id, undefined);
-
-console.log("response", response);
 
 dispatcher.send(response);

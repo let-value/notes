@@ -20,6 +20,7 @@ export function useDecorateEditor() {
             return;
         }
 
+        console.log("handleContentChange", model.getVersionId());
         modelToEditor.setEditor(model, editorSubject.value);
     }, [editorSubject]);
 

@@ -7,6 +7,7 @@
         "@ampproject/worker-dom": "^0.34.0",
         "@creasource/reactive-idb": "^1.2.1",
         "app": "file:../../app",
+        "filter-async-rxjs-pipe": "^1.0.1",
         "immer": "^9.0.17",
         "iti": "^0.6.0",
         "language-detect": "^1.1.0",

@@ -1,7 +1,7 @@
 import { createDocument } from "@ampproject/worker-dom/dist/server-lib.mjs";
 import { parseModelTokens } from "app/src/editor/tokens/parseModelTokens";
 
-import { ItemHandle, TreeItem } from "models";
+import { Item, ItemHandle, TreeItem } from "models";
 import { editor, Uri } from "monaco-editor/esm/vs/editor/editor.api";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -35,12 +35,12 @@ export class WorkspaceParseHelper {
         throw new Error("Method not implemented.");
     }
 
-    async getTokens(item: ItemHandle<false>, language: string) {
+    async getTokens(item: Item<false>, language: string) {
         if (!item || item.isDirectory) {
             return undefined;
         }
 
-        const content = await this.store.fs.readFile(item);
+        const content = await this.store.fs.readFile(item as ItemHandle<false>);
         const taskId = `${this.store.workspace.id}/parse/${item.path}`;
         return await queue.add(
             () => {

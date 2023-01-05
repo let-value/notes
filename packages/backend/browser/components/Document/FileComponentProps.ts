@@ -1,6 +1,6 @@
-import { ItemHandle, Token } from "models";
+import { Item, Token } from "models";
 
-export interface FileComponentProps extends ItemHandle<false> {
+export interface FileComponentProps extends Item<false> {
     language: string;
 }
 

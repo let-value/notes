@@ -1,6 +1,6 @@
 import { container } from "@/container";
 import { groupBy, isEqual } from "lodash-es";
-import { Token } from "models";
+import { Item, Token, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 import { useObservable } from "observable-hooks";
 import { useObservableState } from "observable-hooks/dist/cjs/use-observable-state";
@@ -12,15 +12,18 @@ import { DateLineWidgets } from "./DateLineWidgets";
 const tokensService = container.get("tokensService");
 
 interface DateCodeLensProps {
+    workspaceId: WorkspaceId;
+    item: Item;
     editorSubject: BehaviorSubject<editor.IStandaloneCodeEditor | undefined>;
 }
 
-export const DateCodeLens: FC<DateCodeLensProps> = ({ editorSubject }) => {
+export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorSubject }) => {
     const [tokens, setTokens] = useState<Token[]>([]);
     const datesByLines = useMemo(() => groupBy(tokens, (token) => token.line), [tokens]);
 
     const handleTokensUpdate = useCallback(
         (newTokens: Token[]) => {
+            console.log(newTokens);
             const dateTokens = newTokens.filter((x) => x.type.startsWith("date"));
             if (isEqual(tokens, dateTokens)) return;
             setTokens(dateTokens);
@@ -46,7 +49,7 @@ export const DateCodeLens: FC<DateCodeLensProps> = ({ editorSubject }) => {
     return (
         <>
             {Object.entries(datesByLines).map(([, tokens], index) => (
-                <DateLineWidgets key={index} editor={editor} tokens={tokens} />
+                <DateLineWidgets key={index} workspaceId={workspaceId} item={item} editor={editor} tokens={tokens} />
             ))}
         </>
     );

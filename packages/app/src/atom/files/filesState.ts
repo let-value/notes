@@ -40,17 +40,22 @@ export const workspaceTree = selectorFamily({
                 }
 
                 if (item?.isDirectory && expanded.includes(item.path)) {
-                    const items = await get(noWait(workspaceItems({ workspaceId, path: item.path }))).toPromise();
-                    const firstItem = items?.[0];
-                    if (items.length === 1 && firstItem?.isDirectory) {
-                        queue.unshift({
-                            ...firstItem,
-                            collapsed: [...(item.collapsed ?? []), item],
-                            depth: item.depth,
-                        });
-                        continue;
+                    const response = get(noWait(workspaceItems({ workspaceId, path: item.path })));
+
+                    if (response.state === "hasValue") {
+                        const items = response.contents;
+
+                        const firstItem = items?.[0];
+                        if (items.length === 1 && firstItem?.isDirectory) {
+                            queue.unshift({
+                                ...firstItem,
+                                collapsed: [...(item.collapsed ?? []), item],
+                                depth: item.depth,
+                            });
+                            continue;
+                        }
+                        queue.unshift(...items.map((x) => ({ ...x, depth: item.depth + 1 })));
                     }
-                    queue.unshift(...items.map((x) => ({ ...x, depth: item.depth + 1 })));
                 }
 
                 result.push(item);

@@ -1,4 +1,4 @@
-import { ItemHandle } from "models";
+import { Item } from "models";
 import { memo, useContext, useMemo } from "react";
 import { getLanguage } from "../../utils/getLanguage";
 import { fileComponent } from "../Document";
@@ -6,12 +6,12 @@ import { TreeContext } from "../TreeContext";
 import { TreeNode } from "../TreeNode";
 
 export class TreeFileNode extends TreeNode {
-    constructor(public language: string, item: ItemHandle, parent?: TreeNode) {
+    constructor(public language: string, item: Item, parent?: TreeNode) {
         super(item, parent);
     }
 }
 
-export const File = memo(function File(item: ItemHandle<false>) {
+export const File = memo(function File(item: Item<false>) {
     const parent = useContext(TreeContext);
     const language = useMemo(() => getLanguage(item), [item]);
     const instance = useMemo(() => new TreeFileNode(language, item, parent), [item, language, parent]);

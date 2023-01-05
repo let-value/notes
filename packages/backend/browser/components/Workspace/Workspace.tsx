@@ -31,8 +31,6 @@ export const Workspace = memo(function Workspace({ store }: WorkspaceProps) {
         return null;
     }
 
-    console.log(instance);
-
     return (
         <WorkspaceContext.Provider value={store}>
             <TreeContext.Provider value={instance}>

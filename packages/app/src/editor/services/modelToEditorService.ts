@@ -15,6 +15,7 @@ function getModel(editor: editor.IStandaloneCodeEditor) {
 
 function setModel(editor: editor.IStandaloneCodeEditor, model: editor.ITextModel) {
     const modelSubject = getModel(editor);
+    console.log("setModel", model.getVersionId());
     modelSubject.next(model);
 }
 

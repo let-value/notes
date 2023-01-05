@@ -2,6 +2,7 @@ import { Token } from "models";
 import { editor } from "monaco-editor";
 
 export function parseModelTokens(model: editor.ITextModel) {
+    console.log("parseModelTokens", model.getVersionId());
     const result: Token[] = [];
 
     const language = model.getLanguageId();

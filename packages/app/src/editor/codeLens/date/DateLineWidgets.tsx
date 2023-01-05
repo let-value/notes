@@ -1,15 +1,17 @@
 import { DateWidget } from "@/editor/widgets";
-import { Token } from "models";
+import { Item, Token, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 import { FC, useEffect, useState } from "react";
 import { RenderDateWidget } from "./RenderDateWidget";
 
 interface DateLineWidgetsProps {
+    workspaceId: WorkspaceId;
+    item: Item;
     editor: editor.IStandaloneCodeEditor;
     tokens: Token[];
 }
 
-export const DateLineWidgets: FC<DateLineWidgetsProps> = ({ editor, tokens }) => {
+export const DateLineWidgets: FC<DateLineWidgetsProps> = ({ workspaceId, item, editor, tokens }) => {
     const [widget] = useState(() => new DateWidget(editor, tokens));
 
     useEffect(() => {
@@ -26,7 +28,14 @@ export const DateLineWidgets: FC<DateLineWidgetsProps> = ({ editor, tokens }) =>
     return (
         <>
             {tokens.map((token, index) => (
-                <RenderDateWidget key={index} token={token} widget={widget?.getContentWidget(index)} />
+                <RenderDateWidget
+                    key={index}
+                    token={token}
+                    workspaceId={workspaceId}
+                    item={item}
+                    editor={editor}
+                    widget={widget?.getContentWidget(index)}
+                />
             ))}
         </>
     );

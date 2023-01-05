@@ -10,7 +10,7 @@ export class TreeNodeExtensions {
             const node = queue.shift();
 
             if (node instanceof TreeWorkspaceNode && node.constructor === TreeWorkspaceNode) {
-                await node.mounted;
+                await node.ready;
                 for (const child of node.nested.values()) {
                     queue.push(await child.lastValue);
                 }
@@ -22,7 +22,7 @@ export class TreeNodeExtensions {
                 node.constructor === TreeDirectoryNode &&
                 path.includes(node.item.path)
             ) {
-                await node.mounted;
+                await node.ready;
                 for (const child of node.nested.values()) {
                     queue.push(await child.lastValue);
                 }

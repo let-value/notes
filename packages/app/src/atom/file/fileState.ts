@@ -20,7 +20,7 @@ export const fileContentState = atomFamily({
             }
 
             try {
-                return await dispatcher.call(backend.workspace.fileContent, query as ReadFileQuery);
+                return await dispatcher.call(backend.workspace.file.content, query as ReadFileQuery);
             } catch {
                 return undefined;
             }
@@ -38,8 +38,9 @@ export const fileTokensState = atomFamily({
             }
 
             try {
-                return await dispatcher.call(backend.workspace.fileTokens, query as ReadFileQuery);
-            } catch {
+                return await dispatcher.call(backend.workspace.file.tokens, query as ReadFileQuery);
+            } catch (error) {
+                console.error(error);
                 return undefined;
             }
         },
