@@ -56,32 +56,14 @@ export class WorkspaceItemsHelper {
         return files;
     }
 
-    async readFile(payload: string, query?: BroadcastMessage) {
-        await this.store.permission.check(query);
-
-        const taskId = `${this.store.workspace.id}/readFile/${payload}`;
+    async readFile(item: ItemHandle<false>) {
+        const taskId = `${this.store.workspace.id}/readFile/${item.name}`;
         const readFileTask = async () => {
-            await this.store.permission.check(query);
+            await this.store.permission.check();
 
-            const parsedPath = path.parse(payload);
-
-            const folders = parsedPath.dir.split(path.sep).filter((dir) => dir !== "");
-
-            let directoryHandle = this.store.workspace.handle as FileSystemDirectoryHandle;
-            while (folders.length > 0) {
-                const dir = folders.shift();
-
-                if (!dir) {
-                    continue;
-                }
-
-                directoryHandle = await directoryHandle.getDirectoryHandle(dir);
-            }
-
-            const fileHandle = await directoryHandle.getFileHandle(parsedPath.base);
-            const file = await fileHandle.getFile();
+            const file = await item.handle.getFile();
             return await file.text();
         };
-        return await queue.add(readFileTask, { priority: query ? 4 : 1, type: taskId });
+        return await queue.add(readFileTask, { type: taskId });
     }
 }

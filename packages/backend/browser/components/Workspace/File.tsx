@@ -1,4 +1,4 @@
-import { Item, ItemHandle } from "models";
+import { ItemHandle } from "models";
 import { memo, useContext, useMemo } from "react";
 import { getLanguage } from "../../utils/getLanguage";
 import { fileComponent } from "../Document";
@@ -6,7 +6,7 @@ import { TreeContext } from "../TreeContext";
 import { TreeNode } from "../TreeNode";
 
 export class TreeFileNode extends TreeNode {
-    constructor(public language: string, item: Item, parent?: TreeNode) {
+    constructor(public language: string, item: ItemHandle, parent?: TreeNode) {
         super(item, parent);
     }
 }

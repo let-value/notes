@@ -25,11 +25,9 @@ interface ListItem extends Item {
 export const workspaceTree = selectorFamily({
     key: "workspace/tree",
     get:
-        (query: Readonly<WorkspaceTreeReqest>) =>
+        ({ workspaceId, expanded }: Readonly<WorkspaceTreeReqest>) =>
         async ({ get }) => {
-            const rootItems = await get(
-                noWait(workspaceItems({ workspaceId: query.workspaceId, path: "/" })),
-            ).toPromise();
+            const rootItems = await get(noWait(workspaceItems({ workspaceId, path: "/" }))).toPromise();
 
             const queue: ListItem[] = rootItems.map((x) => ({ ...x, depth: 0 }));
 
@@ -41,10 +39,8 @@ export const workspaceTree = selectorFamily({
                     break;
                 }
 
-                if (item?.isDirectory && query.expanded.includes(item.path)) {
-                    const items = await get(
-                        noWait(workspaceItems({ workspaceId: query.workspaceId, path: item.path })),
-                    ).toPromise();
+                if (item?.isDirectory && expanded.includes(item.path)) {
+                    const items = await get(noWait(workspaceItems({ workspaceId, path: item.path }))).toPromise();
                     const firstItem = items?.[0];
                     if (items.length === 1 && firstItem?.isDirectory) {
                         queue.unshift({

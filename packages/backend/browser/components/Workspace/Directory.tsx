@@ -2,7 +2,7 @@ import { useAsyncMemo } from "app/src/utils";
 import { Item, ItemHandle } from "models";
 
 import { memo, useContext, useEffect, useState } from "react";
-import { combineLatest, filter, lastValueFrom, map } from "rxjs";
+import { combineLatest, filter, firstValueFrom, map } from "rxjs";
 import { ReactiveValue } from "../../utils/ReactiveValue";
 import { useReactiveValue } from "../../utils/useReactiveValue";
 import { TreeContext } from "../TreeContext";
@@ -18,9 +18,10 @@ export class TreeDirectoryNode extends TreeNode {
         const childs = this.nested.observable.pipe(map((x) => Array.from(x.values())));
         const pipeline = combineLatest([this.children.valuePipe, childs]).pipe(
             map(([children, values]) => children?.length === values?.filter((x) => x.value).length),
-            filter(Boolean),
+            filter((x) => x === true),
         );
-        return lastValueFrom(pipeline);
+
+        return firstValueFrom(pipeline);
     }
 }
 

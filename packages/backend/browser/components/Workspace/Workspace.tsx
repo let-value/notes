@@ -18,6 +18,8 @@ export const Workspace = memo(function Workspace({ store }: WorkspaceProps) {
     const instance = useMemo(() => new TreeWorkspaceNode(root), [root]);
     const [suspended] = useReactiveValue(instance.suspended, false);
 
+    useEffect(() => instance.children.next([root]), [instance, root]);
+
     useEffect(() => {
         store.treeSource.next(instance);
         return () => {

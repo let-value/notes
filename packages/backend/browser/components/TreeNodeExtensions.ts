@@ -9,14 +9,19 @@ export class TreeNodeExtensions {
         while (queue.length > 0) {
             const node = queue.shift();
 
-            if (node instanceof TreeWorkspaceNode) {
+            if (node instanceof TreeWorkspaceNode && node.constructor === TreeWorkspaceNode) {
                 await node.mounted;
                 for (const child of node.nested.values()) {
                     queue.push(await child.lastValue);
                 }
+                continue;
             }
 
-            if (node instanceof TreeDirectoryNode && path.includes(node.item.path)) {
+            if (
+                node instanceof TreeDirectoryNode &&
+                node.constructor === TreeDirectoryNode &&
+                path.includes(node.item.path)
+            ) {
                 await node.mounted;
                 for (const child of node.nested.values()) {
                     queue.push(await child.lastValue);

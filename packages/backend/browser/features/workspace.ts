@@ -1,5 +1,6 @@
 import { backend, matchQuery } from "messaging";
 import { TreeDirectoryNode } from "../components/Workspace/Directory";
+import { TreeFileNode } from "../components/Workspace/File";
 import { container } from "../container";
 import { WorkspaceStore } from "../workspace/WorkspaceStore";
 
@@ -24,24 +25,15 @@ mediator.pipe(matchQuery(backend.workspace.open)).subscribe(async (query) => {
     }
 });
 
-mediator.pipe(matchQuery(backend.workspace.files)).subscribe(async (query) => {
-    try {
-        const store = await WorkspaceStore.getInstance(query.payload);
-
-        const items = await store.fs.getItems(query);
-
-        await dispatcher.send(backend.workspace.files.response(items, query, query.payload));
-    } catch (error) {
-        await dispatcher.send(backend.workspace.files.error(error, query));
-    }
-});
-
 mediator.pipe(matchQuery(backend.workspace.fileContent)).subscribe(async (query) => {
     try {
         const store = await WorkspaceStore.getInstance(query.payload.workspaceId);
 
-        const text = await store.fs.readFile(query.payload.path, query);
-
+        const node = await store.findNodeByPath(query.payload.path);
+        if (!(node instanceof TreeFileNode)) {
+            throw new Error("Not a file");
+        }
+        const text = await store.fs.readFile(node.item);
         await dispatcher.send(backend.workspace.fileContent.response(text, query));
     } catch (error) {
         await dispatcher.send(backend.workspace.fileContent.error(error, query));
