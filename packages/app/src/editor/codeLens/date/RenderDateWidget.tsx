@@ -1,4 +1,4 @@
-import { fileTokensState } from "@/atom/file/fileState";
+import { fileTokensState } from "@/atom/file";
 import { Text } from "evergreen-ui";
 import { Item, Token, WorkspaceId } from "models";
 import { editor } from "monaco-editor";

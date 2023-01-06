@@ -1,22 +1,15 @@
+import { ReactiveWeakMap } from "@/utils";
 import { editor } from "monaco-editor";
-import { BehaviorSubject } from "rxjs";
 
-const modelToEditor = new WeakMap<editor.ITextModel, editor.IStandaloneCodeEditor>();
-const editorToModel = new WeakMap<editor.IStandaloneCodeEditor, BehaviorSubject<editor.ITextModel | undefined>>();
+const modelToEditor = new ReactiveWeakMap<editor.ITextModel, editor.IStandaloneCodeEditor>();
+const editorToModel = new ReactiveWeakMap<editor.IStandaloneCodeEditor, editor.ITextModel>();
 
 function getModel(editor: editor.IStandaloneCodeEditor) {
-    let modelSubject = editorToModel.get(editor);
-    if (!modelSubject) {
-        modelSubject = new BehaviorSubject<editor.ITextModel | undefined>(undefined);
-        editorToModel.set(editor, modelSubject);
-    }
-    return modelSubject;
+    return editorToModel.get(editor);
 }
 
 function setModel(editor: editor.IStandaloneCodeEditor, model: editor.ITextModel) {
-    const modelSubject = getModel(editor);
-    console.log("setModel", model.getVersionId());
-    modelSubject.next(model);
+    getModel(editor).next(model);
 }
 
 function getEditor(model: editor.ITextModel) {
@@ -24,7 +17,7 @@ function getEditor(model: editor.ITextModel) {
 }
 
 function setEditor(model: editor.ITextModel, editor: editor.IStandaloneCodeEditor) {
-    modelToEditor.set(model, editor);
+    modelToEditor.setValue(model, editor);
     setModel(editor, model);
 }
 

@@ -1,4 +1,5 @@
 import { container } from "@/container";
+import { ReactiveValue } from "@/utils";
 import { groupBy, isEqual } from "lodash-es";
 import { Item, Token, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
@@ -6,7 +7,7 @@ import { useObservable } from "observable-hooks";
 import { useObservableState } from "observable-hooks/dist/cjs/use-observable-state";
 import { useSubscription } from "observable-hooks/dist/cjs/use-subscription";
 import { FC, useCallback, useMemo, useState } from "react";
-import { BehaviorSubject, filter, mergeMap } from "rxjs";
+import { mergeMap } from "rxjs";
 import { DateLineWidgets } from "./DateLineWidgets";
 
 const tokensService = container.get("tokensService");
@@ -14,7 +15,7 @@ const tokensService = container.get("tokensService");
 interface DateCodeLensProps {
     workspaceId: WorkspaceId;
     item: Item;
-    editorSubject: BehaviorSubject<editor.IStandaloneCodeEditor | undefined>;
+    editorSubject: ReactiveValue<editor.IStandaloneCodeEditor>;
 }
 
 export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorSubject }) => {
@@ -23,7 +24,6 @@ export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorS
 
     const handleTokensUpdate = useCallback(
         (newTokens: Token[]) => {
-            console.log(newTokens);
             const dateTokens = newTokens.filter((x) => x.type.startsWith("date"));
             if (isEqual(tokens, dateTokens)) return;
             setTokens(dateTokens);
@@ -33,11 +33,7 @@ export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorS
 
     const editor = useObservableState(editorSubject);
     const tokens$ = useObservable(() =>
-        editorSubject.pipe(
-            filter(Boolean),
-            mergeMap((editor) => tokensService.getEditorTokens(editor)),
-            filter(Boolean),
-        ),
+        editorSubject.valuePipe.pipe(mergeMap((editor) => tokensService.getEditorTokens(editor))),
     );
 
     useSubscription(tokens$, handleTokensUpdate);

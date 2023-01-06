@@ -1,5 +1,6 @@
 import { createContainer } from "iti";
 import { createDispatcherService, createMessagingService } from "messaging";
+import { setStoreServices } from "./atom/storeServices";
 import { browserBackend } from "./backend";
 import { editorMetaService } from "./editor/services/editorMetaService";
 import { modelToEditorService } from "./editor/services/modelToEditorService";
@@ -14,3 +15,5 @@ export const container = createContainer()
     .add(editorMetaService)
     .add(modelToEditorService)
     .add(tokensService);
+
+setStoreServices(await container.getContainerSet(["dispatcher", "mediator"]));

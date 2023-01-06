@@ -5,7 +5,7 @@ export class ReactiveValue<TValue> extends BehaviorSubject<TValue | undefined> {
         super(value);
     }
     get valuePipe() {
-        return this.pipe(filter((x) => x !== undefined));
+        return this.pipe(filter((x): x is TValue => x !== undefined));
     }
     get lastValue() {
         return firstValueFrom(this.valuePipe);

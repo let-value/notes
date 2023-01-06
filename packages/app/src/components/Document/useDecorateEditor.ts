@@ -1,14 +1,15 @@
 import { container } from "@/container";
+import { ReactiveValue } from "@/utils";
 import { Monaco } from "@monaco-editor/react";
+import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 import { useCallback, useState } from "react";
-import { BehaviorSubject } from "rxjs";
 
 const modelToEditor = container.get("modelToEditor");
 const editorMeta = container.get("editorMeta");
 
-export function useDecorateEditor() {
-    const [editorSubject] = useState(() => new BehaviorSubject<editor.IStandaloneCodeEditor | undefined>(undefined));
+export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
+    const [editorSubject] = useState(() => new ReactiveValue<editor.IStandaloneCodeEditor>());
 
     const handleContentChange = useCallback(() => {
         if (!editorSubject.value) {
@@ -20,7 +21,6 @@ export function useDecorateEditor() {
             return;
         }
 
-        console.log("handleContentChange", model.getVersionId());
         modelToEditor.setEditor(model, editorSubject.value);
     }, [editorSubject]);
 
@@ -47,12 +47,12 @@ export function useDecorateEditor() {
                 "",
             );
 
-            editorMeta.set(ref, { commandId });
+            editorMeta.set(ref, { commandId, workspaceId, item });
 
             ref.onDidChangeModelContent(handleContentChange);
             handleContentChange();
         },
-        [editorSubject, handleContentChange],
+        [editorSubject, handleContentChange, item, workspaceId],
     );
 
     return { editor: editorSubject, handleRef };

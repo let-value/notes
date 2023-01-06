@@ -1,7 +1,6 @@
-import { incrementFileNameIfExist } from "app/src/utils";
+import { incrementFileNameIfExist, ReactiveValue } from "app/src/utils";
 import { BroadcastMessage, frontend } from "messaging";
 import { Workspace, WorkspaceHandle, WorkspaceId } from "models";
-import { BehaviorSubject, filter, firstValueFrom, Observable } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
 import { TreeNodeExtensions } from "../components/TreeNodeExtensions";
 import { TreeWorkspaceNode } from "../components/Workspace/Workspace";
@@ -15,24 +14,21 @@ const dispatcher = container.get("dispatcher");
 const workspaceStores = new Map<WorkspaceId, WorkspaceStore>();
 
 export class WorkspaceStore {
-    treeSource: BehaviorSubject<TreeWorkspaceNode>;
-    private root: Observable<TreeWorkspaceNode>;
-
+    root: ReactiveValue<TreeWorkspaceNode>;
     permission: WorkspacePermissionHelper;
     fs: WorkspaceItemsHelper;
     parse: WorkspaceParseHelper;
 
     constructor(public workspace: WorkspaceHandle) {
-        this.treeSource = new BehaviorSubject<TreeWorkspaceNode | undefined>(undefined);
-        this.root = this.treeSource.pipe(filter(Boolean));
+        this.root = new ReactiveValue<TreeWorkspaceNode>();
+
         this.permission = new WorkspacePermissionHelper(this);
         this.fs = new WorkspaceItemsHelper(this);
         this.parse = new WorkspaceParseHelper(this);
     }
 
     async findNodeByPath(path: string) {
-        const root = await firstValueFrom(this.root);
-        return await TreeNodeExtensions.findNested(root, path);
+        return await TreeNodeExtensions.findNested(await this.root.lastValue, path);
     }
 
     static async getInstance(id: WorkspaceId) {

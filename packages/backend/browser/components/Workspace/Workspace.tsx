@@ -21,11 +21,11 @@ export const Workspace = memo(function Workspace({ store }: WorkspaceProps) {
     useEffect(() => instance.children.next([root]), [instance, root]);
 
     useEffect(() => {
-        store.treeSource.next(instance);
+        store.root.next(instance);
         return () => {
-            store.treeSource.next(undefined);
+            store.root.next(undefined);
         };
-    }, [instance, store.treeSource]);
+    }, [instance, store.root]);
 
     if (!root || suspended) {
         return null;

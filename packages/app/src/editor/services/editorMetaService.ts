@@ -1,7 +1,10 @@
+import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 
 export interface EditorMetadata {
     commandId: string | null;
+    workspaceId: WorkspaceId;
+    item: Item<false>;
 }
 
 const map = new WeakMap<editor.IStandaloneCodeEditor, EditorMetadata>();
@@ -20,3 +23,5 @@ export const editorMetaService = {
         set,
     }),
 };
+
+export type EditorMetadataService = ReturnType<typeof editorMetaService.editorMeta>;

@@ -12,6 +12,7 @@ export class BacklinkLinkProvider implements languages.LinkProvider {
         }
 
         const tokens = tokensService.getModelTokens(editor, model);
+
         return null;
     }
     resolveLink?:

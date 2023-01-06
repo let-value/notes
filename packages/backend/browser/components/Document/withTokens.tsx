@@ -1,9 +1,9 @@
+import { ReactiveValue } from "app/src/utils";
 import { Item, Token } from "models";
 import { useObservableState } from "observable-hooks";
 import path from "path";
 import { FC, useContext, useEffect, useMemo } from "react";
 import { firstValueFrom, map } from "rxjs";
-import { ReactiveValue } from "../../utils/ReactiveValue";
 import { TreeContext } from "../TreeContext";
 import { TreeNode } from "../TreeNode";
 import { TreeFileNode } from "../Workspace/File";

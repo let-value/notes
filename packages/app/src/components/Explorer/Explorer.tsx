@@ -1,5 +1,5 @@
-import { useSelectFile } from "@/atom/file/useSelectFile";
-import { workspaceTree } from "@/atom/files/filesState";
+import { useSelectFile } from "@/atom/file";
+import { workspaceTree } from "@/atom/workspace";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { AnnotationIcon, FolderCloseIcon, FolderOpenIcon, Menu, Pane } from "evergreen-ui";
 import { join } from "lodash-es";

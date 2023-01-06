@@ -1,23 +1,13 @@
-import { container } from "@/container";
-import { backend, ReadFileQuery } from "messaging";
 import { Item, WorkspaceId } from "models";
 import { noWait, selectorFamily } from "recoil";
-
-const dispatcher = container.get("dispatcher");
-
-export const workspaceItems = selectorFamily({
-    key: "workspace/items",
-    get: (query: Readonly<ReadFileQuery>) => () => {
-        return dispatcher.call(backend.workspace.items, query);
-    },
-});
+import { workspaceItemsSelector } from "./workspaceItemsSelector";
 
 export interface WorkspaceTreeReqest {
     workspaceId: WorkspaceId;
     expanded: string[];
 }
 
-interface ListItem extends Item {
+export interface ListItem extends Item {
     collapsed?: Item[];
     depth: number;
 }
@@ -27,7 +17,7 @@ export const workspaceTree = selectorFamily({
     get:
         ({ workspaceId, expanded }: Readonly<WorkspaceTreeReqest>) =>
         async ({ get }) => {
-            const rootItems = await get(noWait(workspaceItems({ workspaceId, path: "/" }))).toPromise();
+            const rootItems = await get(noWait(workspaceItemsSelector({ workspaceId, path: "/" }))).toPromise();
 
             const queue: ListItem[] = rootItems.map((x) => ({ ...x, depth: 0 }));
 
@@ -40,7 +30,7 @@ export const workspaceTree = selectorFamily({
                 }
 
                 if (item?.isDirectory && expanded.includes(item.path)) {
-                    const response = get(noWait(workspaceItems({ workspaceId, path: item.path })));
+                    const response = get(noWait(workspaceItemsSelector({ workspaceId, path: item.path })));
 
                     if (response.state === "hasValue") {
                         const items = response.contents;

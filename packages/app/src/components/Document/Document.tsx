@@ -1,25 +1,21 @@
-import { fileContentState, fileState, fileTokensState } from "@/atom/file/fileState";
-import { workspaceState } from "@/atom/workspace/workspace";
+import { fileContentState } from "@/atom/file";
 import Editor from "@monaco-editor/react";
+import { Item, Workspace } from "models";
 import { FC } from "react";
-import { useRecoilValue, useRecoilValueLoadable } from "recoil";
+import { useRecoilValue } from "recoil";
 import { DateCodeLens } from "../../editor/codeLens/date/DateCodeLens";
 import defaultValue from "./defaultValue.md?raw";
 import { useDecorateEditor } from "./useDecorateEditor";
 
-export const Document: FC = () => {
-    const workspace = useRecoilValue(workspaceState);
-    const item = useRecoilValue(fileState);
+export interface DocumentProps {
+    workspace: Workspace;
+    item: Item<false>;
+}
+
+export const Document: FC<DocumentProps> = ({ workspace, item }) => {
     const content = useRecoilValue(fileContentState({ workspaceId: workspace?.id, path: item?.path }));
-    const tokens = useRecoilValueLoadable(fileTokensState({ workspaceId: workspace?.id, path: item?.path }));
 
-    console.log("tokens", item, tokens);
-
-    const { editor, handleRef } = useDecorateEditor();
-
-    if (!workspace || !item) {
-        return null;
-    }
+    const { editor, handleRef } = useDecorateEditor(workspace.id, item);
 
     return (
         <>
