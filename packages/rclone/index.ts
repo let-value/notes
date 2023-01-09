@@ -1,7 +1,13 @@
 import "./wasm_exec.js";
 
+let rcValidResolve: () => void;
+
+export const ready = new Promise<void>((resolve) => {
+    rcValidResolve = resolve;
+});
+
 globalThis.rcValidResolve ??= function () {
-    console.log("rcValidResolve");
+    rcValidResolve();
 };
 
 const go = new globalThis.Go();
@@ -10,8 +16,8 @@ const { instance } = await WebAssembly.instantiateStreaming(
     go.importObject,
 );
 
-await go.run(instance);
-
 export function rc(command: string, args: object): object {
-    return globalThis.rc?.(command, args);
+    return globalThis.rc(command, args);
 }
+
+go.run(instance);

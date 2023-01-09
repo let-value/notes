@@ -27,6 +27,7 @@ import (
 	//	_ "github.com/rclone/rclone/backend/all" // import all backends
 
 	// Backends
+	_ "github.com/rclone/rclone/backend/drive"
 	_ "github.com/rclone/rclone/backend/memory"
 )
 

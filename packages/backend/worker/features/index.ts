@@ -2,6 +2,11 @@ export * from "./leader";
 export * from "./workpaces";
 export * from "./workspace";
 
-import { rc } from "rclone";
+import { rc, ready } from "rclone";
 
-console.log("core/version", rc("core/version", null));
+await ready;
+try {
+    console.log("core/version", rc("core/version", null));
+} catch (e) {
+    console.error(e);
+}

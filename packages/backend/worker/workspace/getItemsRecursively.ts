@@ -1,8 +1,8 @@
 import path from "path";
 
-if (!self.process) {
-    self.process = { cwd: () => "" } as never;
-}
+// if (!self?.process?.cwd) {
+//     self.process = { cwd: () => "" } as never;
+// }
 
 export const getItemsRecursively = async function* (
     entry: FileSystemHandle,
