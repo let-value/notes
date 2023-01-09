@@ -5,10 +5,13 @@ globalThis.rcValidResolve ??= function () {
 };
 
 const go = new globalThis.Go();
-const wasm = await WebAssembly.instantiateStreaming(fetch(new URL("./rclone.wasm", import.meta.url)), go.importObject);
+const { instance } = await WebAssembly.instantiateStreaming(
+    fetch(new URL("./rclone.wasm", import.meta.url)),
+    go.importObject,
+);
+
+await go.run(instance);
 
 export function rc(command: string, args: object): object {
     return globalThis.rc?.(command, args);
 }
-
-await go.run(wasm.instance);

@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE.wasmexec file.
+// license that can be found in the LICENSE file.
 
 "use strict";
 
@@ -16,14 +16,7 @@
     if (!globalThis.fs) {
         let outputBuf = "";
         globalThis.fs = {
-            constants: {
-                O_WRONLY: -1,
-                O_RDWR: -1,
-                O_CREAT: -1,
-                O_TRUNC: -1,
-                O_APPEND: -1,
-                O_EXCL: -1,
-            }, // unused
+            constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
             writeSync(fd, buf) {
                 outputBuf += decoder.decode(buf);
                 const nl = outputBuf.lastIndexOf("\n");

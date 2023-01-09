@@ -22,7 +22,7 @@ import (
 
 	// Core functionality we need
 	_ "github.com/rclone/rclone/fs/operations"
-	// _ "github.com/rclone/rclone/fs/sync"
+	_ "github.com/rclone/rclone/fs/sync"
 
 	//	_ "github.com/rclone/rclone/backend/all" // import all backends
 
