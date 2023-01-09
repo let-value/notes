@@ -1,12 +1,12 @@
 import { container } from "backend-worker/container";
-import { backend, WorkerEventTarget } from "messaging";
-
-container.upsert({ eventTarget: () => new WorkerEventTarget(self) });
+import { backend } from "messaging";
 
 const id = container.get("id");
 
-await import("app/src/editor/setupMonaco");
-await import("backend-worker/dom/setupDom");
+export function setTabId(tabId: string) {
+    container.upsert({ tabId });
+}
+
 await import("backend-worker/features");
 
 const dispatcher = container.get("dispatcher");

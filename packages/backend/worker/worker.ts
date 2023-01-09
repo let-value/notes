@@ -2,9 +2,11 @@ import { BroadcastChannel, createLeaderElection } from "broadcast-channel";
 import { backend, BroadcastMessage } from "messaging";
 import { container } from "./container";
 
-const tabId = await new Promise<string>((resolve) =>
-    self.addEventListener("message", (message) => resolve(message.data), { once: true }),
-);
+export let resolveTabId: (tabId: string) => void;
+const tabId = await new Promise<string>((resolve) => {
+    resolveTabId = resolve;
+    self.addEventListener("message", (message) => resolve(message.data), { once: true });
+});
 
 container.upsert({ tabId });
 

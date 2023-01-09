@@ -5,6 +5,7 @@
         "packages/domain",
         "packages/messaging",
         "packages/queue",
+        "packages/backend/worker",
         "packages/backend/browser",
         "packages/backend/electron",
         "packages/app",

@@ -4,6 +4,6 @@
     "description": "",
     "main": "worker.ts",
     "dependencies": {
-        "backend-browser": "file:../browser"
+        "backend-worker": "file:../worker"
     }
 }

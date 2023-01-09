@@ -1,0 +1,25 @@
+{
+    "name": "backend-worker",
+    "version": "1.0.0",
+    "description": "",
+    "main": "worker.ts",
+    "dependencies": {
+        "@ampproject/worker-dom": "^0.34.0",
+        "@creasource/reactive-idb": "^1.2.1",
+        "app": "file:../../app",
+        "filter-async-rxjs-pipe": "^1.0.1",
+        "immer": "^9.0.17",
+        "iti": "^0.6.0",
+        "language-detect": "^1.1.0",
+        "language-map": "^1.5.0",
+        "messaging": "file:../../messaging",
+        "models": "file:../../domain",
+        "monaco-editor": "^0.34.1",
+        "observable-hooks": "^4.2.1",
+        "queue": "file:../../queue",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "rxjs": "^7.8.0",
+        "usehooks-ts": "^2.9.1"
+    }
+}
