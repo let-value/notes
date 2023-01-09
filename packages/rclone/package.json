@@ -4,6 +4,6 @@
     "main": "index.ts",
     "type": "module",
     "scripts": {
-        "build:wasm": "cross-env GOARCH=wasm GOOS=js go build -o rclone.wasm"
+        "build": "cross-env GOARCH=wasm GOOS=js go build -o rclone.wasm"
     }
 }
