@@ -1,6 +1,7 @@
 import { fileTokensState } from "@/atom/file";
+import { CompensatedToken } from "@/editor/services/tokensService";
 import { Text } from "evergreen-ui";
-import { Item, Token, WorkspaceId } from "models";
+import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 import { FC, useMemo } from "react";
 import { createPortal } from "react-dom";
@@ -9,7 +10,7 @@ import { useRecoilValueLoadable } from "recoil";
 interface DateWidgetProps {
     workspaceId: WorkspaceId;
     item: Item;
-    token: Token;
+    token: CompensatedToken;
     editor: editor.IStandaloneCodeEditor;
     widget: editor.IContentWidget | undefined;
 }
@@ -23,7 +24,10 @@ export const RenderDateWidget: FC<DateWidgetProps> = ({ workspaceId, item, edito
         () =>
             tokens.state === "hasValue"
                 ? tokens.contents?.find(
-                      (t) => t.line === token.line && t.start === token.start && t.value === token.value,
+                      (t) =>
+                          t.line === token.compensatedLine &&
+                          t.start === token.compensatedStart &&
+                          t.value === token.value,
                   )
                 : undefined,
         [tokens, token],

@@ -1,7 +1,8 @@
 import { container } from "@/container";
+import { CompensatedToken } from "@/editor/services/tokensService";
 import { ReactiveValue } from "@/utils";
 import { groupBy, isEqual } from "lodash-es";
-import { Item, Token, WorkspaceId } from "models";
+import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 import { useObservable } from "observable-hooks";
 import { useObservableState } from "observable-hooks/dist/cjs/use-observable-state";
@@ -19,11 +20,11 @@ interface DateCodeLensProps {
 }
 
 export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorSubject }) => {
-    const [tokens, setTokens] = useState<Token[]>([]);
+    const [tokens, setTokens] = useState<CompensatedToken[]>([]);
     const datesByLines = useMemo(() => groupBy(tokens, (token) => token.line), [tokens]);
 
     const handleTokensUpdate = useCallback(
-        (newTokens: Token[]) => {
+        (newTokens: CompensatedToken[]) => {
             const dateTokens = newTokens.filter((x) => x.type.startsWith("date"));
             if (isEqual(tokens, dateTokens)) return;
             setTokens(dateTokens);
@@ -33,7 +34,7 @@ export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorS
 
     const editor = useObservableState(editorSubject);
     const tokens$ = useObservable(() =>
-        editorSubject.valuePipe.pipe(mergeMap((editor) => tokensService.getEditorTokens(editor))),
+        editorSubject.valuePipe.pipe(mergeMap((editor) => tokensService.getEditorCompensatedTokens(editor))),
     );
 
     useSubscription(tokens$, handleTokensUpdate);

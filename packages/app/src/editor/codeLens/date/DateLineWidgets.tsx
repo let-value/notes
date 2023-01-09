@@ -1,5 +1,6 @@
+import { CompensatedToken } from "@/editor/services/tokensService";
 import { DateWidget } from "@/editor/widgets";
-import { Item, Token, WorkspaceId } from "models";
+import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 import { FC, useEffect, useState } from "react";
 import { RenderDateWidget } from "./RenderDateWidget";
@@ -8,7 +9,7 @@ interface DateLineWidgetsProps {
     workspaceId: WorkspaceId;
     item: Item;
     editor: editor.IStandaloneCodeEditor;
-    tokens: Token[];
+    tokens: CompensatedToken[];
 }
 
 export const DateLineWidgets: FC<DateLineWidgetsProps> = ({ workspaceId, item, editor, tokens }) => {
