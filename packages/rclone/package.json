@@ -1,0 +1,9 @@
+{
+    "name": "rclone",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "type": "module",
+    "scripts": {
+        "build": "cross-env GOARCH=wasm GOOS=js go build -o rclone.wasm"
+    }
+}
