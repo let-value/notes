@@ -5,6 +5,7 @@
         "packages/domain",
         "packages/messaging",
         "packages/queue",
+        "packages/rclone",
         "packages/backend/worker",
         "packages/backend/browser",
         "packages/backend/electron",
