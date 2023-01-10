@@ -7,16 +7,15 @@ export class DateViewZone implements editor.IViewZone {
     heightInLines = 1;
     domNode: HTMLElement;
     id?: string;
-
     constructor(private editor: Editor, public afterLineNumber: number) {
         this.domNode = document.createElement("div");
-        this.domNode.style.border = "1px solid black";
         this.update(editor, afterLineNumber);
     }
     update(editor: Editor, afterLineNumber: number) {
         if (!editor) {
             return;
         }
+
         if (this.editor !== editor) {
             this.id = undefined;
         }

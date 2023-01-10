@@ -1,8 +1,6 @@
-import { BroadcastMessage } from "messaging";
 import { Item, ItemHandle } from "models";
 import path from "path";
 import { container } from "../container";
-import { getItemsRecursively } from "./getItemsRecursively";
 import { WorkspaceStore } from "./WorkspaceStore";
 
 const queue = container.get("queue");
@@ -26,34 +24,6 @@ export class WorkspaceItemsHelper {
         }
 
         return items;
-    }
-
-    /**
-     * @deprecated use getItems instead
-     * @param query
-     * @returns
-     */
-    async getItems(query?: BroadcastMessage) {
-        if (this.files) {
-            return this.files;
-        }
-
-        await this.store.permission.check(query);
-
-        const taskId = `${this.store.workspace.id}/getFiles`;
-        const getFilesTask = async () => {
-            const items: Item[] = [];
-            for await (const [handle, parentPath] of getItemsRecursively(this.store.workspace.handle)) {
-                items.push({ name: handle.name, path: parentPath, isDirectory: handle.kind === "directory" });
-            }
-
-            return items;
-        };
-
-        const files = await queue.add(getFilesTask, { priority: query ? 4 : 1, type: taskId });
-
-        this.files = files;
-        return files;
     }
 
     async readFile(item: ItemHandle<false>) {

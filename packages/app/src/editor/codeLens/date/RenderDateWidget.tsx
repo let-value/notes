@@ -38,7 +38,7 @@ export const RenderDateWidget: FC<DateWidgetProps> = ({ workspaceId, item, edito
     }
 
     return createPortal(
-        <Text whiteSpace="nowrap" color={mathedToke ? "red" : undefined}>
+        <Text whiteSpace="nowrap" color={mathedToke ? "red" : undefined} fontSize={10}>
             {token.value}
         </Text>,
         target,

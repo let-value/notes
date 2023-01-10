@@ -5,13 +5,13 @@ import { editor as monacoEditor } from "monaco-editor";
 import { v4 as uuidv4 } from "uuid";
 
 export class DateContentWidget implements monacoEditor.IContentWidget {
+    suppressMouseDown = false;
     private id?: string;
     private domNode: HTMLDivElement;
     private position?: monacoEditor.IContentWidgetPosition;
     private editor?: monacoEditor.IStandaloneCodeEditor;
     constructor(...args: Parameters<DateContentWidget["update"]>) {
         this.domNode = document.createElement("div");
-        this.domNode.style.border = "1px solid black";
         this.update(...args);
     }
     update(editor: Editor, token: Token) {

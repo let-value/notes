@@ -13,8 +13,9 @@ export function MarkdownBacklink({ from, token }: MarkdownBacklinkProps) {
     const store = useContext(WorkspaceContext);
     const [, embed, path, name] = useMemo(() => wikilinkRegex.exec(token.value), [token.value]);
     const to = useAsyncMemo(async () => {
-        const files = await store.fs.getItems();
-        return files.find((file) => file.path.includes(path) && !file.isDirectory);
+        // store.findNodeByLink(path);
+        // const files = await store.fs.getItems();
+        // return files.find((file) => file.path.includes(path) && !file.isDirectory);
     }, [store.fs]);
 
     return null;
