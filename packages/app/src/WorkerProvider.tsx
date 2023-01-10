@@ -1,4 +1,4 @@
-import { Pane, Spinner } from "evergreen-ui";
+import { Spinner } from "@blueprintjs/core";
 import { FC, PropsWithChildren } from "react";
 import { useRecoilValueLoadable } from "recoil";
 import { workerState } from "./atom/workerState";
@@ -8,9 +8,9 @@ export const WorkerProvider: FC<PropsWithChildren> = ({ children }) => {
 
     if (worker.state != "hasValue") {
         return (
-            <Pane display="flex" alignItems="center" justifyContent="center" height="100%" width="100%">
+            <div className="flex align-middle justify-center h-full w-full">
                 <Spinner />
-            </Pane>
+            </div>
         );
     }
 

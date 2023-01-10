@@ -1,7 +1,8 @@
-import { useSelectFile } from "@/atom/file";
+import { useOpenEditorPanel } from "@/atom/panels";
 import { workspaceTree } from "@/atom/workspace";
+import { TreeNode } from "@blueprintjs/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { AnnotationIcon, FolderCloseIcon, FolderOpenIcon, Menu, Pane } from "evergreen-ui";
+import cx from "classnames";
 import { join } from "lodash-es";
 import { Item, Workspace } from "models";
 import { FC, useCallback, useRef } from "react";
@@ -28,7 +29,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
         overscan: 5,
     });
 
-    const handleSelectFile = useSelectFile();
+    const handleSelectFile = useOpenEditorPanel(workspace);
 
     const handleClick = useCallback(
         (item: Item) => {
@@ -51,9 +52,12 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
     }
 
     return (
-        <Pane flex={1} height="100%" width="100%" overflow="hidden">
-            <Pane ref={parentRef} overflowY="auto" overflowX="hidden" height="100%">
-                <Pane className={styles.tree} height={rowVirtualizer.getTotalSize()} position="relative">
+        <div className="flex-1 h-full w-full overflow-hidden">
+            <div ref={parentRef} className="overflow-y-auto overflow-x-hidden h-full">
+                <div
+                    className={cx(styles.tree, "relative bp4-tree-node-list")}
+                    style={{ height: rowVirtualizer.getTotalSize() }}
+                >
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                         const item = tree.contents?.[virtualRow.index];
 
@@ -62,31 +66,30 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
                             .concat(item.name);
 
                         return (
-                            <Menu.Item
+                            <div
+                                className="absolute whitespace-nowrap top-0 left-0 w-full"
                                 key={virtualRow.index}
-                                icon={
-                                    item.isDirectory
-                                        ? expand.get(item.path)
-                                            ? FolderOpenIcon
-                                            : FolderCloseIcon
-                                        : AnnotationIcon
-                                }
-                                position="absolute"
-                                whiteSpace="nowrap"
-                                top={0}
-                                left={0}
-                                width="100%"
-                                height={virtualRow.size}
-                                paddingLeft={`calc(${item.depth} * var(--indentation-size))`}
-                                transform={`translateY(${virtualRow.start}px)`}
-                                onClick={() => handleClick(item)}
+                                style={{ height: virtualRow.size, transform: `translateY(${virtualRow.start}px)` }}
                             >
-                                {join(segments, " / ")}
-                            </Menu.Item>
+                                <TreeNode
+                                    id={item.path}
+                                    icon={
+                                        item.isDirectory
+                                            ? expand.get(item.path)
+                                                ? "folder-open"
+                                                : "folder-close"
+                                            : "document"
+                                    }
+                                    depth={item.depth}
+                                    label={join(segments, " / ")}
+                                    path={[]}
+                                    onClick={() => handleClick(item)}
+                                />
+                            </div>
                         );
                     })}
-                </Pane>
-            </Pane>
-        </Pane>
+                </div>
+            </div>
+        </div>
     );
 };

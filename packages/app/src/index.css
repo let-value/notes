@@ -1,3 +1,12 @@
+@import "dockview/dist/styles/dockview.css";
+@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+@import "@blueprintjs/core/lib/css/blueprint.css";
+@import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,
 body {
     height: 100%;

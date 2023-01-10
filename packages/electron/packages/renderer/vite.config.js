@@ -15,13 +15,9 @@ const PROJECT_ROOT = join(PACKAGE_ROOT, "../..");
  */
 const config = {
     ...baseConfig,
-    //mode: process.env.MODE,
+    mode: process.env.MODE,
     root: PACKAGE_ROOT,
     envDir: PROJECT_ROOT,
-    build: {
-        ...baseConfig.build,
-        target: "esnext",
-    },
     worker: {
         ...baseConfig.worker,
         format: "es",

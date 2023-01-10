@@ -1,6 +1,6 @@
 import { fileTokensState } from "@/atom/file";
 import { CompensatedToken } from "@/editor/services/tokensService";
-import { Text } from "evergreen-ui";
+import { Text } from "@blueprintjs/core";
 import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
 import { FC, useMemo } from "react";
@@ -37,10 +37,5 @@ export const RenderDateWidget: FC<DateWidgetProps> = ({ workspaceId, item, edito
         return null;
     }
 
-    return createPortal(
-        <Text whiteSpace="nowrap" color={mathedToke ? "red" : undefined} fontSize={10}>
-            {token.value}
-        </Text>,
-        target,
-    );
+    return createPortal(<Text color={mathedToke ? "red" : undefined}>{token.value}</Text>, target);
 };

@@ -1,4 +1,3 @@
-import { defaultTheme, ThemeProvider } from "evergreen-ui";
 import { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
@@ -11,13 +10,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <Suspense>
         <RecoilRoot>
             <RecoilNexus />
-            <ThemeProvider value={defaultTheme}>
-                <Suspense>
-                    <WorkerProvider>
-                        <App />
-                    </WorkerProvider>
-                </Suspense>
-            </ThemeProvider>
+            <Suspense>
+                <WorkerProvider>
+                    <App />
+                </WorkerProvider>
+            </Suspense>
         </RecoilRoot>
     </Suspense>,
 );
