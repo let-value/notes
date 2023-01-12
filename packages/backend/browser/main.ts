@@ -1,11 +1,8 @@
 import { container } from "backend-worker/container";
 import { backend } from "messaging";
 
+export { container };
 const id = container.get("id");
-
-export function setTabId(tabId: string) {
-    container.upsert({ tabId });
-}
 
 await import("backend-worker/features");
 

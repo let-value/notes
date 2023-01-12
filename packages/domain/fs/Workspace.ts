@@ -1,10 +1,9 @@
+import { FileProvider } from "./FileProvider";
+
 export interface Workspace {
     id: string;
     name: string;
-}
-
-export interface WorkspaceHandle extends Workspace {
-    handle: FileSystemDirectoryHandle;
+    provider: FileProvider;
 }
 
 export type WorkspaceId = Workspace["id"];

@@ -17,7 +17,7 @@ export const workspaceTree = selectorFamily({
     get:
         ({ workspaceId, expanded }: Readonly<WorkspaceTreeReqest>) =>
         async ({ get }) => {
-            const rootItems = await get(noWait(workspaceItemsSelector({ workspaceId, path: "/" }))).toPromise();
+            const rootItems = await get(noWait(workspaceItemsSelector({ workspaceId, path: "" }))).toPromise();
 
             const queue: ListItem[] = rootItems.map((x) => ({ ...x, depth: 0 }));
 

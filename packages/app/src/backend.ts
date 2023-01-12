@@ -1,11 +1,11 @@
 import { id } from "@/tabId";
 import { createBroadcastChannel } from "@/utils";
 import { EventTarget } from "messaging";
-import { setTabId } from "../../backend/browser/main";
+import { container } from "../../backend/browser/main";
 
 export const browserBackend = {
     eventTarget: () => {
-        setTabId(id);
+        container.upsert({ tabId: id });
         return createBroadcastChannel() as EventTarget;
     },
 };

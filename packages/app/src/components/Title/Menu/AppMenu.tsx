@@ -1,6 +1,7 @@
-import { Button, Menu, OverflowList, OverflowListProps } from "@blueprintjs/core";
+import { Button, ButtonProps, Menu, OverflowList, OverflowListProps } from "@blueprintjs/core";
 import { MenuItem2, Popover2, Popover2Props } from "@blueprintjs/popover2";
-import { FC, useCallback } from "react";
+import cx from "classnames";
+import { ComponentProps, FC, useCallback } from "react";
 import { FileMenu } from "./FileMenu";
 import { ViewMenu } from "./ViewMenu";
 
@@ -13,22 +14,40 @@ const popoverProps: Popover2Props = {
     modifiers: { arrow: { enabled: false } },
 };
 
-export const AppMenu: FC<Partial<OverflowListProps<Item>>> = (props) => {
-    const renderItem = useCallback((Item: Item, index: number) => {
-        return (
-            <Popover2
-                key={index}
-                {...popoverProps}
-                content={
-                    <Menu>
-                        <Item />
-                    </Menu>
-                }
-            >
-                <Button minimal>{Item.displayName}</Button>
-            </Popover2>
-        );
-    }, []);
+export interface AppMenuProps extends Partial<OverflowListProps<Item>> {
+    TargetProps?: ComponentProps<"span">;
+    ItemProps?: ButtonProps;
+}
+
+export const AppMenu: FC<AppMenuProps> = ({ TargetProps, ItemProps, ...other }) => {
+    const renderTarget = useCallback(
+        (Item: Item, { className, ...other }: any) => (
+            <span {...TargetProps} {...other} className={cx(className, TargetProps?.className)}>
+                <Button minimal {...ItemProps}>
+                    {Item.displayName}
+                </Button>
+            </span>
+        ),
+        [ItemProps, TargetProps],
+    );
+
+    const renderItem = useCallback(
+        (Item: Item, index: number) => {
+            return (
+                <Popover2
+                    key={index}
+                    {...popoverProps}
+                    content={
+                        <Menu>
+                            <Item />
+                        </Menu>
+                    }
+                    renderTarget={renderTarget.bind(undefined, Item)}
+                />
+            );
+        },
+        [renderTarget],
+    );
 
     const renderOverflow = useCallback((items: Item[]) => {
         return (
@@ -55,7 +74,7 @@ export const AppMenu: FC<Partial<OverflowListProps<Item>>> = (props) => {
             items={menuItems}
             overflowRenderer={renderOverflow}
             visibleItemRenderer={renderItem}
-            {...props}
+            {...other}
         />
     );
 };

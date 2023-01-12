@@ -1,5 +1,5 @@
 import { useAsyncMemo } from "app/src/utils";
-import { Item, ItemHandle } from "models";
+import { Item } from "models";
 
 import { ReactiveValue } from "app/src/utils";
 import { memo, useContext, useEffect, useState } from "react";
@@ -32,7 +32,7 @@ export const Directory = memo(function Directory(item: Item<true>) {
     const [instance] = useState(() => new TreeDirectoryNode(item, parent));
     const [suspended] = useReactiveValue(instance.suspended, false);
 
-    const children = useAsyncMemo(() => store.fs.getDirectoryItems(item as ItemHandle<true>), [store], undefined);
+    const children = useAsyncMemo(() => store.fs.listDirectory(item), [store], undefined);
     useEffect(() => instance.children.next(children), [children, instance]);
 
     if (!item.isDirectory || suspended) {

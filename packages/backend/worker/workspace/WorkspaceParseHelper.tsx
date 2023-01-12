@@ -1,7 +1,7 @@
 import { createDocument } from "@ampproject/worker-dom/dist/server-lib.mjs";
 import { parseModelTokens } from "app/src/editor/tokens/parseModelTokens";
 
-import { Item, ItemHandle, TreeItem } from "models";
+import { Item } from "models";
 import { editor, Uri } from "monaco-editor/esm/vs/editor/editor.api";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -31,16 +31,12 @@ export class WorkspaceParseHelper {
         this.container.remove();
     }
 
-    getFileReference(item: TreeItem): import("react").Ref<unknown> {
-        throw new Error("Method not implemented.");
-    }
-
     async getTokens(item: Item<false>, language: string) {
         if (!item || item.isDirectory) {
             return undefined;
         }
 
-        const content = await this.store.fs.readFile(item as ItemHandle<false>);
+        const content = await this.store.fs.readFile(item);
         const taskId = `${this.store.workspace.id}/parse/${item.path}`;
         return await queue.add(
             () => {

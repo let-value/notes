@@ -25,7 +25,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
     const rowVirtualizer = useVirtualizer({
         count: tree.contents?.length ?? 0,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 40,
+        estimateSize: () => 30,
         overscan: 5,
     });
 
@@ -55,7 +55,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
         <div className="flex-1 h-full w-full overflow-hidden">
             <div ref={parentRef} className="overflow-y-auto overflow-x-hidden h-full">
                 <div
-                    className={cx(styles.tree, "relative bp4-tree-node-list")}
+                    className={cx(styles.tree, "relative bp4-tree bp4-tree-node-list bp4-tree-root")}
                     style={{ height: rowVirtualizer.getTotalSize() }}
                 >
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -65,6 +65,8 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
                             .concat((item.collapsed ?? []).map((item) => item.name))
                             .concat(item.name);
 
+                        const handler = handleClick.bind(undefined, item);
+
                         return (
                             <div
                                 className="absolute whitespace-nowrap top-0 left-0 w-full"
@@ -73,6 +75,8 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
                             >
                                 <TreeNode
                                     id={item.path}
+                                    hasCaret={item.isDirectory}
+                                    isExpanded={expand.get(item.path)}
                                     icon={
                                         item.isDirectory
                                             ? expand.get(item.path)
@@ -83,7 +87,9 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
                                     depth={item.depth}
                                     label={join(segments, " / ")}
                                     path={[]}
-                                    onClick={() => handleClick(item)}
+                                    onClick={handler}
+                                    onExpand={handler}
+                                    onCollapse={handler}
                                 />
                             </div>
                         );

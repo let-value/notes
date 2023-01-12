@@ -1,14 +1,35 @@
 import { AddSplitviewComponentOptions, ISplitviewPanelProps, PanelCollection } from "dockview";
-import { FC } from "react";
+import { useObservable, useSubscription } from "observable-hooks";
+import { FC, useEffect } from "react";
 import { useRecoilValue } from "recoil";
+import { fromEventPattern } from "rxjs";
 import { workspaceState } from "../atom/workspace";
 import { Explorer } from "./Explorer/Explorer";
+import { showSidebarState } from "./Title/Menu/ViewMenu";
 import { withSuspense } from "./withSuspense";
 
 const id = "sidebar";
 
-export const SidebarPanel: FC<ISplitviewPanelProps> = () => {
+export const SidebarPanel: FC<ISplitviewPanelProps> = ({ api }) => {
     const workspace = useRecoilValue(workspaceState);
+
+    useEffect(() => {
+        api.setSize({ size: 300 });
+    }, [api]);
+
+    useSubscription(showSidebarState, (value) => api.setVisible(value));
+
+    const visible = useObservable(
+        () =>
+            fromEventPattern<boolean>(
+                (handler) => api.onDidVisibilityChange(handler),
+                (_, signal) => signal.dispose(),
+                (event) => event.isVisible,
+            ),
+        [api],
+    );
+
+    useSubscription(visible, (value) => showSidebarState.next(value));
 
     if (!workspace) {
         return null;
@@ -20,10 +41,8 @@ export const SidebarPanel: FC<ISplitviewPanelProps> = () => {
 const options: AddSplitviewComponentOptions = {
     id,
     component: id,
-
     minimumSize: 200,
     maximumSize: 400,
-    size: 300,
     snap: true,
 };
 

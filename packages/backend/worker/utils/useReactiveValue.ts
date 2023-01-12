@@ -1,6 +1,6 @@
+import { ReactiveValue } from "app/src/utils";
 import { useObservableState } from "observable-hooks";
 import { useCallback } from "react";
-import { ReactiveValue } from "./ReactiveValue";
 
 export function useReactiveValue<TValue>(reactiveValue: ReactiveValue<TValue>, initialState?: TValue | (() => TValue)) {
     const value = useObservableState(reactiveValue, initialState);

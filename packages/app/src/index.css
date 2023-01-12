@@ -17,3 +17,7 @@ body {
 #root {
     height: 100%;
 }
+
+.split-view-container .sash-container .sash {
+    z-index: 1;
+}

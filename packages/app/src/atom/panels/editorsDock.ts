@@ -23,7 +23,7 @@ export const useOpenEditorPanel = (workspace: Workspace) =>
 
             const existingPanel = api.panels.find((x) => x.id === panel.id);
             if (existingPanel) {
-                existingPanel.focus();
+                existingPanel.api.setActive();
                 return;
             }
 

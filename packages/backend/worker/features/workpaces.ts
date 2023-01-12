@@ -1,6 +1,6 @@
 import { backend, matchQuery } from "messaging";
 import { container } from "../container";
-import { getWorkspaces } from "../db/repositories";
+import { getWorkspaces } from "../db/repositories/workspaces";
 
 const mediator = container.get("mediator");
 const dispatcher = container.get("dispatcher");

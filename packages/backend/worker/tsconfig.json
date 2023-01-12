@@ -4,6 +4,7 @@
         "module": "ESNext",
         "moduleResolution": "Node",
         "jsx": "react-jsx",
+        "lib": ["ESNext", "ES2015"],
         "allowSyntheticDefaultImports": true
     }
 }

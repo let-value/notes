@@ -1,5 +1,5 @@
+import { useAsyncMemo } from "app/src/utils";
 import { memo, useEffect, useMemo } from "react";
-import { useReactiveValue } from "../../utils/useReactiveValue";
 import { WorkspaceStore } from "../../workspace/WorkspaceStore";
 import { TreeContext } from "../TreeContext";
 
@@ -13,12 +13,11 @@ interface WorkspaceProps {
 }
 
 export const Workspace = memo(function Workspace({ store }: WorkspaceProps) {
-    const root = useMemo(() => store.fs.getWorkspaceItem(), [store]);
+    const root = useAsyncMemo(() => store.fs.initializeWorkspace(store.workspace), [store]);
 
-    const instance = useMemo(() => new TreeWorkspaceNode(root), [root]);
-    const [suspended] = useReactiveValue(instance.suspended, false);
+    const instance = useMemo(() => root && new TreeWorkspaceNode(root), [root]);
 
-    useEffect(() => instance.children.next([root]), [instance, root]);
+    useEffect(() => instance?.children.next([root]), [instance, root]);
 
     useEffect(() => {
         store.root.next(instance);
@@ -27,7 +26,7 @@ export const Workspace = memo(function Workspace({ store }: WorkspaceProps) {
         };
     }, [instance, store.root]);
 
-    if (!root || suspended) {
+    if (!root) {
         return null;
     }
 
