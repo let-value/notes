@@ -22,13 +22,7 @@ const config = {
         ...baseConfig.worker,
         format: "es",
     },
-    plugins: [
-        ...baseConfig.plugins,
-        // renderer.vite({
-        //   preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.ts'),
-        // }),
-        injectAppVersion(),
-    ],
+    plugins: [...baseConfig.plugins, injectAppVersion()],
 };
 
 export default defineConfig(config);

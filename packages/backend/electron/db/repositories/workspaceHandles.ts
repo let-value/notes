@@ -1,15 +1,6 @@
-import { ReactiveIDBStoreSchema } from "@creasource/reactive-idb";
-import { Workspace } from "models";
 import { concatMap, firstValueFrom, lastValueFrom } from "rxjs";
 import { database } from "../database";
-
-export interface WorkspaceHandle extends Workspace {
-    path: string;
-}
-
-export const workspaceHandles: ReactiveIDBStoreSchema = {
-    name: "workspaceHandles",
-};
+import { WorkspaceHandle } from "../stores/workspaceHandles";
 
 export function getWorkspaceHandle(id: string) {
     return firstValueFrom(

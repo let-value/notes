@@ -4,6 +4,8 @@
     "description": "",
     "main": "worker.ts",
     "dependencies": {
-        "backend-worker": "file:../worker"
+        "backend-worker": "file:../worker",
+        "electron": "^22.0.1",
+        "electron-promise-ipc": "^2.2.4"
     }
 }

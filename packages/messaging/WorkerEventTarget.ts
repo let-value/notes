@@ -4,7 +4,7 @@ import { EventTarget } from "./EventTarget";
 
 const listeners = new Map();
 
-interface WorkerLine {
+interface WorkerLike {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     postMessage: (message: any) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,7 +14,7 @@ interface WorkerLine {
 }
 
 export class WorkerEventTarget implements EventTarget {
-    constructor(private worker: WorkerLine) {}
+    constructor(private worker: WorkerLike) {}
     async postMessage(msg: BroadcastMessage<BroadcastMessageType, unknown, unknown>): Promise<void> {
         return this.worker.postMessage(msg);
     }

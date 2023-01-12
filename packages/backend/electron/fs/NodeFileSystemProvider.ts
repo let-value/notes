@@ -1,4 +1,6 @@
 import { FileSystemProvider } from "backend-worker/fs/FileSystemProvider";
+import { OpenDialogOptions } from "electron";
+import promiseIpc from "electron-promise-ipc/build/renderer";
 import * as fs from "fs";
 import { Item, Workspace } from "models";
 import * as path from "path";
@@ -6,8 +8,13 @@ import { promisify } from "util";
 import { getWorkspaceHandle } from "../db/repositories";
 
 export class NodeFileSystemProvider implements FileSystemProvider {
-    openWorkspace(): Promise<Workspace> {
-        throw new Error("Method not implemented.");
+    async openWorkspace(): Promise<Workspace> {
+        const options: OpenDialogOptions = {
+            properties: ["openDirectory"],
+        };
+        const result = await promiseIpc.send("openDialog", options);
+        console.log(result);
+        return null;
     }
     async initializeWorkspace(workspace: Workspace): Promise<Item<true>> {
         const workspaceHandle = await getWorkspaceHandle(workspace.id);
