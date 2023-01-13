@@ -22,7 +22,13 @@ const config = {
         ...baseConfig.worker,
         format: "es",
     },
-    plugins: [...baseConfig.plugins, injectAppVersion()],
+    plugins: [
+        ...baseConfig.plugins,
+        // renderer({
+        //     nodeIntegration: true,
+        // }),
+        injectAppVersion(),
+    ],
 };
 
 export default defineConfig(config);

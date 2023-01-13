@@ -42,6 +42,9 @@
         "typescript": "4.9.4",
         "unplugin-auto-expose": "0.0.4",
         "vite": "4.0.3",
+        "vite-electron-plugin": "^0.7.3",
+        "vite-plugin-electron": "^0.11.1",
+        "vite-plugin-electron-renderer": "^0.11.4",
         "vitest": "0.26.2"
     },
     "dependencies": {
