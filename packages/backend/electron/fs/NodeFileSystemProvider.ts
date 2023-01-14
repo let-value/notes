@@ -1,23 +1,50 @@
+import { incrementFileNameIfExist } from "app/src/utils";
+import { addWorkspace, getWorkspaces } from "backend-worker/db/repositories/workspaces";
 import { FileSystemProvider } from "backend-worker/fs/FileSystemProvider";
-import { OpenDialogOptions } from "electron";
-import promiseIpc from "electron-promise-ipc/build/renderer";
 import * as fs from "fs";
-import { Item, Workspace } from "models";
+import { openDialog } from "notes-electron/packages/renderer/src/controllers/openDialog";
+
+import { DispatcherService } from "messaging";
+import { FileProvider, Item, Workspace } from "models";
 import * as path from "path";
 import { promisify } from "util";
-import { getWorkspaceHandle } from "../db/repositories";
+import { v4 as uuidv4 } from "uuid";
+import { addWorkspaceHandle, getWorkspaceHandle, getWorkspaceHandles } from "../db/repositories";
 
 export class NodeFileSystemProvider implements FileSystemProvider {
+    constructor(private dispatcher: DispatcherService) {}
     async openWorkspace(): Promise<Workspace> {
-        const options: OpenDialogOptions = {
+        const id = uuidv4();
+        const result = await this.dispatcher.call(openDialog, {
             properties: ["openDirectory"],
-        };
-        const result = await promiseIpc.send("openDialog", options);
-        console.log(result);
-        return null;
+        });
+        const filePath = result.filePaths[0];
+
+        const workspaces = await getWorkspaces();
+        const workspaceHandles = await getWorkspaceHandles();
+
+        for (const workspace of workspaceHandles) {
+            if (workspace.path == filePath) {
+                return workspace;
+            }
+        }
+
+        const workspaceNames = workspaces.map((workspace) => workspace.name);
+        const name = incrementFileNameIfExist(path.dirname(filePath), workspaceNames);
+
+        const workspace: Workspace = { id, name, provider: FileProvider.Local };
+        await addWorkspace(workspace);
+        await addWorkspaceHandle({ ...workspace, path: filePath });
+
+        return workspace;
     }
     async initializeWorkspace(workspace: Workspace): Promise<Item<true>> {
         const workspaceHandle = await getWorkspaceHandle(workspace.id);
+
+        if (!workspaceHandle) {
+            throw new Error(`Workspace ${workspace.name} not found`);
+        }
+
         return new Item(workspaceHandle.path, workspace.name, true);
     }
     async listDirectory(item: Item<true>): Promise<Item[]> {

@@ -5,5 +5,7 @@
         "moduleResolution": "Node",
         "jsx": "react-jsx",
         "allowSyntheticDefaultImports": true
-    }
+    },
+    "include": ["src/**/*"],
+    "references": [{ "path": "../../electron/packages/renderer/tsconfig.json" }]
 }

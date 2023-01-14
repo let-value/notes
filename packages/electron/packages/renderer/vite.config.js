@@ -21,14 +21,13 @@ const config = {
     worker: {
         ...baseConfig.worker,
         format: "es",
+        plugins: [
+            // renderer({
+            //     nodeIntegration: true,
+            // }),
+        ],
     },
-    plugins: [
-        ...baseConfig.plugins,
-        // renderer({
-        //     nodeIntegration: true,
-        // }),
-        injectAppVersion(),
-    ],
+    plugins: [...baseConfig.plugins, injectAppVersion()],
 };
 
 export default defineConfig(config);

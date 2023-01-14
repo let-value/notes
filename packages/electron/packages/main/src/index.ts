@@ -1,5 +1,5 @@
 import { app } from "electron";
-import "./features";
+import "./controllers";
 import "./security-restrictions";
 import { restoreOrCreateWindow } from "/@/mainWindow";
 

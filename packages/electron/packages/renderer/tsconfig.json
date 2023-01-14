@@ -1,13 +1,15 @@
 {
     "compilerOptions": {
         "module": "ESNext",
+        "target": "ESNext",
         "moduleResolution": "Node",
         "noEmit": true,
-        "esModuleInterop": true,
+        "esModuleInterop": false,
         "outDir": "./dist",
         "paths": {
             "#preload": ["../preload/src/index"]
         }
     },
+    "include": ["src/**/*"],
     "references": [{ "path": "../../../app/tsconfig.base.json" }, { "path": "./tsconfig.node.json" }]
 }

@@ -27,19 +27,15 @@
     "devDependencies": {
         "@types/node": "18.11.18",
         "@typescript-eslint/eslint-plugin": "5.47.1",
-        "@vitejs/plugin-vue": "4.0.0",
-        "@vue/test-utils": "2.2.6",
         "cross-env": "7.0.3",
-        "electron": "22.0.0",
         "electron-builder": "23.6.0",
         "electron-devtools-installer": "^3.2.0",
+        "esbuild": "^0.16.17",
         "eslint": "8.30.0",
-        "eslint-plugin-vue": "9.8.0",
         "happy-dom": "8.1.1",
         "nano-staged": "0.8.0",
         "playwright": "1.29.1",
         "simple-git-hooks": "2.8.1",
-        "typescript": "4.9.4",
         "unplugin-auto-expose": "0.0.4",
         "vite": "4.0.3",
         "vite-electron-plugin": "^0.7.3",
@@ -48,9 +44,12 @@
         "vitest": "0.26.2"
     },
     "dependencies": {
-        "app": "file:../app",
+        "app": "workspace:^",
+        "electron": "22.0.0",
         "electron-promise-ipc": "^2.2.4",
         "electron-updater": "5.3.0",
-        "messaging": "file:../messaging"
+        "messaging": "workspace:^",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
     }
 }

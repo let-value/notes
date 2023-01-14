@@ -1,8 +1,9 @@
 {
-    "name": "notes-workspace",
+    "name": "notes",
     "type": "module",
+    "private": true,
     "workspaces": [
-        "packages/domain",
+        "packages/models",
         "packages/messaging",
         "packages/queue",
         "packages/rclone",
@@ -11,5 +12,17 @@
         "packages/backend/electron",
         "packages/app",
         "packages/electron"
-    ]
+    ],
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.47.0",
+        "@typescript-eslint/parser": "^5.47.0",
+        "eslint": "^8.30.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jsx-a11y": "^6.6.1",
+        "eslint-plugin-react": "^7.31.11",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "prettier": "^2.8.1",
+        "typescript": "^4.9.4"
+    }
 }

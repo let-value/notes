@@ -1,11 +1,16 @@
 {
     "name": "backend-electron",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "description": "",
     "main": "worker.ts",
     "dependencies": {
-        "backend-worker": "file:../worker",
-        "electron": "^22.0.1",
-        "electron-promise-ipc": "^2.2.4"
+        "@creasource/reactive-idb": "^1.2.1",
+        "app": "workspace:^",
+        "backend-worker": "workspace:^",
+        "messaging": "workspace:^",
+        "models": "workspace:^",
+        "notes-electron": "workspace:^",
+        "rxjs": "^7.8.0",
+        "uuid": "^9.0.0"
     }
 }
