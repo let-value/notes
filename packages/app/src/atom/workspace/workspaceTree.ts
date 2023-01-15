@@ -8,6 +8,7 @@ export interface WorkspaceTreeReqest {
 }
 
 export interface ListItem extends Item {
+    loading?: boolean;
     collapsed?: Item[];
     depth: number;
 }
@@ -31,6 +32,7 @@ export const workspaceTree = selectorFamily({
 
                 if (item?.isDirectory && expanded.includes(item.path)) {
                     const response = get(noWait(workspaceItemsSelector({ workspaceId, path: item.path })));
+                    item.loading = response.state === "loading";
 
                     if (response.state === "hasValue") {
                         const items = response.contents;

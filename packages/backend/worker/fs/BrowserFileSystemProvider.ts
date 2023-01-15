@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { incrementFileNameIfExist } from "app/src/utils";
 import { DispatcherService, frontend } from "messaging";
 import { FileProvider, Item, Workspace } from "models";
@@ -80,7 +81,7 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
         throw new Error("Method not implemented.");
     }
 
-    async createFile(item: Item<false>, data: any): Promise<void> {
+    async createFile(item: Item<false>, data: unknown): Promise<void> {
         throw new Error("Method not implemented.");
     }
 

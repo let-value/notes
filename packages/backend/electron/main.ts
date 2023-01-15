@@ -1,13 +1,12 @@
 import { container } from "backend-worker/container";
 import { backend, WorkerEventTarget } from "messaging";
-import { NodeFileSystemProvider } from "./fs/NodeFileSystemProvider";
+import { nodeFileSystemService } from "./fs/NodeFileSystemService";
 
 container.upsert({ eventTarget: () => new WorkerEventTarget(self) });
-container.upsert({ fs: () => new NodeFileSystemProvider() });
+container.upsert(nodeFileSystemService);
 
 const id = container.get("id");
 
-await import("backend-worker/dom/setupDom");
 await import("app/src/editor/setupMonaco");
 await import("backend-worker/features");
 

@@ -1,4 +1,4 @@
-import { ContextGetter } from "iti/dist/src/_utils";
+import type { ContextGetter } from "iti/dist/src/_utils";
 import { filter, take } from "rxjs";
 import { BroadcastMessage } from "./BroadcastMessage";
 import { BroadcastMessageType } from "./BroadcastMessageType";

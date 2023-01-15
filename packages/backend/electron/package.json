@@ -2,11 +2,12 @@
     "name": "backend-electron",
     "version": "0.0.0",
     "description": "",
-    "main": "worker.ts",
+    "main": "electron.ts",
     "dependencies": {
         "@creasource/reactive-idb": "^1.2.1",
         "app": "workspace:^",
         "backend-worker": "workspace:^",
+        "iti": "^0.6.0",
         "messaging": "workspace:^",
         "models": "workspace:^",
         "notes-electron": "workspace:^",

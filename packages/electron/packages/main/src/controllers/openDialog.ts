@@ -1,6 +1,6 @@
 import { BrowserWindow, dialog, IpcMainEvent, OpenDialogOptions } from "electron";
-import { Listener } from "electron-promise-ipc/build/base";
-import promiseIpc from "electron-promise-ipc/build/mainProcess";
+import promiseIpc from "electron-promise-ipc";
+import type { Listener } from "electron-promise-ipc/build/base";
 
 promiseIpc.on("openDialog", function (options: OpenDialogOptions, event?: IpcMainEvent) {
     if (!event) {

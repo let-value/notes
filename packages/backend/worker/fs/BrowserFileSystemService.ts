@@ -1,4 +1,4 @@
-import { ContextGetter } from "iti/dist/src/_utils";
+import type { ContextGetter } from "iti/dist/src/_utils";
 import { DispatcherService } from "messaging";
 import { BrowserFileSystemProvider } from "./BrowserFileSystemProvider";
 import { FileSystemProvider } from "./FileSystemProvider";

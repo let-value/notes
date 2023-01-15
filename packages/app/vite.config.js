@@ -1,7 +1,6 @@
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
-import eslint from "vite-plugin-eslint";
 
 /**
  * @type {import('vite').UserConfig}
@@ -18,7 +17,6 @@ export const config = {
         },
     },
     plugins: [
-        eslint(),
         react({
             babel: {
                 parserOpts: {
