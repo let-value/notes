@@ -18,6 +18,7 @@ const logLevel = "warn";
  */
 function setupMainPackageWatcher({ resolvedUrls }) {
     process.env.VITE_DEV_SERVER_URL = resolvedUrls.local[0];
+    console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
 
     /** @type {ChildProcess | null} */
     let electronApp = null;
@@ -47,6 +48,10 @@ function setupMainPackageWatcher({ resolvedUrls }) {
                     /** Spawn new electron process */
                     electronApp = spawn(String(electronPath), ["--inspect", "."], {
                         stdio: "inherit",
+                        env: {
+                            ...process.env,
+                            NODE_OPTIONS: "--preserve-symlinks",
+                        },
                     });
 
                     /** Stops the watch script when the application has been quit */
@@ -98,6 +103,11 @@ const rendererWatchServer = await createServer({
     mode,
     logLevel: "info",
     configFile: "packages/renderer/vite.config.js",
+    server: {
+        hmr: {
+            overlay: false,
+        },
+    },
 }).then((s) => s.listen());
 
 await setupPreloadPackageWatcher(rendererWatchServer);

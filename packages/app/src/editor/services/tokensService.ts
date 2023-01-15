@@ -1,6 +1,6 @@
 import { fileContentState } from "@/atom/file";
 import { DIFF_DELETE, DIFF_EQUAL, DIFF_INSERT, diff_match_patch } from "diff-match-patch";
-import { ContextGetter } from "iti/dist/src/_utils";
+import type { ContextGetter } from "iti/dist/src/_utils";
 import lineColumn from "line-column";
 import { Token } from "models";
 import { editor } from "monaco-editor";

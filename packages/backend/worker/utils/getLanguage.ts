@@ -1,12 +1,9 @@
-import { filename } from "language-detect";
-import map from "language-map";
-import { TreeItem } from "models";
+import { Item } from "models";
 
-export function getLanguage(tree: TreeItem): string {
+export function getLanguage(tree: Item): string {
     if (!tree || tree.isDirectory) {
         return undefined;
     }
 
-    const detected: any = filename(tree.name);
-    return (map as any)[detected]?.aceMode;
+    return "markdown";
 }

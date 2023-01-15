@@ -16,7 +16,7 @@ interface WorkerLike {
 export class WorkerEventTarget implements EventTarget {
     constructor(private worker: WorkerLike) {}
     async postMessage(msg: BroadcastMessage<BroadcastMessageType, unknown, unknown>): Promise<void> {
-        return this.worker.postMessage(msg);
+        return this.worker.postMessage(JSON.parse(JSON.stringify(msg)));
     }
     set onmessage(
         handler: (this: EventTarget, ev: BroadcastMessage<BroadcastMessageType, unknown, unknown>) => unknown,

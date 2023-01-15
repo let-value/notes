@@ -1,9 +1,9 @@
-import { ReactiveIDBDatabaseSchema, ReactiveIDBStoreSchema } from "@creasource/reactive-idb";
+import { ReactiveIDBDatabaseSchema } from "@creasource/reactive-idb";
 import { schema as originalSchema } from "backend-worker/db/schema";
 import { workspaceHandles } from "./stores/workspaceHandles";
 
 const originalStores = originalSchema.stores.filter(
-    (store: ReactiveIDBStoreSchema) => store.name !== "workspaceHandles",
+    (store) => (typeof store === "object" ? store.name : store) !== "workspaceHandles",
 );
 
 export const schema: ReactiveIDBDatabaseSchema = {

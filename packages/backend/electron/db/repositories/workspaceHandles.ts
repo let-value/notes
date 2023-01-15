@@ -20,7 +20,7 @@ export function getWorkspaceHandles() {
     );
 }
 
-export function addWorkspaceHandles(workspace: WorkspaceHandle) {
+export function addWorkspaceHandle(workspace: WorkspaceHandle) {
     return lastValueFrom(
         database.pipe(
             concatMap((db) => db.transaction$(["workspaceHandles"], "readwrite")),

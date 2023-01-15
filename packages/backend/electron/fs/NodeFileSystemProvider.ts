@@ -1,44 +1,68 @@
+import { incrementFileNameIfExist } from "app/src/utils";
+import { addWorkspace, getWorkspaces } from "backend-worker/db/repositories/workspaces";
 import { FileSystemProvider } from "backend-worker/fs/FileSystemProvider";
-import { OpenDialogOptions } from "electron";
-import promiseIpc from "electron-promise-ipc/build/renderer";
-import * as fs from "fs";
-import { Item, Workspace } from "models";
-import * as path from "path";
-import { promisify } from "util";
-import { getWorkspaceHandle } from "../db/repositories";
+import fsAsync from "fs/promises";
+import { openDialog } from "notes-electron/packages/renderer/src/controllers/openDialog";
+
+import { DispatcherService } from "messaging";
+import { FileProvider, Item, Workspace } from "models";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
+import { addWorkspaceHandle, getWorkspaceHandle, getWorkspaceHandles } from "../db/repositories";
+
+console.log("NodeFileSystemProvider.ts");
 
 export class NodeFileSystemProvider implements FileSystemProvider {
+    constructor(private dispatcher: DispatcherService) {}
     async openWorkspace(): Promise<Workspace> {
-        const options: OpenDialogOptions = {
+        const id = uuidv4();
+        const result = await this.dispatcher.call(openDialog, {
             properties: ["openDirectory"],
-        };
-        const result = await promiseIpc.send("openDialog", options);
-        console.log(result);
-        return null;
+        });
+        const filePath = result.filePaths[0].replace(/\\/g, "/");
+
+        const workspaces = await getWorkspaces();
+        const workspaceHandles = await getWorkspaceHandles();
+
+        for (const workspace of workspaceHandles) {
+            if (workspace.path == filePath) {
+                return workspace;
+            }
+        }
+
+        const workspaceNames = workspaces.map((workspace) => workspace.name);
+        const name = incrementFileNameIfExist(path.basename(filePath), workspaceNames);
+
+        const workspace: Workspace = { id, name, provider: FileProvider.Local };
+        await addWorkspace(workspace);
+        await addWorkspaceHandle({ ...workspace, path: filePath });
+
+        return workspace;
     }
     async initializeWorkspace(workspace: Workspace): Promise<Item<true>> {
         const workspaceHandle = await getWorkspaceHandle(workspace.id);
+
+        if (!workspaceHandle) {
+            throw new Error(`Workspace ${workspace.name} not found`);
+        }
+
         return new Item(workspaceHandle.path, workspace.name, true);
     }
     async listDirectory(item: Item<true>): Promise<Item[]> {
-        const readdir = promisify(fs.readdir);
-        const names = await readdir(item.path, { withFileTypes: true });
-        return names.map(({ name, isDirectory }) => new Item(path.resolve(item.path, name), name, isDirectory()));
+        const names = await fsAsync.readdir(item.path, { withFileTypes: true });
+        return names.map((entry) => new Item(path.join(item.path, entry.name), entry.name, entry.isDirectory()));
     }
 
     createDirectory(item: Item<true>): Promise<void> {
-        const mkdir = promisify(fs.mkdir);
-        return mkdir(item.path);
+        return fsAsync.mkdir(item.path);
     }
 
     renameDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void> {
-        const rename = promisify(fs.rename);
-        return rename(oldItem.path, newItem.path);
+        return fsAsync.rename(oldItem.path, newItem.path);
     }
 
     deleteDirectory(item: Item<true>): Promise<void> {
-        const rmdir = promisify(fs.rmdir);
-        return rmdir(item.path);
+        return fsAsync.rmdir(item.path);
     }
 
     moveDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void> {
@@ -56,23 +80,19 @@ export class NodeFileSystemProvider implements FileSystemProvider {
     }
 
     createFile(item: Item<false>, data: any): Promise<void> {
-        const writeFile = promisify(fs.writeFile);
-        return writeFile(item.path, data);
+        return fsAsync.writeFile(item.path, data);
     }
     async readFile(item: Item<false>): Promise<string> {
-        const readFile = promisify(fs.readFile);
-        const buffer = await readFile(item.path);
+        const buffer = await fsAsync.readFile(item.path);
         return buffer.toString();
     }
 
     renameFile(oldItem: Item<false>, newItem: Item<false>): Promise<void> {
-        const rename = promisify(fs.rename);
-        return rename(oldItem.path, newItem.path);
+        return fsAsync.rename(oldItem.path, newItem.path);
     }
 
     deleteFile(item: Item<false>): Promise<void> {
-        const unlink = promisify(fs.unlink);
-        return unlink(item.path);
+        return fsAsync.unlink(item.path);
     }
 
     moveFile(oldItem: Item<false>, newItem: Item<false>): Promise<void> {
@@ -80,7 +100,6 @@ export class NodeFileSystemProvider implements FileSystemProvider {
     }
 
     copyFile(oldItem: Item<false>, newItem: Item<false>): Promise<void> {
-        const copyFile = promisify(fs.copyFile);
-        return copyFile(oldItem.path, newItem.path);
+        return fsAsync.copyFile(oldItem.path, newItem.path);
     }
 }

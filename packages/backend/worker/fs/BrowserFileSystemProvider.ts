@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { incrementFileNameIfExist } from "app/src/utils";
 import { DispatcherService, frontend } from "messaging";
-import { Item, Workspace } from "models";
+import { FileProvider, Item, Workspace } from "models";
 import * as path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { addWorkspaceHandle, getWorkspaceHandle, getWorkspaceHandles } from "../db/repositories/workspaceHandles";
@@ -28,7 +29,7 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
         const workspaceNames = workspaces.map((workspace) => workspace.name);
         const name = incrementFileNameIfExist(handle.name, workspaceNames);
 
-        const workspace: Workspace = { id, name };
+        const workspace: Workspace = { id, name, provider: FileProvider.Local };
         await addWorkspace(workspace);
         await addWorkspaceHandle({ ...workspace, handle });
 
@@ -80,7 +81,7 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
         throw new Error("Method not implemented.");
     }
 
-    async createFile(item: Item<false>, data: any): Promise<void> {
+    async createFile(item: Item<false>, data: unknown): Promise<void> {
         throw new Error("Method not implemented.");
     }
 

@@ -1,9 +1,10 @@
 {
     "name": "backend-browser",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "description": "",
     "main": "main.ts",
     "dependencies": {
-        "backend-worker": "file:../worker"
+        "backend-worker": "workspace:^",
+        "messaging": "workspace:^"
     }
 }

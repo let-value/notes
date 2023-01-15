@@ -1,16 +1,14 @@
-import { createBroadcastChannel } from "app/src/utils";
 import { createContainer } from "iti";
-import { createDispatcherService, createMessagingService, EventTarget } from "messaging";
+import { createDispatcherService, createMessagingService } from "messaging";
 import { queueService } from "queue";
+import { eventTargetService } from "./eventTargetService";
 import { browserFileSystemService } from "./fs/BrowserFileSystemService";
 import { id } from "./workerId";
-
-const broadcastChannel = createBroadcastChannel();
 
 export const container = createContainer()
     .add({ id, tabId: () => "" })
     .add(queueService)
-    .add({ eventTarget: () => broadcastChannel as EventTarget })
+    .add(eventTargetService)
     .add(createMessagingService)
     .add(createDispatcherService)
     .add(browserFileSystemService);

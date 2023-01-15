@@ -3,6 +3,7 @@
 import { join } from "node:path";
 import { defineConfig } from "vite";
 //import { config as baseConfig } from "app/vite.config";
+import renderer from "vite-plugin-electron-renderer";
 import { config as baseConfig } from "../../../app/vite.config";
 import { injectAppVersion } from "../../version/inject-app-version-plugin.mjs";
 
@@ -18,15 +19,18 @@ const config = {
     mode: process.env.MODE,
     root: PACKAGE_ROOT,
     envDir: PROJECT_ROOT,
+    server: {
+        hmr: false,
+    },
     worker: {
         ...baseConfig.worker,
         format: "es",
     },
     plugins: [
         ...baseConfig.plugins,
-        // renderer({
-        //     nodeIntegration: true,
-        // }),
+        renderer({
+            nodeIntegration: true,
+        }),
         injectAppVersion(),
     ],
 };

@@ -1,4 +1,4 @@
-import { ContextGetter } from "iti/dist/src/_utils";
+import type { ContextGetter } from "iti/dist/src/_utils";
 import { EventTarget } from "./EventTarget";
 import { createMediator, MediatorFactoryResult } from "./mediator";
 

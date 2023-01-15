@@ -1,6 +1,6 @@
 import { useOpenEditorPanel } from "@/atom/panels";
 import { workspaceTree } from "@/atom/workspace";
-import { TreeNode } from "@blueprintjs/core";
+import { Spinner, TreeNode } from "@blueprintjs/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import cx from "classnames";
 import { join } from "lodash-es";
@@ -21,6 +21,8 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
     const tree = useRecoilValueLoadable(
         workspaceTree({ workspaceId: workspace.id, expanded: Array.from(expand.keys()) }),
     );
+
+    console.log(tree);
 
     const rowVirtualizer = useVirtualizer({
         count: tree.contents?.length ?? 0,
@@ -77,6 +79,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
                                     id={item.path}
                                     hasCaret={item.isDirectory}
                                     isExpanded={expand.get(item.path)}
+                                    secondaryLabel={item.loading ? <Spinner size={5} /> : undefined}
                                     icon={
                                         item.isDirectory
                                             ? expand.get(item.path)
