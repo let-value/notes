@@ -15,11 +15,13 @@ export interface DocumentProps {
 export const Document: FC<DocumentProps> = ({ workspace, item }) => {
     const content = useRecoilValue(fileContentState({ workspaceId: workspace?.id, path: item?.path }));
 
-    const { editor, handleRef } = useDecorateEditor(workspace.id, item);
+    const { editor$, handleRef } = useDecorateEditor(workspace.id, item);
 
     return (
         <>
             <Editor
+                keepCurrentModel
+                saveViewState={false}
                 key={item.path}
                 onMount={handleRef}
                 height="100%"
@@ -28,7 +30,7 @@ export const Document: FC<DocumentProps> = ({ workspace, item }) => {
                 defaultValue={content ?? defaultValue}
                 theme="wikilink"
             />
-            <DateCodeLens workspaceId={workspace.id} item={item} editorSubject={editor} />
+            <DateCodeLens workspaceId={workspace.id} item={item} editor$={editor$} />
         </>
     );
 };

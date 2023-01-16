@@ -1799,6 +1799,7 @@ __metadata:
     queue: "workspace:^"
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-reverse-portal: ^2.1.1
     recoil: ^0.7.6
     recoil-nexus: ^0.4.0
     rxjs: ^7.8.0
@@ -6876,6 +6877,16 @@ __metadata:
   version: 0.14.0
   resolution: "react-refresh@npm:0.14.0"
   checksum: dc69fa8c993df512f42dd0f1b604978ae89bd747c0ed5ec595c0cc50d535fb2696619ccd98ae28775cc01d0a7c146a532f0f7fb81dc22e1977c242a4912312f4
+  languageName: node
+  linkType: hard
+
+"react-reverse-portal@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "react-reverse-portal@npm:2.1.1"
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 2daccae3ac089606acee3a13fa5cde07ef90668de775bcc49edceb3f472f82e133f0673bb3b82dc53687c3ebd781c578f81eb4368c6028acd9c4625e71964394
   languageName: node
   linkType: hard
 

@@ -16,10 +16,10 @@ const tokensService = container.get("tokensService");
 interface DateCodeLensProps {
     workspaceId: WorkspaceId;
     item: Item;
-    editorSubject: ReactiveValue<editor.IStandaloneCodeEditor>;
+    editor$: ReactiveValue<editor.IStandaloneCodeEditor>;
 }
 
-export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorSubject }) => {
+export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editor$ }) => {
     const [tokens, setTokens] = useState<CompensatedToken[]>([]);
     const datesByLines = useMemo(() => groupBy(tokens, (token) => token.line), [tokens]);
 
@@ -32,9 +32,9 @@ export const DateCodeLens: FC<DateCodeLensProps> = ({ workspaceId, item, editorS
         [tokens],
     );
 
-    const editor = useObservableState(editorSubject);
+    const editor = useObservableState(editor$);
     const tokens$ = useObservable(() =>
-        editorSubject.valuePipe.pipe(mergeMap((editor) => tokensService.getEditorCompensatedTokens(editor))),
+        editor$.valuePipe.pipe(mergeMap((editor) => tokensService.getEditorCompensatedTokens(editor))),
     );
 
     useSubscription(tokens$, handleTokensUpdate);

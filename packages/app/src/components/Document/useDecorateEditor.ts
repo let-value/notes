@@ -1,32 +1,51 @@
+import { useRegisterEditor, useUnregisterEditor } from "@/atom/editors/editorsState";
+import { useSetChanges, useSetSavedVersion } from "@/atom/file/fileChangesState";
 import { container } from "@/container";
 import { ReactiveValue } from "@/utils";
 import { Monaco } from "@monaco-editor/react";
 import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const modelToEditor = container.get("modelToEditor");
 const editorMeta = container.get("editorMeta");
 
 export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
-    const [editorSubject] = useState(() => new ReactiveValue<editor.IStandaloneCodeEditor>());
+    const registerEditor = useRegisterEditor(item.path);
+    const unRegisterEditor = useUnregisterEditor(item.path);
 
-    const handleContentChange = useCallback(() => {
-        if (!editorSubject.value) {
-            return;
-        }
+    const setChanges = useSetChanges(item.path);
+    const setSavedVersion = useSetSavedVersion(item.path);
 
-        const model = editorSubject.value.getModel();
-        if (!model) {
-            return;
-        }
+    const editor = useRef<editor.IStandaloneCodeEditor>();
+    const [editor$] = useState(() => new ReactiveValue<editor.IStandaloneCodeEditor>());
 
-        modelToEditor.setEditor(model, editorSubject.value);
-    }, [editorSubject]);
+    const handleContentChange = useCallback(
+        (initial: boolean) => {
+            if (!editor$.value) {
+                return;
+            }
+
+            const model = editor$.value.getModel();
+            if (!model) {
+                return;
+            }
+
+            if (initial) {
+                setSavedVersion(model.getAlternativeVersionId());
+            }
+
+            setChanges(model.getValue(), model.getAlternativeVersionId());
+
+            modelToEditor.setEditor(model, editor$.value);
+        },
+        [editor$.value, setChanges, setSavedVersion],
+    );
 
     const handleRef = useCallback(
         (ref: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-            editorSubject.next(ref);
+            editor.current = ref;
+            editor$.next(ref);
 
             ref.addCommand(
                 monaco.KeyMod.chord(
@@ -49,11 +68,21 @@ export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
 
             editorMeta.set(ref, { commandId, workspaceId, item });
 
-            ref.onDidChangeModelContent(handleContentChange);
-            handleContentChange();
+            ref.onDidChangeModelContent(handleContentChange.bind(undefined, false));
+            handleContentChange(true);
+
+            registerEditor(ref);
         },
-        [editorSubject, handleContentChange, item, workspaceId],
+        [editor$, handleContentChange, item, registerEditor, workspaceId],
     );
 
-    return { editor: editorSubject, handleRef };
+    useEffect(() => {
+        return () => {
+            if (editor.current) {
+                unRegisterEditor(editor.current);
+            }
+        };
+    }, [workspaceId, item, unRegisterEditor]);
+
+    return { editor$, handleRef };
 }

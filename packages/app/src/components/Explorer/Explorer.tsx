@@ -22,8 +22,6 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
         workspaceTree({ workspaceId: workspace.id, expanded: Array.from(expand.keys()) }),
     );
 
-    console.log(tree);
-
     const rowVirtualizer = useVirtualizer({
         count: tree.contents?.length ?? 0,
         getScrollElement: () => parentRef.current,
@@ -72,7 +70,7 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
                         return (
                             <div
                                 className="absolute whitespace-nowrap top-0 left-0 w-full"
-                                key={virtualRow.index}
+                                key={item.path}
                                 style={{ height: virtualRow.size, transform: `translateY(${virtualRow.start}px)` }}
                             >
                                 <TreeNode

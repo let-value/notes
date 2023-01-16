@@ -1,0 +1,9 @@
+.tab .close {
+    opacity: 0;
+}
+
+.tab.changes .close,
+.tab.active .close,
+.tab:hover .close {
+    opacity: 1;
+}

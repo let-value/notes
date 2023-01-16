@@ -3,18 +3,23 @@ import {
     AddSplitviewComponentOptions,
     DockviewReact,
     DockviewReadyEvent,
+    IDockviewPanelHeaderProps,
     IDockviewPanelProps,
     ISplitviewPanelProps,
     PanelCollection,
 } from "dockview";
 import { FC, useCallback } from "react";
-import { editorPanel, EditorPanelProps } from "./EditorPanel";
+import { editorPanel } from "./EditorPanel/EditorPanel";
+import { EditorPanelProps } from "./EditorPanel/EditorPanelProps";
+import { editorTab } from "./EditorPanel/EditorTab";
 import { ErrorBoundary } from "./ErrorBoundary";
 
-//workspace && item && <Document workspace={workspace} item={item} />
-
 const components: PanelCollection<IDockviewPanelProps<EditorPanelProps>> = {
-    ...editorPanel.panel,
+    ...editorPanel.collection,
+};
+
+const tabComponents: PanelCollection<IDockviewPanelHeaderProps> = {
+    ...editorTab.collection,
 };
 
 export const EditorsPanel: FC<ISplitviewPanelProps> = () => {
@@ -29,7 +34,12 @@ export const EditorsPanel: FC<ISplitviewPanelProps> = () => {
 
     return (
         <ErrorBoundary>
-            <DockviewReact className="dockview-theme-light" components={components} onReady={handleDockReady} />
+            <DockviewReact
+                className="dockview-theme-light"
+                components={components}
+                tabComponents={tabComponents}
+                onReady={handleDockReady}
+            />
         </ErrorBoundary>
     );
 };
