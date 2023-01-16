@@ -1,8 +1,7 @@
-import type { OpenDialogOptions, OpenDialogReturnValue } from "electron";
-import { matchQuery, Query } from "messaging";
-import { container } from "../container";
-
-export const openDialog = new Query<OpenDialogReturnValue, OpenDialogOptions>("openDialog");
+import type { OpenDialogReturnValue } from "electron";
+import { matchQuery } from "messaging";
+import { container } from "../../container";
+import { openDialog } from "./query";
 
 const mediator = container.get("mediator");
 const dispatcher = container.get("dispatcher");

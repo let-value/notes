@@ -1,23 +1,22 @@
-import { MainMenu } from "app/src/state/menu/MainMenu";
-import type { ContextGetter } from "iti/dist/src/_utils";
+import { mainMenuService, MenuContext } from "app/src/state/menu";
 import { autorun } from "mobx";
 import { ElectronMainMenu } from "./ElectronMainMenu";
 
-export const electronMainMenuService = (services: ContextGetter<{ mainMenu: () => MainMenu }>) => {
+export const electronMainMenuService = (services: MenuContext) => {
     return {
-        electronMainMenu: () => {
+        mainMenu: () => {
             console.trace("electronMainMenuService.electronMainMenu");
 
-            const mainMenu = new ElectronMainMenu(services.mainMenu);
-            const dispose = autorun(() => {
-                JSON.stringify(mainMenu);
-                mainMenu.update();
+            const mainMenu = mainMenuService(services).mainMenu();
+
+            const electronMenu = new ElectronMainMenu(mainMenu);
+
+            autorun(() => {
+                const snapshot = JSON.stringify(electronMenu);
+                electronMenu.update();
             }, {});
 
-            return {
-                mainMenu,
-                dispose,
-            };
+            return electronMenu;
         },
     };
 };

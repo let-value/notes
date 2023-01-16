@@ -48,16 +48,6 @@ export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
             editor$.next(ref);
             registerEditor(ref);
 
-            ref.addCommand(
-                monaco.KeyMod.chord(
-                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-                ),
-                () => {
-                    console.log("save");
-                },
-            );
-
             const commandId = ref.addCommand(
                 0,
                 function (ctx, args) {

@@ -1,22 +1,31 @@
-import { isFileHasChanges } from "@/atom/file";
+import { isFileHasChanges, saveFile } from "@/atom/file";
 import { activePanelParams$ } from "@/atom/panels/editorsDock";
-import { observeRecoilLoadable, setRecoil } from "@/atom/tunnel";
+import { observeRecoilLoadable, recoilAction } from "@/atom/tunnel";
 import { workspaceState } from "@/atom/workspace";
-import { backend } from "messaging";
 import { makeAutoObservable, runInAction } from "mobx";
-import { Item } from "models";
+import { Item, Workspace } from "models";
 import { filter, map, mergeMap, tap } from "rxjs";
-import { context } from "../mainMenuService";
 import { MenuItem } from "../MenuItem";
 
 export class SaveFileMenu implements MenuItem {
     label = "Save";
     type = "normal" as const;
-    item?: Item<false>;
-    hasChanges?: boolean;
+    hotkey = { allowInInput: true, combo: "Ctrl+S", preventDefault: true, stopPropagation: true };
+    workspace?: Workspace = undefined;
+    item?: Item<false> = undefined;
+    hasChanges?: boolean = false;
 
     constructor() {
         makeAutoObservable(this);
+
+        observeRecoilLoadable(workspaceState).then((workspace) =>
+            workspace.subscribe((workspace) =>
+                runInAction(() => {
+                    this.workspace = workspace;
+                }),
+            ),
+        );
+
         activePanelParams$
             .pipe(
                 filter(Boolean),
@@ -28,7 +37,6 @@ export class SaveFileMenu implements MenuItem {
                 ),
                 mergeMap((item) => observeRecoilLoadable(isFileHasChanges(item.path))),
                 mergeMap((x) => x),
-                map((x) => (x.state === "hasValue" ? x.contents : false)),
             )
             .subscribe((hasChanges) =>
                 runInAction(() => {
@@ -42,7 +50,9 @@ export class SaveFileMenu implements MenuItem {
     }
 
     async handler() {
-        const workspace = await context.dispatcher.call(backend.workspace.openDirectory, undefined);
-        setRecoil(workspaceState, workspace);
+        if (!this.item || !this.workspace) {
+            return;
+        }
+        recoilAction(saveFile({ workspaceId: this.workspace.id, path: this.item.path }));
     }
 }

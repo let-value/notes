@@ -7,6 +7,9 @@ export const showSidebarState = new BehaviorSubject(true);
 export class ShowSidePanel implements MenuItem {
     label = "Show Side Panel";
     type = "checkbox" as const;
+    hotkey = {
+        combo: "Ctrl+B",
+    };
     value = true;
     constructor() {
         makeAutoObservable(this);

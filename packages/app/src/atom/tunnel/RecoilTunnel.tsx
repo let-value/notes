@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactiveValue } from "@/utils";
 import { Suspense, useEffect, useMemo } from "react";
-import { Loadable, RecoilState, RecoilValue, useRecoilCallback } from "recoil";
+import { CallbackInterface, Loadable, RecoilState, RecoilValue, useRecoilCallback } from "recoil";
 import { finalize, Observable } from "rxjs";
 import { useMap } from "usehooks-ts";
 import { ObserverState } from "./ObserverState";
@@ -14,6 +14,7 @@ interface Tunnel {
     set: <T>(atom: RecoilState<T>, valOrUpdater: T | ((currVal: T) => T)) => void;
     reset: (atom: RecoilState<any>) => void;
     observe: <T>(atom: RecoilValue<T>) => Observable<T | undefined>;
+    action: <T>(action: (methods: CallbackInterface) => T) => T;
 }
 
 const tunnel$ = new ReactiveValue<Tunnel>();
@@ -21,6 +22,14 @@ const tunnel$ = new ReactiveValue<Tunnel>();
 let subscribtionCounter = 0;
 
 export function RecoilTunnel() {
+    const action = useRecoilCallback<[any], any>(
+        (methods) =>
+            function <T>(action: (methods: CallbackInterface) => T): T {
+                return action(methods);
+            },
+        [],
+    );
+
     const getLoadable = useRecoilCallback<[atom: RecoilValue<any>], any>(
         ({ snapshot }) =>
             function <T>(atom: RecoilValue<T>) {
@@ -67,8 +76,8 @@ export function RecoilTunnel() {
     );
 
     const tunnel = useMemo(
-        () => ({ getLoadable, getPromise, set, reset, observe }),
-        [getLoadable, getPromise, observe, reset, set],
+        () => ({ action, getLoadable, getPromise, set, reset, observe }),
+        [action, getLoadable, getPromise, observe, reset, set],
     );
 
     useEffect(() => {
@@ -104,4 +113,8 @@ export async function resetRecoil(atom: RecoilState<any>) {
 
 export async function observeRecoilLoadable<T>(atom: RecoilValue<T>): Promise<Observable<T | undefined>> {
     return (await tunnel$.lastValue).observe(atom);
+}
+
+export async function recoilAction<T>(action: (methods: CallbackInterface) => T): Promise<T> {
+    return (await tunnel$.lastValue).action(action);
 }

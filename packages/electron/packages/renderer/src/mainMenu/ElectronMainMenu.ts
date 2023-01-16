@@ -32,6 +32,7 @@ export class ElectronMainMenu implements MenuItem {
         const template: MenuItemConstructorOptions = {
             id: path,
             type: menu.type,
+            accelerator: menu.hotkey?.combo,
             checked: menu.checked,
             label: menu.label,
             enabled: !menu?.disabled,

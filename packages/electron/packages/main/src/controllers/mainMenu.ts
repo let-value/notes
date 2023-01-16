@@ -8,7 +8,6 @@ import {
     MenuItemConstructorOptions,
 } from "electron";
 import { stringify } from "flatted";
-import { flatMapDeep } from "lodash";
 
 ipcMain.on("mainMenu", function (event: IpcMainEvent, template: MenuItemConstructorOptions[]) {
     function handleClick(menuItem: MenuItem, browserWindow: BrowserWindow | undefined, keyboardEvent: KeyboardEvent) {
@@ -21,17 +20,22 @@ ipcMain.on("mainMenu", function (event: IpcMainEvent, template: MenuItemConstruc
         }
     }
 
-    flatMapDeep(template, (x: MenuItemConstructorOptions) => x.submenu as MenuItemConstructorOptions[]).forEach(
-        (item) => {
-            if (!item) {
-                return;
-            }
+    const queue = [...template];
 
-            item.click = handleClick;
-        },
-    );
+    while (queue.length > 0) {
+        const item = queue.shift();
+
+        if (!item) {
+            continue;
+        }
+
+        if (item.submenu) {
+            queue.push(...(item.submenu as MenuItemConstructorOptions[]));
+        }
+
+        item.click = handleClick;
+    }
 
     const menu = Menu.buildFromTemplate(template);
-    console.log("mainMenu", menu);
     Menu.setApplicationMenu(menu);
 });

@@ -1,3 +1,4 @@
+import { HotkeysProvider } from "@blueprintjs/core";
 import { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
@@ -16,7 +17,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <RecoilTunnel />
             <Suspense>
                 <WorkerProvider>
-                    <App />
+                    <HotkeysProvider>
+                        <App />
+                    </HotkeysProvider>
                 </WorkerProvider>
             </Suspense>
         </RecoilRoot>

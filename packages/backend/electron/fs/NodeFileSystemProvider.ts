@@ -2,7 +2,7 @@ import { incrementFileNameIfExist } from "app/src/utils";
 import { addWorkspace, getWorkspaces } from "backend-worker/db/repositories/workspaces";
 import { FileSystemProvider } from "backend-worker/fs/FileSystemProvider";
 import fsAsync from "fs/promises";
-import { openDialog } from "notes-electron/packages/renderer/src/controllers/openDialog";
+import { openDialog } from "notes-electron/packages/renderer/src/controllers/openDialog/query";
 
 import { DispatcherService } from "messaging";
 import { FileProvider, Item, Workspace } from "models";

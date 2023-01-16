@@ -1,10 +1,19 @@
 import { container } from "@/container";
 import { MenuItem } from "@/state/menu/MenuItem";
-import { Button, ButtonProps, Menu, MenuDivider, OverflowList, OverflowListProps } from "@blueprintjs/core";
+import {
+    Button,
+    ButtonProps,
+    HotkeyConfig,
+    Menu,
+    MenuDivider,
+    OverflowList,
+    OverflowListProps,
+    useHotkeys,
+} from "@blueprintjs/core";
 import { MenuItem2, Popover2, Popover2Props } from "@blueprintjs/popover2";
 import cx from "classnames";
 import { observer } from "mobx-react-lite";
-import { ComponentProps, useCallback } from "react";
+import { ComponentProps, useCallback, useMemo } from "react";
 
 const popoverProps: Popover2Props = {
     placement: "bottom-start",
@@ -71,13 +80,16 @@ export const MainMenu = observer(({ TargetProps, ItemProps, ...other }: MainMenu
     );
 
     return (
-        <OverflowList
-            collapseFrom="end"
-            items={mainMenu.items}
-            overflowRenderer={renderOverflow}
-            visibleItemRenderer={renderItem}
-            {...other}
-        />
+        <>
+            <OverflowList
+                collapseFrom="end"
+                items={mainMenu.items}
+                overflowRenderer={renderOverflow}
+                visibleItemRenderer={renderItem}
+                {...other}
+            />
+            <Hotkeys items={mainMenu.items} />
+        </>
     );
 });
 
@@ -104,11 +116,51 @@ export const ChildMenu = observer(({ item }: ChildMenuProps) => {
                         disabled={item.disabled}
                         icon={item.checked ? "tick" : undefined}
                         onClick={() => item.handler?.()}
+                        label={item.hotkey?.combo}
                     >
                         {item.items ? <ChildMenu item={item} /> : undefined}
                     </MenuItem2>
                 ),
             )}
+        </>
+    );
+});
+
+interface HotkeysProps {
+    parent?: MenuItem;
+    items: MenuItem[];
+}
+
+export const Hotkeys = observer(({ parent, items }: HotkeysProps) => {
+    const hotkeys = useMemo(
+        () =>
+            items
+                .filter((x) => x.hotkey)
+                .map(
+                    (x): HotkeyConfig => ({
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        combo: x.hotkey!.combo!,
+                        //group: parent?.label,
+                        label: x.label,
+                        disabled: x.disabled,
+                        global: true,
+                        onKeyDown: () => x.handler?.(),
+                        ...x.hotkey,
+                    }),
+                ),
+        [items, parent?.label],
+    );
+
+    useHotkeys(hotkeys);
+
+    return (
+        <>
+            {items.map((item, index) => {
+                if (item.items) {
+                    return <Hotkeys key={index} parent={item} items={item.items} />;
+                }
+                return null;
+            })}
         </>
     );
 });

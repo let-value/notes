@@ -11,7 +11,7 @@ import { MenuItem } from "../MenuItem";
 export class OpenRecentMenu implements MenuItem {
     label = "Open recent";
     type = "submenu" as const;
-    workspaces?: Workspace[];
+    workspaces?: Workspace[] = undefined;
     constructor() {
         makeAutoObservable(this);
         observeRecoilLoadable(workspacesSelector).then((pipe) => {
@@ -24,6 +24,7 @@ export class OpenRecentMenu implements MenuItem {
             );
         });
     }
+
     async itemHandler(workspaceId: WorkspaceId) {
         const workspace = await context.dispatcher.call(backend.workspace.open, workspaceId);
         setRecoil(workspaceState, workspace);

@@ -1,28 +1,25 @@
 import { backend, ReadFileQuery } from "messaging";
-import { useRecoilCallback } from "recoil";
+import { CallbackInterface } from "recoil";
 import { context } from "../storeServices";
 import { fileChangesState } from "./fileChangesState";
 
-export const useSaveFile = () =>
-    useRecoilCallback(
-        ({ set, snapshot }) =>
-            async ({ workspaceId, path }: ReadFileQuery) => {
-                if (!workspaceId || !path) {
-                    return undefined;
-                }
+export const saveFile =
+    ({ workspaceId, path }: ReadFileQuery) =>
+    async ({ set, snapshot }: CallbackInterface) => {
+        if (!workspaceId || !path) {
+            return undefined;
+        }
 
-                const changesState = fileChangesState(path);
-                const changes = await snapshot.getPromise(changesState);
+        const changesState = fileChangesState(path);
+        const changes = await snapshot.getPromise(changesState);
 
-                if (!changes) {
-                    return;
-                }
+        if (!changes) {
+            return;
+        }
 
-                const { content, version } = changes;
+        const { content, version } = changes;
 
-                await context.dispatcher.call(backend.workspace.file.save, { workspaceId, path, content });
+        await context.dispatcher.call(backend.workspace.file.save, { workspaceId, path, content });
 
-                set(changesState, (prev = {}) => ({ ...prev, savedVersion: version }));
-            },
-        [],
-    );
+        set(changesState, (prev = {}) => ({ ...prev, savedVersion: version }));
+    };
