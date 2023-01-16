@@ -12,7 +12,6 @@ import { FC, useCallback } from "react";
 import { editorPanel } from "./EditorPanel/EditorPanel";
 import { EditorPanelProps } from "./EditorPanel/EditorPanelProps";
 import { editorTab } from "./EditorPanel/EditorTab";
-import { ErrorBoundary } from "./ErrorBoundary";
 
 const components: PanelCollection<IDockviewPanelProps<EditorPanelProps>> = {
     ...editorPanel.collection,
@@ -33,14 +32,12 @@ export const EditorsPanel: FC<ISplitviewPanelProps> = () => {
     );
 
     return (
-        <ErrorBoundary>
-            <DockviewReact
-                className="dockview-theme-light"
-                components={components}
-                tabComponents={tabComponents}
-                onReady={handleDockReady}
-            />
-        </ErrorBoundary>
+        <DockviewReact
+            className="dockview-theme-light"
+            components={components}
+            tabComponents={tabComponents}
+            onReady={handleDockReady}
+        />
     );
 };
 

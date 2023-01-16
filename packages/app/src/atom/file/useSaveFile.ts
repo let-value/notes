@@ -1,6 +1,6 @@
 import { backend, ReadFileQuery } from "messaging";
 import { useRecoilCallback } from "recoil";
-import { storeServices } from "../storeServices";
+import { context } from "../storeServices";
 import { fileChangesState } from "./fileChangesState";
 
 export const useSaveFile = () =>
@@ -20,7 +20,7 @@ export const useSaveFile = () =>
 
                 const { content, version } = changes;
 
-                await storeServices.dispatcher.call(backend.workspace.file.save, { workspaceId, path, content });
+                await context.dispatcher.call(backend.workspace.file.save, { workspaceId, path, content });
 
                 set(changesState, (prev = {}) => ({ ...prev, savedVersion: version }));
             },

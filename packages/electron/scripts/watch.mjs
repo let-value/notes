@@ -50,7 +50,7 @@ function setupMainPackageWatcher({ resolvedUrls }) {
                         stdio: "inherit",
                         env: {
                             ...process.env,
-                            NODE_OPTIONS: "--preserve-symlinks",
+                            NODE_OPTIONS: "--preserve-symlinks --inspect",
                         },
                     });
 

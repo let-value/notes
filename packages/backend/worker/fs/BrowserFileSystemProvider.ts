@@ -41,20 +41,20 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
         await this.handles.checkPermission(workspaceHandle.handle);
 
         const item = new Item(`/${workspace.id}`, workspace.name, true);
-        this.handles.set(item, workspaceHandle.handle);
+        this.handles.set(item.path, workspaceHandle.handle);
 
         return item;
     }
 
     async listDirectory(item: Item<true>): Promise<Item[]> {
-        const handle = this.handles.getDirectory(item);
+        const handle = this.handles.getDirectory(item.path);
         await this.handles.checkPermission(handle);
 
         const items: Item[] = [];
         for await (const child of handle.values()) {
             const name = child.name;
             const childItem = new Item(path.resolve(item.path, name), name, child.kind === "directory");
-            this.handles.set(childItem, child);
+            this.handles.set(childItem.path, child);
             items.push(childItem);
         }
 
@@ -62,7 +62,9 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
     }
 
     async createDirectory(item: Item<true>): Promise<void> {
-        throw new Error("Method not implemented.");
+        const handle = this.handles.getParent(item.path);
+        await this.handles.checkPermission(handle, "readwrite");
+        await handle.getDirectoryHandle(item.name, { create: true });
     }
 
     async renameDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void> {
@@ -70,23 +72,39 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
     }
 
     async deleteDirectory(item: Item<true>): Promise<void> {
-        throw new Error("Method not implemented.");
+        const handle = this.handles.getParent(item.path);
+        await this.handles.checkPermission(handle, "readwrite");
+        await handle.removeEntry(item.name);
     }
 
     async moveDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.renameDirectory(oldItem, newItem);
     }
 
     async copyDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
-    async createFile(item: Item<false>, data: unknown): Promise<void> {
-        throw new Error("Method not implemented.");
+    async writeFile(item: Item<false>, data: unknown): Promise<void> {
+        let handle = this.handles.getFile(item.path);
+        if (!handle) {
+            const parent = this.handles.getParent(item.path);
+            await this.handles.checkPermission(parent, "readwrite");
+
+            handle = await parent.getFileHandle(item.name, { create: true });
+            this.handles.set(item.path, handle);
+        }
+
+        await this.handles.checkPermission(handle, "readwrite");
+
+        const stream = await handle.createWritable({ keepExistingData: false });
+        await stream.write(data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (stream as any).close();
     }
 
     async readFile(item: Item<false>): Promise<string> {
-        const handle = this.handles.getFile(item);
+        const handle = this.handles.getFile(item.path);
         await this.handles.checkPermission(handle);
 
         const file = await handle.getFile();
@@ -98,11 +116,13 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
     }
 
     async deleteFile(item: Item<false>): Promise<void> {
-        throw new Error("Method not implemented.");
+        const handle = this.handles.getParent(item.path);
+        await this.handles.checkPermission(handle, "readwrite");
+        await handle.removeEntry(item.name);
     }
 
     async moveFile(oldItem: Item<false>, newItem: Item<false>): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.renameFile(oldItem, newItem);
     }
 
     async copyFile(oldItem: Item<false>, newItem: Item<false>): Promise<void> {

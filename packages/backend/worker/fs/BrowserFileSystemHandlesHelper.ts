@@ -1,34 +1,32 @@
-import { Item } from "models";
-
 export class BrowserFileSystemHandlesHelper {
     private handleLookup = new Map<string, FileSystemHandle>();
 
-    get(item: Item) {
-        return this.handleLookup.get(item.path);
+    get(path: string) {
+        return this.handleLookup.get(path);
     }
 
-    getFile(item: Item<false>): FileSystemFileHandle {
-        const handle = this.get(item);
+    getFile(path: string): FileSystemFileHandle {
+        const handle = this.get(path);
         if (!(handle instanceof FileSystemFileHandle)) {
             throw new Error("Invalid handle");
         }
         return handle;
     }
 
-    getDirectory(item: Item<true>): FileSystemDirectoryHandle {
-        const handle = this.get(item);
+    getDirectory(path: string): FileSystemDirectoryHandle {
+        const handle = this.get(path);
         if (!(handle instanceof FileSystemDirectoryHandle)) {
             throw new Error("Invalid handle");
         }
         return handle;
     }
 
-    set(item: Item, child: FileSystemHandle) {
-        this.handleLookup.set(item.path, child);
+    getParent(path: string): FileSystemDirectoryHandle {
+        throw new Error("Invalid handle");
     }
 
-    indexFromTo(closestParent: Item<true>, item: Item<true>) {
-        throw new Error("Method not implemented.");
+    set(path: string, child: FileSystemHandle) {
+        this.handleLookup.set(path, child);
     }
 
     async checkPermission(handle: FileSystemHandle, mode: FileSystemPermissionMode = "read"): Promise<void> {

@@ -2,14 +2,14 @@ import { atom, selector } from "recoil";
 
 import { backend } from "messaging";
 import { createQueryEffect } from "./createQueryEffect";
-import { storeServices } from "./storeServices";
+import { context } from "./storeServices";
 
 export const workerState = atom<string>({
     key: "worker",
     default: selector({
         key: "worker/initial",
         get: async () => {
-            return await storeServices.dispatcher.call(backend.leader, undefined);
+            return await context.dispatcher.call(backend.leader, undefined);
         },
     }),
     effects: [createQueryEffect(backend.leader)],

@@ -1,7 +1,7 @@
 import { backend, ReadFileQuery } from "messaging";
 import { atomFamily, selectorFamily } from "recoil";
 
-import { storeServices } from "../storeServices";
+import { context } from "../storeServices";
 
 export const fileContentState = atomFamily({
     key: "file/content",
@@ -13,7 +13,7 @@ export const fileContentState = atomFamily({
             }
 
             try {
-                return await storeServices.dispatcher.call(backend.workspace.file.content, query as ReadFileQuery);
+                return await context.dispatcher.call(backend.workspace.file.content, query as ReadFileQuery);
             } catch {
                 return undefined;
             }

@@ -45,6 +45,21 @@ mediator.pipe(matchQuery(backend.workspace.file.content)).subscribe(async (query
     }
 });
 
+mediator.pipe(matchQuery(backend.workspace.file.save)).subscribe(async (query) => {
+    try {
+        const store = await WorkspaceStore.getInstance(query.payload.workspaceId);
+
+        const node = await store.findNodeByPath(query.payload.path);
+        if (!(node instanceof TreeFileNode)) {
+            throw new Error("Not a file");
+        }
+        await store.fs.writeFile(node.item, query.payload.content);
+        await dispatcher.send(backend.workspace.file.save.response(true, query));
+    } catch (error) {
+        await dispatcher.send(backend.workspace.file.save.error(error, query));
+    }
+});
+
 mediator.pipe(matchQuery(backend.workspace.file.tokens)).subscribe(async (query) => {
     try {
         const store = await WorkspaceStore.getInstance(query.payload.workspaceId);

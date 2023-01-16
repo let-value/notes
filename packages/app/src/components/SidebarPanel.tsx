@@ -1,3 +1,4 @@
+import { showSidebarState } from "@/state/menu/ViewMenu/ShowSidePanel";
 import { AddSplitviewComponentOptions, ISplitviewPanelProps, PanelCollection } from "dockview";
 import { useObservable, useSubscription } from "observable-hooks";
 import { FC, useEffect } from "react";
@@ -5,7 +6,7 @@ import { useRecoilValue } from "recoil";
 import { fromEventPattern } from "rxjs";
 import { workspaceState } from "../atom/workspace";
 import { Explorer } from "./Explorer/Explorer";
-import { showSidebarState } from "./Title/Menu/ViewMenu";
+
 import { withSuspense } from "./withSuspense";
 
 const id = "sidebar";

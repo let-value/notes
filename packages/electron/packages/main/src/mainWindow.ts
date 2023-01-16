@@ -4,8 +4,8 @@ import { URL } from "url";
 
 async function createWindow() {
     const browserWindow = new BrowserWindow({
-        show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
-        titleBarStyle: "hidden",
+        show: true, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
+        //titleBarStyle: "hidden",
         titleBarOverlay: true,
         webPreferences: {
             nodeIntegration: false,
@@ -16,6 +16,8 @@ async function createWindow() {
             preload: join(app.getAppPath(), "packages/preload/dist/index.cjs"),
         },
     });
+
+    browserWindow?.webContents.openDevTools();
 
     /**
      * If the 'show' property of the BrowserWindow's constructor is omitted from the initialization options,

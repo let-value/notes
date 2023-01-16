@@ -5,7 +5,6 @@ import { defineConfig } from "vite";
 //import { config as baseConfig } from "app/vite.config";
 import renderer from "vite-plugin-electron-renderer";
 import { config as baseConfig } from "../../../app/vite.config";
-import { injectAppVersion } from "../../version/inject-app-version-plugin.mjs";
 
 const PACKAGE_ROOT = __dirname;
 const PROJECT_ROOT = join(PACKAGE_ROOT, "../..");
@@ -31,7 +30,6 @@ const config = {
         renderer({
             nodeIntegration: true,
         }),
-        injectAppVersion(),
     ],
 };
 

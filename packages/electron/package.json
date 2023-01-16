@@ -46,6 +46,7 @@
         "electron": "22.0.0",
         "electron-promise-ipc": "^2.2.4",
         "electron-updater": "5.3.0",
+        "lodash": "^4.17.21",
         "messaging": "workspace:^",
         "models": "workspace:^"
     },

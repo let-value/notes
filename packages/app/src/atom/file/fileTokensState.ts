@@ -1,6 +1,6 @@
 import { backend, ReadFileQuery } from "messaging";
 import { atomFamily, selectorFamily } from "recoil";
-import { storeServices } from "../storeServices";
+import { context } from "../storeServices";
 
 export const fileTokensState = atomFamily({
     key: "file/tokens",
@@ -12,7 +12,7 @@ export const fileTokensState = atomFamily({
             }
 
             try {
-                return await storeServices.dispatcher.call(backend.workspace.file.tokens, query as ReadFileQuery);
+                return await context.dispatcher.call(backend.workspace.file.tokens, query as ReadFileQuery);
             } catch (error) {
                 console.error(error);
                 return undefined;

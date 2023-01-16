@@ -9,7 +9,7 @@ export interface FileSystemProvider {
     deleteDirectory(item: Item<true>): Promise<void>;
     moveDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void>;
     copyDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void>;
-    createFile(item: Item<false>, data: any): Promise<void>;
+    writeFile(item: Item<false>, data: any): Promise<void>;
     readFile(item: Item<false>): Promise<string>;
     renameFile(oldItem: Item<false>, newItem: Item<false>): Promise<void>;
     deleteFile(item: Item<false>): Promise<void>;

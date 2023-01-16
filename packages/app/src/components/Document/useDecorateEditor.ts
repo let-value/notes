@@ -46,6 +46,7 @@ export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
         (ref: editor.IStandaloneCodeEditor, monaco: Monaco) => {
             editor.current = ref;
             editor$.next(ref);
+            registerEditor(ref);
 
             ref.addCommand(
                 monaco.KeyMod.chord(
@@ -70,8 +71,6 @@ export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
 
             ref.onDidChangeModelContent(handleContentChange.bind(undefined, false));
             handleContentChange(true);
-
-            registerEditor(ref);
         },
         [editor$, handleContentChange, item, registerEditor, workspaceId],
     );
@@ -79,7 +78,10 @@ export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
     useEffect(() => {
         return () => {
             if (editor.current) {
-                unRegisterEditor(editor.current);
+                const editors = unRegisterEditor(editor.current);
+                if (editors?.size === 0) {
+                    editor.current.getModel()?.dispose();
+                }
             }
         };
     }, [workspaceId, item, unRegisterEditor]);

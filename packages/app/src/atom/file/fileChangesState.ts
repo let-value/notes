@@ -35,8 +35,10 @@ export const useSetSavedVersion = (item: Param) =>
 export const isFileHasChanges = selectorFamily({
     key: "file/changes/has",
     get:
-        (item: Param) =>
+        (item: Param | undefined = undefined) =>
         ({ get }) => {
+            if (!item) return false;
+
             const { savedVersion, version } = get(fileChangesState(item)) ?? {};
             return savedVersion !== version;
         },

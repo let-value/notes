@@ -1,10 +1,10 @@
 import { backend, ReadFileQuery } from "messaging";
 import { selectorFamily } from "recoil";
-import { storeServices } from "../storeServices";
+import { context } from "../storeServices";
 
 export const workspaceItemsSelector = selectorFamily({
     key: "workspace/items",
     get: (query: Readonly<ReadFileQuery>) => () => {
-        return storeServices.dispatcher.call(backend.workspace.items, query);
+        return context.dispatcher.call(backend.workspace.items, query);
     },
 });

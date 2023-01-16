@@ -1,9 +1,9 @@
 import cx from "classnames";
 import { ComponentProps, FC } from "react";
-import { AppMenu, AppMenuProps } from "./Menu/AppMenu";
+import { MainMenu, MainMenuProps } from "./MainMenu";
 import styles from "./Title.module.css";
 
-const menuItemProps: AppMenuProps["ItemProps"] = {
+const menuItemProps: MainMenuProps["ItemProps"] = {
     className: styles.noDraggable,
 };
 
@@ -11,7 +11,7 @@ export const Title = () => {
     return (
         <div className={cx(styles.title, styles.noDraggable, "flex items-center ")}>
             <div className={cx(styles.draggableRegion, styles.draggable, "z-0")} />
-            <AppMenu TargetProps={menuItemProps} className={cx("flex-grow z-10")} />
+            <MainMenu TargetProps={menuItemProps} className={cx("flex-grow z-10")} />
         </div>
     );
 };

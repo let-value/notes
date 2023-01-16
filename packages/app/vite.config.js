@@ -23,7 +23,7 @@ export const config = {
                     plugins: ["decorators-legacy", "classProperties"],
                 },
             },
-            exclude: /backend\/worker/,
+            exclude: /backend\/worker|atom\/tunnel/,
         }),
     ],
 };

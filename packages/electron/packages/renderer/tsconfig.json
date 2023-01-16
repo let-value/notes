@@ -6,6 +6,7 @@
         "noEmit": true,
         "esModuleInterop": false,
         "outDir": "./dist",
+        "allowSyntheticDefaultImports": true,
         "paths": {
             "#preload": ["../preload/src/index"]
         }

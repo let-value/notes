@@ -79,7 +79,7 @@ export class NodeFileSystemProvider implements FileSystemProvider {
         return newDirectory;
     }
 
-    createFile(item: Item<false>, data: any): Promise<void> {
+    writeFile(item: Item<false>, data: any): Promise<void> {
         return fsAsync.writeFile(item.path, data);
     }
     async readFile(item: Item<false>): Promise<string> {

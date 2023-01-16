@@ -1,12 +1,12 @@
 import { BroadcastMessage, Command, matchCommand, matchResponse, Query } from "messaging";
 import { AtomEffect } from "recoil";
 import { filter } from "rxjs";
-import { storeServices } from "./storeServices";
+import { context } from "./storeServices";
 
 export const createQueryEffect =
     <T>(query: Query<T>, predicate?: Parameters<typeof filter<BroadcastMessage<"response", T>>>[0]): AtomEffect<T> =>
     ({ setSelf }) => {
-        let pipeline = storeServices.mediator.pipe(matchResponse(query));
+        let pipeline = context.mediator.pipe(matchResponse(query));
 
         if (predicate) {
             pipeline = pipeline.pipe(filter(predicate));
@@ -24,7 +24,7 @@ export const createQueryEffect =
 export const createCommandEffect =
     <T>(command: Command<T>, predicate?: Parameters<typeof filter<BroadcastMessage<"command", T>>>[0]): AtomEffect<T> =>
     ({ setSelf }) => {
-        let pipeline = storeServices.mediator.pipe(matchCommand(command));
+        let pipeline = context.mediator.pipe(matchCommand(command));
 
         if (predicate) {
             pipeline = pipeline.pipe(filter(predicate));

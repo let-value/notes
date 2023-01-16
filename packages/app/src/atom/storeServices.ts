@@ -1,12 +1,16 @@
 import { DispatcherService, MediatorService } from "messaging";
 
-interface StoreServices {
+interface AtomContext {
     mediator: MediatorService;
     dispatcher: DispatcherService;
 }
 
-export let storeServices: StoreServices;
+export let context: AtomContext;
 
-export function setStoreServices(services: StoreServices) {
-    storeServices = services;
-}
+export const atomService = (services: AtomContext) => {
+    context = services;
+
+    return {
+        store: undefined,
+    };
+};

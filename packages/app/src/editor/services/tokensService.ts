@@ -1,10 +1,8 @@
-import { fileContentState } from "@/atom/file";
 import { DIFF_DELETE, DIFF_EQUAL, DIFF_INSERT, diff_match_patch } from "diff-match-patch";
 import type { ContextGetter } from "iti/dist/src/_utils";
 import lineColumn from "line-column";
 import { Token } from "models";
 import { editor } from "monaco-editor";
-import { getRecoil } from "recoil-nexus";
 import { filter, map } from "rxjs";
 import { parseModelTokens } from "../tokens/parseModelTokens";
 import { EditorMetadataService } from "./editorMetaService";
@@ -162,9 +160,10 @@ export const tokensService = (
                         return undefined;
                     }
 
-                    const content = getRecoil(
-                        fileContentState({ workspaceId: meta.workspaceId, path: meta.item.path }),
-                    );
+                    const content = undefined;
+                    //  = getRecoilLoadable(
+                    //     fileContentState({ workspaceId: meta.workspaceId, path: meta.item.path }),
+                    // ).contents;
 
                     return {
                         model,

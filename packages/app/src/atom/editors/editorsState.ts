@@ -6,7 +6,8 @@ type Param = Readonly<Item["path"]>;
 
 export const editorsState = atomFamily({
     key: "editors",
-    default: (item: Param) => new Set<editor.IStandaloneCodeEditor>(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    default: (_: Param) => new Set<editor.IStandaloneCodeEditor>(),
 });
 
 export const useRegisterEditor = (item: Param) =>
@@ -24,18 +25,19 @@ export const useRegisterEditor = (item: Param) =>
 
 export const useUnregisterEditor = (item: Param) =>
     useRecoilCallback(
-        ({ set }) =>
+        ({ set, snapshot }) =>
             (instance: editor.IStandaloneCodeEditor) => {
-                set(editorsState(item), (prev) => {
-                    const next = new Set(prev);
-                    next.delete(instance);
+                const loadable = snapshot.getLoadable(editorsState(item));
+                if (loadable.state !== "hasValue") {
+                    return;
+                }
 
-                    if (next.size === 0) {
-                        instance.getModel()?.dispose();
-                    }
+                const next = new Set(loadable.contents);
+                next.delete(instance);
 
-                    return next;
-                });
+                set(editorsState(item), next);
+
+                return next;
             },
         [item],
     );
