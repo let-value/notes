@@ -1,6 +1,6 @@
-import { container } from "app/src/container";
 import type { OpenDialogOptions, OpenDialogReturnValue } from "electron";
 import { matchQuery, Query } from "messaging";
+import { container } from "../container";
 
 export const openDialog = new Query<OpenDialogReturnValue, OpenDialogOptions>("openDialog");
 

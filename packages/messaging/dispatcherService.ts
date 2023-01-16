@@ -26,15 +26,16 @@ export const createDispatcherService = (
     }>,
 ) => ({
     dispatcher: (): DispatcherService => {
+        console.trace("createDispatcherService.dispatcher");
         const { id, eventTarget, mediator } = services;
 
         mediator.subscribe((message) => {
-            //console.log(id, "recieved", message);
+            console.log(id, "recieved", message);
         });
 
         const send = <TPayload, TType extends BroadcastMessageType>(message: BroadcastMessage<TType, TPayload>) => {
             message.senderId = id;
-            //console.log(id, "send", message);
+            console.log(id, "send", message);
             return eventTarget.postMessage(message);
         };
 

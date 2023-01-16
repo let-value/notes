@@ -1,8 +1,7 @@
-import { container } from "app/src/container";
-import { workerElectronBackend } from "./backend";
-import { electronMainMenuService } from "./mainMenu/mainMenuService";
-
-container.upsert(workerElectronBackend).add(electronMainMenuService);
-
+const { container } = await import("./container");
 await import("./controllers");
 await import("app/src/main");
+
+container.get("electronMainMenu");
+
+export {};

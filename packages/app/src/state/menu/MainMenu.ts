@@ -4,6 +4,7 @@ import { MenuItem } from "./MenuItem";
 import { ViewMenu } from "./ViewMenu/ViewMenu";
 
 export class MainMenu implements MenuItem {
+    type = "normal" as const;
     label = "Main";
     file = new FileMenu();
     view = new ViewMenu();

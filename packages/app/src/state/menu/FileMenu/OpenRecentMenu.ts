@@ -4,7 +4,6 @@ import { workspacesSelector } from "@/atom/workspaces";
 import { backend } from "messaging";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Workspace, WorkspaceId } from "models";
-import { Loadable } from "recoil";
 
 import { context } from "../mainMenuService";
 import { MenuItem } from "../MenuItem";
@@ -12,7 +11,7 @@ import { MenuItem } from "../MenuItem";
 export class OpenRecentMenu implements MenuItem {
     label = "Open recent";
     type = "submenu" as const;
-    workspaces?: Loadable<Workspace[]>;
+    workspaces?: Workspace[];
     constructor() {
         makeAutoObservable(this);
         observeRecoilLoadable(workspacesSelector).then((pipe) => {
@@ -31,11 +30,7 @@ export class OpenRecentMenu implements MenuItem {
     }
 
     get items() {
-        if (this.workspaces?.state != "hasValue") {
-            return undefined;
-        }
-
-        return this.workspaces.contents.map(
+        return this.workspaces?.map(
             (workspace): MenuItem => ({
                 type: "normal",
                 label: workspace.name,

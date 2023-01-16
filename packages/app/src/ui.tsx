@@ -2,17 +2,13 @@ import { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import { App } from "./App";
+import { atomService } from "./atom/storeServices";
 import { RecoilTunnel } from "./atom/tunnel";
+import { container } from "./container";
 import "./index.css";
 import { WorkerProvider } from "./WorkerProvider";
 
-// async function updateStoreServices() {
-//     setStoreServices(await container.getContainerSet(["dispatcher", "mediator"]));
-// }
-
-// container.on("containerUpserted", updateStoreServices);
-// container.on("containerUpdated", updateStoreServices);
-// updateStoreServices();
+atomService(container as never);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <Suspense>

@@ -13,6 +13,7 @@ export const createMessagingService = (
     }>,
 ) => ({
     mediator: () => {
+        console.trace("createMessagingService.mediator");
         const { dispatch, mediator, setSource } = createMediator(services.id);
 
         const service = mediator as MediatorService;

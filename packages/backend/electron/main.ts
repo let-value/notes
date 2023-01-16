@@ -1,9 +1,8 @@
-import { container } from "backend-worker/container";
+import { container as original } from "backend-worker/container";
 import { backend, WorkerEventTarget } from "messaging";
 import { nodeFileSystemService } from "./fs/NodeFileSystemService";
 
-container.upsert({ eventTarget: () => new WorkerEventTarget(self) });
-container.upsert(nodeFileSystemService);
+const container = original.upsert({ eventTarget: () => new WorkerEventTarget(self) }).upsert(nodeFileSystemService);
 
 const id = container.get("id");
 

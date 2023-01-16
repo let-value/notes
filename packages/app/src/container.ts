@@ -1,6 +1,5 @@
 import { createContainer } from "iti";
 import { createDispatcherService, createMessagingService } from "messaging";
-import { atomService } from "./atom/storeServices";
 import { browserBackend } from "./backend";
 import { editorMetaService } from "./editor/services/editorMetaService";
 import { modelToEditorService } from "./editor/services/modelToEditorService";
@@ -13,7 +12,6 @@ export const container = createContainer()
     .add(browserBackend)
     .add(createMessagingService)
     .add(createDispatcherService)
-    .add(atomService)
     .add(mainMenuService)
     .add(editorMetaService)
     .add(modelToEditorService)

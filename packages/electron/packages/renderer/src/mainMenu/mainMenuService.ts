@@ -4,16 +4,20 @@ import { autorun } from "mobx";
 import { ElectronMainMenu } from "./ElectronMainMenu";
 
 export const electronMainMenuService = (services: ContextGetter<{ mainMenu: () => MainMenu }>) => {
-    const mainMenu = new ElectronMainMenu(services.mainMenu);
-    const dispose = autorun(() => {
-        JSON.stringify(mainMenu);
-        mainMenu.update();
-    }, {});
-
     return {
-        electronMainMenu: {
-            mainMenu,
-            dispose,
+        electronMainMenu: () => {
+            console.trace("electronMainMenuService.electronMainMenu");
+
+            const mainMenu = new ElectronMainMenu(services.mainMenu);
+            const dispose = autorun(() => {
+                JSON.stringify(mainMenu);
+                mainMenu.update();
+            }, {});
+
+            return {
+                mainMenu,
+                dispose,
+            };
         },
     };
 };

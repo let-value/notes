@@ -143,6 +143,8 @@ export const tokensService = (
     }>,
 ) => ({
     tokensService: () => {
+        console.trace("tokensService");
+
         const { modelToEditor, editorMeta } = services;
 
         function getEditorTokens(editor: editor.IStandaloneCodeEditor) {

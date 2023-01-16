@@ -1,9 +1,9 @@
 import { FC, useEffect } from "react";
-import { useRecoilValueLoadable } from "recoil";
+import { useRecoilValue } from "recoil";
 import { ObserverState } from "./ObserverState";
 
 export const RecoilTunnelObserver: FC<ObserverState> = ({ atom, subject }) => {
-    const loadable = useRecoilValueLoadable(atom);
+    const loadable = useRecoilValue(atom);
 
     useEffect(() => {
         subject.next(loadable);
