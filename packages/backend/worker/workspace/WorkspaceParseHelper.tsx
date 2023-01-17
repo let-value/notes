@@ -5,8 +5,8 @@ import { Item } from "models";
 import { editor, Uri } from "monaco-editor/esm/vs/editor/editor.api";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "../components/ErrorBoundary";
-import { Workspace } from "../components/Workspace/Workspace";
 import { container } from "../container";
+import { WorkspaceNode } from "./tree/WorkspaceNode";
 import { WorkspaceStore } from "./WorkspaceStore";
 
 const queue = container.get("queue");
@@ -21,7 +21,7 @@ export class WorkspaceParseHelper {
         this.root = ReactDOM.createRoot(this.container);
         this.root.render(
             <ErrorBoundary>
-                <Workspace store={store} />
+                <WorkspaceNode store={store} />
             </ErrorBoundary>,
         );
     }

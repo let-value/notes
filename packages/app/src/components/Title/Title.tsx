@@ -1,6 +1,6 @@
 import cx from "classnames";
 import { ComponentProps, FC } from "react";
-import { MainMenu, MainMenuProps } from "./MainMenu";
+import { MainMenu, MainMenuProps } from "./MainMenu/MainMenu";
 import styles from "./Title.module.css";
 
 const menuItemProps: MainMenuProps["ItemProps"] = {

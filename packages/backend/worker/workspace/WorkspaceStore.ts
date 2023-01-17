@@ -1,28 +1,29 @@
 import { ReactiveValue } from "app/src/utils";
 import { Workspace, WorkspaceId } from "models";
-import { TreeNodeExtensions } from "../components/TreeNodeExtensions";
-import { TreeWorkspaceNode } from "../components/Workspace/Workspace";
+
 import { container } from "../container";
 import { getWorkspace } from "../db/repositories/workspaces";
 import { FileSystemProvider } from "../fs/FileSystemProvider";
+import { WorkspaceNode } from "./tree/WorkspaceNode";
+import { TreeNodeExtensions } from "./TreeNodeExtensions";
 import { WorkspaceParseHelper } from "./WorkspaceParseHelper";
 
 const fs = container.get("fs");
 const workspaceStores = new Map<WorkspaceId, WorkspaceStore>();
 
 export class WorkspaceStore {
-    root: ReactiveValue<TreeWorkspaceNode>;
+    root: ReactiveValue<WorkspaceNode>;
     parse: WorkspaceParseHelper;
     fs: FileSystemProvider;
 
     constructor(public workspace: Workspace) {
-        this.root = new ReactiveValue<TreeWorkspaceNode>();
+        this.root = new ReactiveValue<WorkspaceNode>();
         this.parse = new WorkspaceParseHelper(this);
         this.fs = fs;
     }
 
     async findNodeByPath(path: string) {
-        return await TreeNodeExtensions.findNested(await this.root.lastValue, path);
+        return await TreeNodeExtensions.findNode(await this.root.lastValue, path);
     }
 
     static async getInstance(id: WorkspaceId) {

@@ -1791,6 +1791,7 @@ __metadata:
     autoprefixer: ^10.4.13
     broadcast-channel: ^4.18.1
     classnames: ^2.3.2
+    computed-async-mobx: ^6.1.0
     diff-match-patch: ^1.0.5
     dockview: ^1.5.2
     flat: ^5.0.2
@@ -1807,6 +1808,7 @@ __metadata:
     messaging: "workspace:^"
     mobx: ^6.7.0
     mobx-async-computed: ^1.0.0-alpha.15
+    mobx-react: ^7.6.0
     mobx-react-lite: ^3.4.0
     models: "workspace:^"
     monaco-editor: ^0.34.1
@@ -2785,6 +2787,16 @@ __metadata:
   version: 0.1.2
   resolution: "compare-version@npm:0.1.2"
   checksum: 0ceaf50b5f912c8eb8eeca19375e617209d200abebd771e9306510166462e6f91ad764f33f210a3058ee27c83f2f001a7a4ca32f509da2d207d0143a3438a020
+  languageName: node
+  linkType: hard
+
+"computed-async-mobx@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "computed-async-mobx@npm:6.1.0"
+  peerDependencies:
+    mobx: ^3.0.0 || ^4.0.0 || ^4.0.0-beta.2 || ^5.0.0
+    mobx-utils: ^3.0.0 || ^4.0.0 || ^4.0.0-beta.2 || ^5.0.0
+  checksum: 1890c2c7bf33b509b1266aee54d1c8098f127f1f4a94ff2ba102dff3f96fdbe736e8cd3ce1acb74ee04878d1a9c81ada7828d26e924d561848cf22a08ab23fb8
   languageName: node
   linkType: hard
 
@@ -5989,6 +6001,23 @@ __metadata:
     react-native:
       optional: true
   checksum: 9294e127e281c8b37ec7bcaf17de479f50519e6ad485b58d7b991291900511541a5a718653759d3cf6503462c70325d025e1c2ed376d4584fb1b2d3aac9d9b48
+  languageName: node
+  linkType: hard
+
+"mobx-react@npm:^7.6.0":
+  version: 7.6.0
+  resolution: "mobx-react@npm:7.6.0"
+  dependencies:
+    mobx-react-lite: ^3.4.0
+  peerDependencies:
+    mobx: ^6.1.0
+    react: ^16.8.0 || ^17 || ^18
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 07ce6eb297ddab2cc693df7350a3e2f730194cc6eb56bd912f80e28f9427237569e0bda6b30167154faf094e7c5e5ff360abd52acd2860d9a0d0e53320617ee8
   languageName: node
   linkType: hard
 

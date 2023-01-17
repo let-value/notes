@@ -5,7 +5,7 @@ import { container } from "./container";
 export let resolveTabId: (tabId: string) => void;
 const tabId = await new Promise<string>((resolve) => {
     resolveTabId = resolve;
-    self.addEventListener("message", (message) => resolve(message.data), { once: true });
+    self.addEventListener("message", (message: MessageEvent) => resolve(message.data), { once: true });
 });
 
 container.upsert({ tabId });
@@ -20,7 +20,7 @@ console.trace("leader", id, tabId);
 
 await import("./dom/setupDom");
 await import("app/src/editor/setupMonaco");
-await import("./features");
+await import("./controllers");
 
 const dispatcher = container.get("dispatcher");
 const response = backend.leader.response(id, undefined);

@@ -10,7 +10,7 @@ import { MenuItem } from "../MenuItem";
 export class SaveFileMenu implements MenuItem {
     label = "Save";
     type = "normal" as const;
-    hotkey = { allowInInput: true, combo: "Ctrl+S", preventDefault: true, stopPropagation: true };
+    hotkey = { allowInInput: true, combo: "Ctrl+S", preventDefault: true, stopPropagation: true, disabled: false };
     workspace?: Workspace = undefined;
     item?: Item<false> = undefined;
     hasChanges?: boolean = false;
