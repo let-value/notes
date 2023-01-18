@@ -31,7 +31,9 @@ export const workspaceTree = selectorFamily({
                     break;
                 }
 
-                if (item?.isDirectory && expanded.includes(item.path)) {
+                const show = expanded.includes(item.path) || item.depth < 0;
+
+                if (item?.isDirectory && show) {
                     const response = get(noWait(workspaceItemsState({ workspaceId, path: item.path })));
                     item.loading = response.state === "loading";
 
@@ -49,6 +51,10 @@ export const workspaceTree = selectorFamily({
                         }
                         queue.unshift(...items.map((x) => ({ ...x, depth: item.depth + 1 })));
                     }
+                }
+
+                if (item.path === rootItem.path) {
+                    continue;
                 }
 
                 result.push(item);

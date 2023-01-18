@@ -1,9 +1,9 @@
-import { useRefreshItem } from "@/atom/workspace/useRefreshItem";
 import { Menu } from "@blueprintjs/core";
 import { MenuItem2 } from "@blueprintjs/popover2";
 import { Item } from "models";
-import { FC, useCallback, useContext } from "react";
+import { FC, useContext } from "react";
 import { ExplorerContext } from "../ExplorerContext";
+import { useDirectoryContextHandlers } from "./useDirectoryContextHandlers";
 
 interface DirectoryContextMenuProps {
     item: Item<true>;
@@ -12,11 +12,7 @@ interface DirectoryContextMenuProps {
 export const DirectoryContextMenu: FC<DirectoryContextMenuProps> = ({ item }) => {
     const { workspace } = useContext(ExplorerContext);
 
-    const refreshItem = useRefreshItem(workspace.id);
-
-    const handleRefresh = useCallback(() => {
-        refreshItem(item);
-    }, [item, refreshItem]);
+    const { handleRefresh } = useDirectoryContextHandlers(workspace, item);
 
     return (
         <Menu>

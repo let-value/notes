@@ -1,12 +1,15 @@
 import { useOpenEditorPanel } from "@/atom/panels";
 import { workspaceTree } from "@/atom/workspace";
+import { workspaceRootSelector } from "@/atom/workspace/workspaceRootSelector";
+import { Button, TreeNode } from "@blueprintjs/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import cx from "classnames";
 import { Item, Workspace } from "models";
 import { FC, ReactNode, useCallback, useMemo, useRef } from "react";
-import { useRecoilValueLoadable } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { useMap } from "usehooks-ts";
 import { DirectoryItem } from "./Directory/DirectoryItem";
+import { useDirectoryContextHandlers } from "./Directory/useDirectoryContextHandlers";
 import styles from "./Explorer.module.css";
 import { ExplorerContext } from "./ExplorerContext";
 import { FileItem } from "./File/FileItem";
@@ -18,9 +21,11 @@ interface ExplorerProps {
 export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
     const parentRef = useRef<HTMLDivElement>(null);
 
-    const [expand, { set: expandFolder, remove: collapseFolder }] = useMap<string, boolean>([
-        [`/${workspace.id}`, true],
-    ]);
+    const [expand, { set: expandFolder, remove: collapseFolder, reset }] = useMap<string, boolean>();
+
+    const root = useRecoilValue(workspaceRootSelector(workspace.id));
+
+    const { handleRefresh } = useDirectoryContextHandlers(workspace, root);
 
     const tree = useRecoilValueLoadable(
         workspaceTree({ workspaceId: workspace.id, expanded: Array.from(expand.keys()) }),
@@ -55,8 +60,22 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
 
     return (
         <ExplorerContext.Provider value={context}>
-            <div className="flex-1 h-full w-full overflow-hidden">
-                <div ref={parentRef} className="overflow-y-auto overflow-x-hidden h-full">
+            <div className="flex flex-col flex-1 h-full w-full overflow-hidden">
+                <div className="bp4-tree bp4-tree-node-list bp4-tree-root">
+                    <TreeNode
+                        id="root"
+                        depth={0}
+                        path={[]}
+                        label={root.name}
+                        secondaryLabel={
+                            <>
+                                <Button small minimal icon="refresh" onClick={handleRefresh} />
+                                <Button small minimal icon="collapse-all" onClick={reset} />
+                            </>
+                        }
+                    />
+                </div>
+                <div ref={parentRef} className="flex-1 overflow-y-auto overflow-x-hidden h-full">
                     <div
                         className={cx(styles.tree, "relative bp4-tree bp4-tree-node-list bp4-tree-root")}
                         style={{ height: rowVirtualizer.getTotalSize() }}
