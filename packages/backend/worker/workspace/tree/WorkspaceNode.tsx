@@ -23,7 +23,7 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
 
     get ready() {
         return firstValueFrom(
-            combineLatest([this.root.pipeline, this.children]).pipe(
+            combineLatest([this.root.pipeline$, this.children]).pipe(
                 map(([root, children]) => !!root && children.size === 1),
                 filter(Boolean),
             ),

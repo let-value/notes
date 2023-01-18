@@ -19,7 +19,8 @@ export const backend = {
     workspace: {
         openDirectory: new Query<Workspace>("workspace/openDirectory"),
         open: new Query<Workspace, string>("workspace/open"),
-        items: new Query<Item[], ReadFileQuery>("workspace/items"),
+        root: new Query<Item<true>, WorkspaceId, WorkspaceId>("workspace/root"),
+        items: new Query<Item[], ReadFileQuery, ReadFileQuery>("workspace/items"),
         file: {
             content: new Query<FileContent, ReadFileQuery>("workspace/fileContent"),
             tokens: new Query<Token[], ReadFileQuery>("workspace/readFileTokens"),

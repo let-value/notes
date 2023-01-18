@@ -18,7 +18,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
 
     get ready() {
         return firstValueFrom(
-            combineLatest([this.items.pipeline, this.children]).pipe(
+            combineLatest([this.items.pipeline$, this.children]).pipe(
                 map(([items, children]) => items.length === children.size),
                 filter(Boolean),
             ),

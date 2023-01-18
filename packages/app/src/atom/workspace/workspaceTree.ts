@@ -1,15 +1,16 @@
 import { Item, WorkspaceId } from "models";
 import { noWait, selectorFamily } from "recoil";
-import { workspaceItemsSelector } from "./workspaceItemsSelector";
+import { workspaceItemsState } from "./workspaceItemsSelector";
+import { workspaceRootSelector } from "./workspaceRootSelector";
 
 export interface WorkspaceTreeReqest {
     workspaceId: WorkspaceId;
     expanded: string[];
 }
 
-export interface ListItem extends Item {
+export interface ListItem<TDirectory extends boolean = any> extends Item<TDirectory> {
     loading?: boolean;
-    collapsed?: Item[];
+    collapsed?: Item<true>[];
     depth: number;
 }
 
@@ -18,9 +19,9 @@ export const workspaceTree = selectorFamily({
     get:
         ({ workspaceId, expanded }: Readonly<WorkspaceTreeReqest>) =>
         async ({ get }) => {
-            const rootItems = await get(noWait(workspaceItemsSelector({ workspaceId, path: "" }))).toPromise();
+            const rootItem = await get(noWait(workspaceRootSelector(workspaceId))).toPromise();
 
-            const queue: ListItem[] = rootItems.map((x) => ({ ...x, depth: 0 }));
+            const queue: ListItem[] = [{ ...rootItem, depth: -1 }];
 
             const result: ListItem[] = [];
 
@@ -31,7 +32,7 @@ export const workspaceTree = selectorFamily({
                 }
 
                 if (item?.isDirectory && expanded.includes(item.path)) {
-                    const response = get(noWait(workspaceItemsSelector({ workspaceId, path: item.path })));
+                    const response = get(noWait(workspaceItemsState({ workspaceId, path: item.path })));
                     item.loading = response.state === "loading";
 
                     if (response.state === "hasValue") {

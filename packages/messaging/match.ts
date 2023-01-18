@@ -3,7 +3,7 @@ import { BroadcastMessage } from "./BroadcastMessage";
 import { Command } from "./Command";
 import { Query } from "./Query";
 
-export function matchQuery<T extends BroadcastMessage, TResult, TArgs>(query: Query<TResult, TArgs>) {
+export function matchQuery<T extends BroadcastMessage, TPayload, TArgs>(query: Query<TPayload, TArgs>) {
     return (source: Observable<T>) =>
         source.pipe(
             filter<T>((x) => x.type == "query" && x.name == query.name),
@@ -11,11 +11,13 @@ export function matchQuery<T extends BroadcastMessage, TResult, TArgs>(query: Qu
         );
 }
 
-export function matchResponse<T extends BroadcastMessage, TResult>(query: Query<TResult>) {
+export function matchResponse<T extends BroadcastMessage, TPayload, TArgs, TMeta>(
+    query: Query<TPayload, TArgs, TMeta>,
+) {
     return (source: Observable<T>) =>
         source.pipe(
             filter<T>((x) => x.type == "response" && x.name == query.name),
-            map((x) => x as BroadcastMessage<"response", TResult>),
+            map((x) => x as BroadcastMessage<"response", TPayload, TMeta>),
         );
 }
 

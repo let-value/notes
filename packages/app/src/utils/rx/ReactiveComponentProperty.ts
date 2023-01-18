@@ -1,5 +1,14 @@
 import { Component } from "react";
-import { distinctUntilChanged, filter, Observable, shareReplay, Subject, Subscription } from "rxjs";
+import {
+    distinctUntilChanged,
+    filter,
+    lastValueFrom,
+    Observable,
+    shareReplay,
+    Subject,
+    Subscription,
+    take,
+} from "rxjs";
 
 function findPropertyDescriptor(obj: object, name: string): PropertyDescriptor | undefined {
     if (Object.prototype.hasOwnProperty.call(obj, name)) {
@@ -15,8 +24,8 @@ function findPropertyDescriptor(obj: object, name: string): PropertyDescriptor |
 }
 
 export class ReactiveComponentProperty<TProps, TValue> {
-    subject: Subject<TProps>;
-    pipeline: Observable<TValue>;
+    props$: Subject<TProps>;
+    pipeline$: Observable<TValue>;
     value?: TValue;
     subsciption: Subscription;
 
@@ -24,15 +33,16 @@ export class ReactiveComponentProperty<TProps, TValue> {
         private readonly component: Component<TProps>,
         pipeline: (props$: Observable<TProps>) => Observable<TValue>,
     ) {
-        this.subject = new Subject<TProps>();
+        this.props$ = new Subject<TProps>();
 
-        this.pipeline = pipeline(this.subject.pipe(distinctUntilChanged())).pipe(
+        const propsPipeline = this.props$.pipe(distinctUntilChanged());
+        this.pipeline$ = pipeline(propsPipeline).pipe(
             filter((value) => !!value),
             distinctUntilChanged(),
             shareReplay(1),
         );
 
-        this.subsciption = this.pipeline.subscribe((value) => {
+        this.subsciption = this.pipeline$.subscribe((value) => {
             this.value = value;
             this.component.forceUpdate();
         });
@@ -42,7 +52,7 @@ export class ReactiveComponentProperty<TProps, TValue> {
             ...componentDidMount,
             value: () => {
                 componentDidMount?.value.apply(this.component);
-                this.subject.next(this.component.props);
+                this.props$.next(this.component.props);
             },
         });
 
@@ -51,7 +61,7 @@ export class ReactiveComponentProperty<TProps, TValue> {
             ...componentDidUpdate,
             value: (...args: unknown[]) => {
                 componentDidUpdate?.value.apply(this.component, args);
-                this.subject.next(this.component.props);
+                this.props$.next(this.component.props);
             },
         });
 
@@ -64,8 +74,14 @@ export class ReactiveComponentProperty<TProps, TValue> {
             },
         });
     }
+
+    update() {
+        this.props$.next({ ...this.component.props });
+        return lastValueFrom(this.pipeline$.pipe(take(2)));
+    }
+
     dispose() {
-        this.subject.complete();
+        this.props$.complete();
         this.subsciption.unsubscribe();
     }
 }

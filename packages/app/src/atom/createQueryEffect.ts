@@ -4,7 +4,10 @@ import { filter } from "rxjs";
 import { context } from "./storeServices";
 
 export const createQueryEffect =
-    <T>(query: Query<T>, predicate?: Parameters<typeof filter<BroadcastMessage<"response", T>>>[0]): AtomEffect<T> =>
+    <TPayload, TArgs, TMeta>(
+        query: Query<TPayload, TArgs, TMeta>,
+        predicate?: Parameters<typeof filter<BroadcastMessage<"response", TPayload, TMeta>>>[0],
+    ): AtomEffect<TPayload> =>
     ({ setSelf }) => {
         let pipeline = context.mediator.pipe(matchResponse(query));
 
