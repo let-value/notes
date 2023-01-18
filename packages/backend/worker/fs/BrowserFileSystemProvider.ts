@@ -85,7 +85,7 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
         throw new Error("Method not implemented.");
     }
 
-    async writeFile(item: Item<false>, data: unknown): Promise<void> {
+    async writeFile(item: Item<false>, data: string): Promise<void> {
         let handle = this.handles.getFile(item.path);
         if (!handle) {
             const parent = this.handles.getParent(item.path);

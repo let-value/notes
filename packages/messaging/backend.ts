@@ -3,9 +3,15 @@ import { Query } from "./Query";
 
 export type FileContent = string;
 
-export interface ReadFileQuery {
+export interface ItemQuery {
     workspaceId: WorkspaceId;
     path: Item["path"];
+}
+
+export interface CreateItemQuery {
+    workspaceId: WorkspaceId;
+    path: Item["name"];
+    name: Item["name"];
 }
 
 export interface SaveFileQuery {
@@ -20,10 +26,14 @@ export const backend = {
         openDirectory: new Query<Workspace>("workspace/openDirectory"),
         open: new Query<Workspace, string>("workspace/open"),
         root: new Query<Item<true>, WorkspaceId, WorkspaceId>("workspace/root"),
-        items: new Query<Item[], ReadFileQuery, ReadFileQuery>("workspace/items"),
+        items: new Query<Item[], ItemQuery, ItemQuery>("workspace/items"),
+        directory: {
+            create: new Query<boolean, CreateItemQuery>("workspace/directory/create"),
+        },
         file: {
-            content: new Query<FileContent, ReadFileQuery>("workspace/fileContent"),
-            tokens: new Query<Token[], ReadFileQuery>("workspace/readFileTokens"),
+            create: new Query<boolean, CreateItemQuery>("workspace/file/create"),
+            content: new Query<FileContent, ItemQuery>("workspace/fileContent"),
+            tokens: new Query<Token[], ItemQuery>("workspace/readFileTokens"),
             save: new Query<boolean, SaveFileQuery>("workspace/saveContent"),
         },
     },

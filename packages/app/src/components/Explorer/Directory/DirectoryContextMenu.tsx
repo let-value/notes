@@ -1,8 +1,7 @@
 import { Menu } from "@blueprintjs/core";
 import { MenuItem2 } from "@blueprintjs/popover2";
 import { Item } from "models";
-import { FC, useContext } from "react";
-import { ExplorerContext } from "../ExplorerContext";
+import { FC } from "react";
 import { useDirectoryContextHandlers } from "./useDirectoryContextHandlers";
 
 interface DirectoryContextMenuProps {
@@ -10,12 +9,12 @@ interface DirectoryContextMenuProps {
 }
 
 export const DirectoryContextMenu: FC<DirectoryContextMenuProps> = ({ item }) => {
-    const { workspace } = useContext(ExplorerContext);
-
-    const { handleRefresh } = useDirectoryContextHandlers(workspace, item);
+    const { handleNewFile, handleNewDirectory, handleRefresh } = useDirectoryContextHandlers(item);
 
     return (
         <Menu>
+            <MenuItem2 text="New File" onClick={handleNewFile} />
+            <MenuItem2 text="New Folder" onClick={handleNewDirectory} />
             <MenuItem2 text="Refresh" onClick={handleRefresh} />
             <MenuItem2 text="Delete" intent="danger" />
         </Menu>

@@ -1,17 +1,14 @@
+import { orderBy } from "lodash-es";
 import { Item, WorkspaceId } from "models";
 import { noWait, selectorFamily } from "recoil";
-import { workspaceItemsState } from "./workspaceItemsSelector";
+import { ListItem } from "./items/ListItem";
+import { newItemState } from "./items/newItemState";
+import { workspaceItemsState } from "./items/workspaceItemsSelector";
 import { workspaceRootSelector } from "./workspaceRootSelector";
 
 export interface WorkspaceTreeReqest {
     workspaceId: WorkspaceId;
     expanded: string[];
-}
-
-export interface ListItem<TDirectory extends boolean = any> extends Item<TDirectory> {
-    loading?: boolean;
-    collapsed?: Item<true>[];
-    depth: number;
 }
 
 export const workspaceTree = selectorFamily({
@@ -20,6 +17,7 @@ export const workspaceTree = selectorFamily({
         ({ workspaceId, expanded }: Readonly<WorkspaceTreeReqest>) =>
         async ({ get }) => {
             const rootItem = await get(noWait(workspaceRootSelector(workspaceId))).toPromise();
+            const newItem = get(newItemState);
 
             const queue: ListItem[] = [{ ...rootItem, depth: -1 }];
 
@@ -33,15 +31,22 @@ export const workspaceTree = selectorFamily({
 
                 const show = expanded.includes(item.path) || item.depth < 0;
 
-                if (item?.isDirectory && show) {
+                if (item?.isDirectory && show && !item.new) {
                     const response = get(noWait(workspaceItemsState({ workspaceId, path: item.path })));
                     item.loading = response.state === "loading";
+
+                    const childs: Item[] = [];
+
+                    const isNewItem = newItem?.path === item.path;
+                    if (isNewItem) {
+                        childs.push(newItem);
+                    }
 
                     if (response.state === "hasValue") {
                         const items = response.contents;
 
                         const firstItem = items?.[0];
-                        if (items.length === 1 && firstItem?.isDirectory) {
+                        if (!isNewItem && items.length === 1 && firstItem?.isDirectory) {
                             queue.unshift({
                                 ...firstItem,
                                 collapsed: [...(item.collapsed ?? []), item],
@@ -49,11 +54,19 @@ export const workspaceTree = selectorFamily({
                             });
                             continue;
                         }
-                        queue.unshift(...items.map((x) => ({ ...x, depth: item.depth + 1 })));
+
+                        childs.push(...items);
                     }
+
+                    queue.unshift(
+                        ...orderBy(childs, ["isDirectory", "new", "name"], ["desc", "asc", "asc"]).map((x) => ({
+                            ...x,
+                            depth: item.depth + 1,
+                        })),
+                    );
                 }
 
-                if (item.path === rootItem.path) {
+                if (item.path === rootItem.path && item.depth === -1) {
                     continue;
                 }
 

@@ -1,10 +1,10 @@
-import { backend, ReadFileQuery } from "messaging";
+import { backend, ItemQuery } from "messaging";
 import { CallbackInterface } from "recoil";
 import { context } from "../storeServices";
 import { fileChangesState } from "./fileChangesState";
 
 export const saveFile =
-    ({ workspaceId, path }: ReadFileQuery) =>
+    ({ workspaceId, path }: ItemQuery) =>
     async ({ set, snapshot }: CallbackInterface) => {
         if (!workspaceId || !path) {
             return undefined;

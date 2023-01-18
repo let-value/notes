@@ -1,3 +1,5 @@
+import { dirname } from "path";
+
 export class BrowserFileSystemHandlesHelper {
     private handleLookup = new Map<string, FileSystemHandle>();
 
@@ -5,24 +7,25 @@ export class BrowserFileSystemHandlesHelper {
         return this.handleLookup.get(path);
     }
 
-    getFile(path: string): FileSystemFileHandle {
+    getFile(path: string): FileSystemFileHandle | undefined {
         const handle = this.get(path);
-        if (!(handle instanceof FileSystemFileHandle)) {
+        if (handle && !(handle instanceof FileSystemFileHandle)) {
             throw new Error("Invalid handle");
         }
-        return handle;
+        return handle as FileSystemFileHandle;
     }
 
-    getDirectory(path: string): FileSystemDirectoryHandle {
+    getDirectory(path: string): FileSystemDirectoryHandle | undefined {
         const handle = this.get(path);
-        if (!(handle instanceof FileSystemDirectoryHandle)) {
+        if (handle && !(handle instanceof FileSystemDirectoryHandle)) {
             throw new Error("Invalid handle");
         }
-        return handle;
+        return handle as FileSystemDirectoryHandle;
     }
 
     getParent(path: string): FileSystemDirectoryHandle {
-        throw new Error("Invalid handle");
+        const parent = dirname(path);
+        return this.getDirectory(parent);
     }
 
     set(path: string, child: FileSystemHandle) {

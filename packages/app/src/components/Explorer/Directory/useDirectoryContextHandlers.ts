@@ -1,9 +1,52 @@
-import { useRefreshItem } from "@/atom/workspace/useRefreshItem";
-import { Item, Workspace } from "models";
-import { MouseEvent, useCallback } from "react";
+import { newItemState } from "@/atom/workspace";
+import { Item } from "models";
+import { MouseEvent, useCallback, useContext } from "react";
+import { useRecoilCallback } from "recoil";
+import { useRefreshItem } from "../../../atom/workspace/items/useRefreshItem";
+import { ExplorerContext } from "../ExplorerContext";
 
-export function useDirectoryContextHandlers(workspace: Workspace, item: Item<true>) {
+export function useDirectoryContextHandlers(item: Item<true>) {
+    const { workspace, expandState } = useContext(ExplorerContext);
+
+    const handleExpandDirectory = useCallback(() => {
+        expandState[1].set(item.path, true);
+    }, [expandState, item.path]);
+
     const refreshItem = useRefreshItem(workspace.id);
+
+    const handleNewDirectory = useRecoilCallback(
+        ({ set }) =>
+            (event: MouseEvent) => {
+                event.stopPropagation();
+                handleExpandDirectory();
+
+                set(newItemState, {
+                    new: true,
+                    name: "",
+                    path: item.path,
+                    isDirectory: true,
+                    depth: 0,
+                });
+            },
+        [handleExpandDirectory, item.path],
+    );
+
+    const handleNewFile = useRecoilCallback(
+        ({ set }) =>
+            (event: MouseEvent) => {
+                event.stopPropagation();
+                handleExpandDirectory();
+
+                set(newItemState, {
+                    new: true,
+                    name: "",
+                    path: item.path,
+                    isDirectory: false,
+                    depth: 0,
+                });
+            },
+        [handleExpandDirectory, item.path],
+    );
 
     const handleRefresh = useCallback(
         (event: MouseEvent) => {
@@ -15,6 +58,8 @@ export function useDirectoryContextHandlers(workspace: Workspace, item: Item<tru
     );
 
     return {
+        handleNewDirectory,
+        handleNewFile,
         handleRefresh,
     };
 }

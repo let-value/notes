@@ -4,7 +4,7 @@ import { workspaceItemsState, workspacePathsSelector } from "./workspaceItemsSel
 
 export const useRefreshItem = (workspaceId: WorkspaceId) =>
     useRecoilCallback(
-        ({ snapshot, refresh, set }) =>
+        ({ snapshot, refresh, reset, set }) =>
             async (item: Item<true>) => {
                 const paths = await snapshot.getPromise(workspacePathsSelector(workspaceId));
 
@@ -13,12 +13,14 @@ export const useRefreshItem = (workspaceId: WorkspaceId) =>
                         continue;
                     }
 
-                    refresh(workspaceItemsState({ workspaceId, path }));
                     set(workspacePathsSelector(workspaceId), (value) => {
                         const result = new Set(value);
-                        result.delete(item.path);
+                        result.delete(path);
                         return result;
                     });
+
+                    //reset(workspaceItemsState({ workspaceId, path }));
+                    refresh(workspaceItemsState({ workspaceId, path }));
                 }
             },
         [workspaceId],

@@ -1,5 +1,4 @@
-export * from "./useOpenDirectory";
-export * from "./useOpenWorkspace";
+export * from "./items";
 export * from "./workspace";
-export * from "./workspaceItemsSelector";
+export * from "./workspaceRootSelector";
 export * from "./workspaceTree";

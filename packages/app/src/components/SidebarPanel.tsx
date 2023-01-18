@@ -43,7 +43,6 @@ const options: AddSplitviewComponentOptions = {
     id,
     component: id,
     minimumSize: 200,
-    maximumSize: 400,
     snap: true,
 };
 

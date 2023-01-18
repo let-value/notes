@@ -1,5 +1,6 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import { Item } from "models";
+import { join } from "path";
 import { combineLatest, filter, firstValueFrom, map, mergeMap } from "rxjs";
 import { FileNode } from "./FileNode";
 import { TreeContext, TreeNode } from "./TreeItemNode";
@@ -23,6 +24,18 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
                 filter(Boolean),
             ),
         );
+    }
+
+    async createFile(name: string) {
+        const item = new Item<false>(join(this.props.item.path, name), name, false);
+        await this.context.store.fs.writeFile(item, "");
+        return await this.items.update();
+    }
+
+    async createDirectory(name: string) {
+        const item = new Item<true>(join(this.props.item.path, name), name, true);
+        await this.context.store.fs.createDirectory(item);
+        return await this.items.update();
     }
 
     render() {
