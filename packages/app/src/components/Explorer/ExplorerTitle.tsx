@@ -21,6 +21,7 @@ export const ExplorerTitle = () => {
                 className="group bp4-running-text"
                 depth={0}
                 path={[]}
+                icon="projects"
                 label={<span>{root.name}</span>}
                 secondaryLabel={
                     <div className="hidden flex-nowrap group-hover:flex">

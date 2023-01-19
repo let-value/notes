@@ -1,7 +1,6 @@
 /* eslint-disable no-useless-escape */
 import { languages } from "monaco-editor";
-
-export const wikilinkRegex = /(\!)?\[\[+([^\]\|]+)(?:\|)?([^\]]+)?\]\]/;
+import { linkName, linkRegex } from "../tokens/link";
 
 export const markdown = <languages.IMonarchLanguage>{
     defaultToken: "",
@@ -102,7 +101,7 @@ export const markdown = <languages.IMonarchLanguage>{
             [/`([^\\`]|@escapes)+`/, "variable"],
 
             // backlinks
-            [wikilinkRegex, "wikilink"],
+            [linkRegex, linkName],
 
             [/\#\[+([^\]]+)\]+/, "date"],
 

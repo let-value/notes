@@ -1,6 +1,6 @@
 import { DirectoryNode } from "./tree/DirectoryNode";
 import { FileNode } from "./tree/FileNode";
-import { TreeNode } from "./tree/TreeItemNode";
+import { TreeNode } from "./tree/TreeNode";
 import { WorkspaceNode } from "./tree/WorkspaceNode";
 
 export class TreeNodeExtensions {

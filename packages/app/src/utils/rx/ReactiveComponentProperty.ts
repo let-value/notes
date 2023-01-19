@@ -36,8 +36,9 @@ export class ReactiveComponentProperty<TProps, TValue> {
         this.props$ = new Subject<TProps>();
 
         const propsPipeline = this.props$.pipe(distinctUntilChanged());
+
         this.pipeline$ = pipeline(propsPipeline).pipe(
-            filter((value) => !!value),
+            filter((value) => value !== undefined),
             distinctUntilChanged(),
             shareReplay(1),
         );
@@ -54,6 +55,7 @@ export class ReactiveComponentProperty<TProps, TValue> {
                 componentDidMount?.value.apply(this.component);
                 this.props$.next(this.component.props);
             },
+            configurable: true,
         });
 
         const componentDidUpdate = findPropertyDescriptor(this.component, "componentDidUpdate");
@@ -63,6 +65,7 @@ export class ReactiveComponentProperty<TProps, TValue> {
                 componentDidUpdate?.value.apply(this.component, args);
                 this.props$.next(this.component.props);
             },
+            configurable: true,
         });
 
         const componentWillUnmount = findPropertyDescriptor(this.component, "componentWillUnmount");
@@ -72,6 +75,7 @@ export class ReactiveComponentProperty<TProps, TValue> {
                 componentWillUnmount?.value.apply(this.component);
                 this.dispose();
             },
+            configurable: true,
         });
     }
 

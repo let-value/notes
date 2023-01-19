@@ -1,7 +1,8 @@
 import { Item } from "models";
-import { fileComponent } from "../../components/Document";
+
 import { getLanguage } from "../../utils/getLanguage";
-import { TreeContext, TreeNode } from "./TreeItemNode";
+import { fileComponent } from "./file";
+import { TreeContext, TreeNode } from "./TreeNode";
 
 interface FileNodeProps {
     item: Item<false>;
@@ -20,6 +21,16 @@ export class FileNode extends TreeNode<FileNodeProps> {
 
     writeFile(content: string) {
         return this.context.store.fs.writeFile(this.props.item, content);
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
+        this.context.store.registry.lastValue.then((registry) => registry.addFile(this));
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        this.context.store.registry.lastValue.then((registry) => registry.removeFile(this));
     }
 
     render() {

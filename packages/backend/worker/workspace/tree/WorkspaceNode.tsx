@@ -1,15 +1,16 @@
 import { ReactiveComponentProperty } from "app/src/utils";
-import { combineLatest, filter, firstValueFrom, map, mergeMap } from "rxjs";
+import { combineLatest, map, mergeMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { DirectoryNode } from "./DirectoryNode";
-import { TreeContext, TreeNode } from "./TreeItemNode";
+import { FileRegistryNode } from "./FileRegistryNode";
+import { TreeContext, TreeNode } from "./TreeNode";
 
 interface WorkspaceProps {
     store: WorkspaceStore;
 }
 
 export class WorkspaceNode extends TreeNode<WorkspaceProps> {
-    root = new ReactiveComponentProperty(this, (props$) =>
+    root$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map((props) => props.store.workspace),
             mergeMap((workspace) => this.props.store.fs.initializeWorkspace(workspace)),
@@ -21,21 +22,28 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
         this.props.store.root.next(this);
     }
 
-    get ready() {
-        return firstValueFrom(
-            combineLatest([this.root.pipeline$, this.children]).pipe(
-                map(([root, children]) => !!root && children.size === 1),
-                filter(Boolean),
+    ready$ = new ReactiveComponentProperty(this, (props$) =>
+        props$.pipe(
+            mergeMap(() =>
+                combineLatest([this.root$.pipeline$, this.children]).pipe(
+                    map(([root, children]) => {
+                        if (!root) {
+                            return false;
+                        }
+                        return !!Array.from(children.values()).find((child) => child instanceof DirectoryNode);
+                    }),
+                ),
             ),
-        );
-    }
+        ),
+    );
 
     render() {
         const { store } = this.props;
 
         return (
             <TreeContext.Provider value={{ store, parent: this }}>
-                {this.root.value && <DirectoryNode item={this.root.value} />}
+                <FileRegistryNode />
+                {this.root$.value && <DirectoryNode item={this.root$.value} />}
             </TreeContext.Provider>
         );
     }

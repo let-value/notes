@@ -50,6 +50,9 @@
         "react-use": "^17.4.0",
         "recoil": "^0.7.6",
         "rxjs": "^7.8.0",
+        "rxjs-spy": "^8.0.2",
+        "rxjs-spy-devtools-plugin": "^0.0.4",
+        "rxjs-watcher": "^1.2.1",
         "usehooks-ts": "^2.9.1",
         "uuid": "^9.0.0"
     },

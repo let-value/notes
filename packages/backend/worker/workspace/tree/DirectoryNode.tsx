@@ -1,9 +1,9 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import { Item } from "models";
 import { join } from "path";
-import { combineLatest, filter, firstValueFrom, map, mergeMap } from "rxjs";
+import { combineLatest, map, mergeMap } from "rxjs";
 import { FileNode } from "./FileNode";
-import { TreeContext, TreeNode } from "./TreeItemNode";
+import { TreeContext, TreeNode } from "./TreeNode";
 
 interface DirectoryNodeProps {
     item: Item<true>;
@@ -17,14 +17,15 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
         ),
     );
 
-    get ready() {
-        return firstValueFrom(
-            combineLatest([this.items.pipeline$, this.children]).pipe(
-                map(([items, children]) => items.length === children.size),
-                filter(Boolean),
+    ready$ = new ReactiveComponentProperty(this, (props$) =>
+        props$.pipe(
+            mergeMap(() =>
+                combineLatest([this.items.pipeline$, this.children]).pipe(
+                    map(([items, children]) => items.length === children.size),
+                ),
             ),
-        );
-    }
+        ),
+    );
 
     async createFile(name: string) {
         const item = new Item<false>(join(this.props.item.path, name), name, false);

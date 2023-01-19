@@ -13,7 +13,7 @@ mediator.pipe(matchQuery(backend.workspace.root)).subscribe(async (query) => {
         const node = await store.root.lastValue;
 
         await node.ready;
-        const item = node.root.value;
+        const item = node.root$.value;
 
         await dispatcher.send(backend.workspace.root.response(item, query));
     } catch (error) {
