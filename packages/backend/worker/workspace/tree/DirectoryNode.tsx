@@ -3,7 +3,7 @@ import { Item } from "models";
 import { join } from "path";
 import { combineLatest, map, mergeMap } from "rxjs";
 import { FileNode } from "./FileNode";
-import { TreeContext, TreeNode } from "./TreeNode";
+import { TreeContext, TreeContextProps, TreeNode } from "./TreeNode";
 
 interface DirectoryNodeProps {
     item: Item<true>;
@@ -39,11 +39,11 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
         return await this.items.update();
     }
 
-    render() {
-        const { store } = this.context;
+    newContext: TreeContextProps = { store: this.context.store, parent: this };
 
+    render() {
         return (
-            <TreeContext.Provider value={{ store, parent: this }}>
+            <TreeContext.Provider value={this.newContext}>
                 {this.items.value?.map((child) => {
                     if (child.isDirectory) {
                         return <DirectoryNode key={child.path} item={child} />;

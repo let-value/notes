@@ -3,7 +3,7 @@ import { combineLatest, map, mergeMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { DirectoryNode } from "./DirectoryNode";
 import { FileRegistryNode } from "./FileRegistryNode";
-import { TreeContext, TreeNode } from "./TreeNode";
+import { TreeContext, TreeContextProps, TreeNode } from "./TreeNode";
 
 interface WorkspaceProps {
     store: WorkspaceStore;
@@ -37,13 +37,13 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
         ),
     );
 
-    render() {
-        const { store } = this.props;
+    newContext: TreeContextProps = { store: this.props.store, parent: this };
 
+    render() {
         return (
-            <TreeContext.Provider value={{ store, parent: this }}>
+            <TreeContext.Provider value={this.newContext}>
                 <FileRegistryNode />
-                {this.root$.value && <DirectoryNode item={this.root$.value} />}
+                {this.root$.value && <DirectoryNode key="directory" item={this.root$.value} />}
             </TreeContext.Provider>
         );
     }

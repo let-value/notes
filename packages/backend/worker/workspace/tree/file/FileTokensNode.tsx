@@ -6,9 +6,13 @@ import { ComponentType } from "react";
 import { distinctUntilChanged, map, mergeMap } from "rxjs";
 import { DocumentNode } from "./DocumentNode";
 
-interface FileTokensNodeProps {
+export interface FileTokensChildrenProps {
+    tokens: Token[];
+}
+
+export interface FileTokensNodeProps {
     content: string;
-    children: ComponentType<{ tokens: Token[] }>;
+    children: ComponentType<FileTokensChildrenProps>;
 }
 
 export class FileTokensNode extends DocumentNode<FileTokensNodeProps> {

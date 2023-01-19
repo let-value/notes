@@ -1,5 +1,5 @@
 import { ReactiveComponentProperty, ReactiveValue } from "app/src/utils";
-import { Component } from "react";
+import { PureComponent } from "react";
 
 import { createContext } from "react";
 import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, mergeMap, scan } from "rxjs";
@@ -12,7 +12,7 @@ export interface TreeContextProps<TParent extends TreeNode = TreeNode> {
 
 export const TreeContext = createContext<TreeContextProps>(null);
 
-export class TreeNode<TProps = unknown, TState = unknown> extends Component<TProps, TState> {
+export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<TProps, TState> {
     static contextType = TreeContext;
     declare context: TreeContextProps;
     suspended = new ReactiveValue<boolean>();

@@ -3,8 +3,12 @@ import { ComponentType } from "react";
 import { mergeMap } from "rxjs";
 import { DocumentNode } from "./DocumentNode";
 
-interface FileContentNodeProps {
-    children: ComponentType<{ content: string }>;
+export interface FileContentChildrenProps {
+    content: string;
+}
+
+export interface FileContentNodeProps {
+    children: ComponentType<FileContentChildrenProps>;
 }
 
 export class FileContentNode extends DocumentNode<FileContentNodeProps> {

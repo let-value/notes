@@ -2,18 +2,14 @@ import { Item } from "models";
 
 import { getLanguage } from "../../utils/getLanguage";
 import { fileComponent } from "./file";
-import { TreeContext, TreeNode } from "./TreeNode";
+import { TreeContext, TreeContextProps, TreeNode } from "./TreeNode";
 
 interface FileNodeProps {
     item: Item<false>;
 }
 
 export class FileNode extends TreeNode<FileNodeProps> {
-    language: string;
-    constructor(props) {
-        super(props);
-        this.language = getLanguage(props.item);
-    }
+    language = getLanguage(this.props.item);
 
     readFile() {
         return this.context.store.fs.readFile(this.props.item);
@@ -33,9 +29,10 @@ export class FileNode extends TreeNode<FileNodeProps> {
         this.context.store.registry.lastValue.then((registry) => registry.removeFile(this));
     }
 
+    newContext: TreeContextProps = { store: this.context.store, parent: this };
+
     render() {
         const { item } = this.props;
-        const { store } = this.context;
 
         const Component = fileComponent[this.language];
 
@@ -44,8 +41,8 @@ export class FileNode extends TreeNode<FileNodeProps> {
         }
 
         return (
-            <TreeContext.Provider value={{ store, parent: this }}>
-                <Component {...item} language={this.language} />
+            <TreeContext.Provider value={this.newContext}>
+                <Component key="component" {...item} language={this.language} />
             </TreeContext.Provider>
         );
     }
