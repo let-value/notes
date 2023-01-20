@@ -1,9 +1,11 @@
+import { languages } from "lang-map";
 import { Item } from "models";
+import { extname } from "path";
 
-export function getLanguage(tree: Item): string {
-    if (!tree || tree.isDirectory) {
+export function getLanguage(item: Item): string {
+    if (!item || item.isDirectory) {
         return undefined;
     }
 
-    return "markdown";
+    return languages(extname(item.path))?.[0];
 }

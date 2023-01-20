@@ -10,7 +10,7 @@ export class TreeNodeExtensions {
             const node = queue.shift();
             if (node instanceof WorkspaceNode && node.constructor === WorkspaceNode) {
                 await node.ready;
-                for (const child of node.children.value.values()) {
+                for (const child of node.children$.value.values()) {
                     queue.push(child);
                 }
                 continue;
@@ -27,7 +27,7 @@ export class TreeNodeExtensions {
                     return node;
                 }
 
-                for (const child of node.children.value.values()) {
+                for (const child of node.children$.value.values()) {
                     queue.push(child);
                 }
             }

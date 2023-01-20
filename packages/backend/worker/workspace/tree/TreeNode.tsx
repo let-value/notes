@@ -4,8 +4,10 @@ import { PureComponent } from "react";
 import { createContext } from "react";
 import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, mergeMap, scan } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
+import { WorkspaceNode } from "./WorkspaceNode";
 
 export interface TreeContextProps<TParent extends TreeNode = TreeNode> {
+    root: WorkspaceNode;
     store: WorkspaceStore;
     parent: TParent;
 }
@@ -16,7 +18,7 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
     static contextType = TreeContext;
     declare context: TreeContextProps;
     suspended = new ReactiveValue<boolean>();
-    children = new BehaviorSubject(new Set<TreeNode>());
+    children$ = new BehaviorSubject(new Array<TreeNode>());
 
     ready$ = new ReactiveComponentProperty(this, (props$) => props$.pipe(map(() => true)));
     get ready() {
@@ -28,7 +30,7 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
             mergeMap(() => {
                 return combineLatest([
                     this.ready$.pipeline$,
-                    this.children.pipe(
+                    this.children$.pipe(
                         mergeMap((children) => Array.from(children).map((child) => child.deepReady$.pipeline$)),
                         mergeMap((x) => x),
                         scan((acc, val) => acc.concat(val), [] as boolean[]),
@@ -43,15 +45,18 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
     }
 
     addChildren(node: TreeNode) {
-        const children = new Set(this.children.getValue());
-        children.add(node);
-        this.children.next(children);
+        const children = [...this.children$.getValue()];
+        children.push(node);
+        this.children$.next(children);
     }
 
     removeChildren(node: TreeNode) {
-        const children = new Set(this.children.getValue());
-        children.delete(node);
-        this.children.next(children);
+        const children = [...this.children$.getValue()];
+        const index = children.indexOf(node);
+        if (index !== -1) {
+            children.splice(index, 1);
+        }
+        this.children$.next(children);
     }
 
     componentDidMount() {

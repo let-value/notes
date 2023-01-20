@@ -20,8 +20,8 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
     ready$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             mergeMap(() =>
-                combineLatest([this.items.pipeline$, this.children]).pipe(
-                    map(([items, children]) => items.length === children.size),
+                combineLatest([this.items.pipeline$, this.children$]).pipe(
+                    map(([items, children]) => items.length === children.length),
                 ),
             ),
         ),
@@ -39,7 +39,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
         return await this.items.update();
     }
 
-    newContext: TreeContextProps = { store: this.context.store, parent: this };
+    newContext: TreeContextProps = { ...this.context, parent: this };
 
     render() {
         return (

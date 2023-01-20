@@ -1,7 +1,7 @@
 export const linkName = "wikilink";
 
 // eslint-disable-next-line no-useless-escape
-export const linkRegex = /(\!)?\[\[+([^\]\|]+)(?:\|)?([^\]]+)?\]\]/;
+export const linkRegex = /(\!)?\[\[+([^\]\|]+)?(?:\|)?([^\]]+)?\]\]/;
 
 export function parseLink(link: string) {
     const match = link.match(linkRegex);

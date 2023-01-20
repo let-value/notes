@@ -2122,12 +2122,14 @@ __metadata:
     filter-async-rxjs-pipe: ^1.0.1
     immer: ^9.0.17
     iti: ^0.6.0
+    lang-map: ^0.4.0
     language-detect: ^1.1.0
     language-map: ^1.5.0
     messaging: "workspace:^"
     models: "workspace:^"
     monaco-editor: ^0.34.1
     observable-hooks: ^4.2.1
+    papaparse: ^5.3.2
     path: "npm:path-browserify@*"
     queue: "workspace:^"
     react: ^18.2.0
@@ -5468,6 +5470,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lang-map@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "lang-map@npm:0.4.0"
+  dependencies:
+    language-map: ^1.1.0
+  checksum: 99ffde549ba4d20a74b6178f35e80c5c1cc4f5019d69ded33af2bb765bbf3eff459db7a094552cbb19790343daadd81199e624faf18aaff448da1050efdfa407
+  languageName: node
+  linkType: hard
+
 "language-classifier@npm:0.0.1":
   version: 0.0.1
   resolution: "language-classifier@npm:0.0.1"
@@ -5486,7 +5497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"language-map@npm:^1.5.0":
+"language-map@npm:^1.1.0, language-map@npm:^1.5.0":
   version: 1.5.0
   resolution: "language-map@npm:1.5.0"
   checksum: a54a05435cc64bffdb61c38dd6c10c75551162e67fa8756a681d9cddb8801a3ed66c1447a4bfbff5deedb95ad2630ca36e300583ede290ad1bf6e6fd0edb69c0
@@ -6603,6 +6614,13 @@ __metadata:
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 1be2bfa1f807608c7538afa15d6f25baa523c30ec870a3228a89579e474a4d992f4293859524e46d5d87fd30fa17c5edf34dbef0671251d9749820b488660b16
+  languageName: node
+  linkType: hard
+
+"papaparse@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "papaparse@npm:5.3.2"
+  checksum: a5950ef931a42f6759a8d3823a43dd30f375b37a0ddea6ea5448c0c5024cd226819231958c49c24fbcdeab297c63fd1d630130b3439876ea0fd17d8a267738ae
   languageName: node
   linkType: hard
 

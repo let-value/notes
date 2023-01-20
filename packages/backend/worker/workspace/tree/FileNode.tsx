@@ -21,15 +21,15 @@ export class FileNode extends TreeNode<FileNodeProps> {
 
     componentDidMount() {
         super.componentDidMount();
-        this.context.store.registry.lastValue.then((registry) => registry.addFile(this));
+        this.context.root.registry.current?.addFile(this);
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
-        this.context.store.registry.lastValue.then((registry) => registry.removeFile(this));
+        this.context.root.registry.current?.removeFile(this);
     }
 
-    newContext: TreeContextProps = { store: this.context.store, parent: this };
+    newContext: TreeContextProps = { ...this.context, parent: this };
 
     render() {
         const { item } = this.props;

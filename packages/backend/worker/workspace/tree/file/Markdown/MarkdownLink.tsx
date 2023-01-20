@@ -20,17 +20,18 @@ export class MarkdownLink extends DocumentNode<MarkdownLinkProps> {
         props$.pipe(
             mergeMap(() => this.link.pipeline$),
             mergeMap(async (link) => {
-                const registry = await this.context.store.registry.lastValue;
+                const registry = await this.context.root.registry.current;
                 return registry.resolveLink(this.context.parent.props.item, link.path);
             }),
         ),
     );
 
     render() {
-        if (this.target.value == undefined) {
+        if (!this.target.value) {
             return null;
         }
-        console.log(this.props.token, this.link.value, this.target.value);
+
+        console.log(this.link.value, this.target.value);
 
         return null;
     }
