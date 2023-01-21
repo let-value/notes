@@ -1,0 +1,13 @@
+@import "@blueprintjs/core/lib/scss/variables";
+
+.root {
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-left: -2px;
+    margin-right: -2px;
+}
+
+.selected {
+    background-color: $pt-intent-primary;
+    color: white !important;
+}

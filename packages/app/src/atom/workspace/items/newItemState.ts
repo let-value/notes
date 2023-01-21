@@ -1,7 +1,7 @@
 import { context } from "@/atom/storeServices";
 import { backend } from "messaging";
-import { WorkspaceId } from "models";
 import { atom, useRecoilCallback } from "recoil";
+import { workspaceState } from "../workspace";
 import { ListItem } from "./ListItem";
 
 export const newItemState = atom<ListItem | undefined>({
@@ -9,9 +9,9 @@ export const newItemState = atom<ListItem | undefined>({
     default: undefined,
 });
 
-export const useCreateDirectory = (workspaceId: WorkspaceId, item: ListItem<true>) =>
+export const useCreateDirectory = (item: ListItem<true>) =>
     useRecoilCallback(
-        ({ set }) =>
+        ({ set, snapshot }) =>
             async (name: string) => {
                 set(newItemState, undefined);
 
@@ -19,18 +19,20 @@ export const useCreateDirectory = (workspaceId: WorkspaceId, item: ListItem<true
                     return;
                 }
 
+                const workspace = await snapshot.getPromise(workspaceState);
+
                 await context.dispatcher.call(backend.workspace.directory.create, {
-                    workspaceId,
+                    workspaceId: workspace.id,
                     path: item.path,
                     name,
                 });
             },
-        [item.path, workspaceId],
+        [item.path],
     );
 
-export const useCreateFile = (workspaceId: WorkspaceId, item: ListItem<false>) =>
+export const useCreateFile = (item: ListItem<false>) =>
     useRecoilCallback(
-        ({ set }) =>
+        ({ set, snapshot }) =>
             async (name: string) => {
                 set(newItemState, undefined);
 
@@ -38,7 +40,13 @@ export const useCreateFile = (workspaceId: WorkspaceId, item: ListItem<false>) =
                     return;
                 }
 
-                await context.dispatcher.call(backend.workspace.file.create, { workspaceId, path: item.path, name });
+                const workspace = await snapshot.getPromise(workspaceState);
+
+                await context.dispatcher.call(backend.workspace.file.create, {
+                    workspaceId: workspace.id,
+                    path: item.path,
+                    name,
+                });
             },
-        [item.path, workspaceId],
+        [item.path],
     );

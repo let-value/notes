@@ -1,27 +1,29 @@
-import { Item, WorkspaceId } from "models";
+import { Item } from "models";
 import { useRecoilCallback } from "recoil";
+import { workspaceState } from "../workspace";
 import { workspaceItemsState, workspacePathsSelector } from "./workspaceItemsSelector";
 
-export const useRefreshItem = (workspaceId: WorkspaceId) =>
+export const useRefreshItem = () =>
     useRecoilCallback(
-        ({ snapshot, refresh, reset, set }) =>
+        ({ snapshot, refresh, set }) =>
             async (item: Item<true>) => {
-                const paths = await snapshot.getPromise(workspacePathsSelector(workspaceId));
+                const workspace = await snapshot.getPromise(workspaceState);
+
+                const paths = await snapshot.getPromise(workspacePathsSelector(workspace.id));
 
                 for (const path of paths) {
                     if (!path.startsWith(item.path)) {
                         continue;
                     }
 
-                    set(workspacePathsSelector(workspaceId), (value) => {
+                    set(workspacePathsSelector(workspace.id), (value) => {
                         const result = new Set(value);
                         result.delete(path);
                         return result;
                     });
 
-                    //reset(workspaceItemsState({ workspaceId, path }));
-                    refresh(workspaceItemsState({ workspaceId, path }));
+                    refresh(workspaceItemsState({ workspaceId: workspace?.id, path }));
                 }
             },
-        [workspaceId],
+        [],
     );

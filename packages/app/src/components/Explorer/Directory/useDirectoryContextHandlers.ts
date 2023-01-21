@@ -1,24 +1,20 @@
 import { newItemState } from "@/atom/workspace";
+import { useExpandItem } from "@/atom/workspace/items/expandedItemsState";
 import { Item } from "models";
-import { MouseEvent, useCallback, useContext } from "react";
+import { MouseEvent, useCallback } from "react";
 import { useRecoilCallback } from "recoil";
 import { useRefreshItem } from "../../../atom/workspace/items/useRefreshItem";
-import { ExplorerContext } from "../ExplorerContext";
 
 export function useDirectoryContextHandlers(item: Item<true>) {
-    const { workspace, expandState } = useContext(ExplorerContext);
+    const expandDirectory = useExpandItem();
 
-    const handleExpandDirectory = useCallback(() => {
-        expandState[1].set(item.path, true);
-    }, [expandState, item.path]);
-
-    const refreshItem = useRefreshItem(workspace.id);
+    const refreshItem = useRefreshItem();
 
     const handleNewDirectory = useRecoilCallback(
         ({ set }) =>
             (event: MouseEvent) => {
                 event.stopPropagation();
-                handleExpandDirectory();
+                expandDirectory(item.path);
 
                 set(newItemState, {
                     new: true,
@@ -28,14 +24,14 @@ export function useDirectoryContextHandlers(item: Item<true>) {
                     depth: 0,
                 });
             },
-        [handleExpandDirectory, item.path],
+        [expandDirectory, item.path],
     );
 
     const handleNewFile = useRecoilCallback(
         ({ set }) =>
             (event: MouseEvent) => {
                 event.stopPropagation();
-                handleExpandDirectory();
+                expandDirectory(item.path);
 
                 set(newItemState, {
                     new: true,
@@ -45,7 +41,7 @@ export function useDirectoryContextHandlers(item: Item<true>) {
                     depth: 0,
                 });
             },
-        [handleExpandDirectory, item.path],
+        [expandDirectory, item.path],
     );
 
     const handleRefresh = useCallback(

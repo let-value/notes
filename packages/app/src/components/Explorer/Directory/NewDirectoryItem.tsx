@@ -1,8 +1,7 @@
 import { useCreateDirectory } from "@/atom/workspace";
 import { ListItem } from "@/atom/workspace/items/ListItem";
 import { EditableText, TreeNode } from "@blueprintjs/core";
-import { ComponentProps, FC, useContext, useEffect, useRef } from "react";
-import { ExplorerContext } from "../ExplorerContext";
+import { ComponentProps, FC, useEffect, useRef } from "react";
 
 interface NewDirectoryItemProps extends Partial<ComponentProps<typeof TreeNode>> {
     item: ListItem<true>;
@@ -10,9 +9,8 @@ interface NewDirectoryItemProps extends Partial<ComponentProps<typeof TreeNode>>
 
 export const NewDirectoryItem: FC<NewDirectoryItemProps> = (props) => {
     const { item, ...other } = props;
-    const { workspace } = useContext(ExplorerContext);
 
-    const handleCreateDirectory = useCreateDirectory(workspace.id, item);
+    const handleCreateDirectory = useCreateDirectory(item);
 
     const editor = useRef<EditableText>(null);
     useEffect(() => {

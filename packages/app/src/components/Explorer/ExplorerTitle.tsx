@@ -1,14 +1,13 @@
-import { workspaceRootSelector } from "@/atom/workspace";
+import { workspaceRootSelector, workspaceState } from "@/atom/workspace";
+import { useResetExpand } from "@/atom/workspace/items/expandedItemsState";
 import { Button, TreeNode } from "@blueprintjs/core";
-import { useContext } from "react";
 import { useRecoilValue } from "recoil";
 import { useDirectoryContextHandlers } from "./Directory/useDirectoryContextHandlers";
-import { ExplorerContext } from "./ExplorerContext";
 
 export const ExplorerTitle = () => {
-    const { workspace, expandState } = useContext(ExplorerContext);
+    const workspace = useRecoilValue(workspaceState);
 
-    const handleResetExpand = expandState[1].reset;
+    const handleResetExpand = useResetExpand();
 
     const root = useRecoilValue(workspaceRootSelector(workspace.id));
 

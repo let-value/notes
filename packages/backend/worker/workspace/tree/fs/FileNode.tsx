@@ -1,8 +1,8 @@
 import { Item } from "models";
 
-import { getLanguage } from "../../utils/getLanguage";
+import { getLanguage } from "../../../utils/getLanguage";
+import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { fileComponent } from "./file";
-import { TreeContext, TreeContextProps, TreeNode } from "./TreeNode";
 
 interface FileNodeProps {
     item: Item<false>;

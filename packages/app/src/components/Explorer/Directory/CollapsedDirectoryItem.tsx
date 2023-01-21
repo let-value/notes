@@ -1,5 +1,9 @@
+import { selectedItemsState } from "@/atom/workspace/items/selectedItemsState";
 import { ContextMenu2 } from "@blueprintjs/popover2";
+import cx from "classnames";
 import { FC } from "react";
+import { useRecoilValue } from "recoil";
+import styles from "./CollapsedDirectoryItem.module.scss";
 import { DirectoryContextMenu } from "./DirectoryContextMenu";
 import { DirectoryHandlersProps, useDirectoryHandlers } from "./useDirectoryItem";
 
@@ -9,10 +13,16 @@ export const CollapsedDirectoryItem: FC<CollapsedDirectoryItemProps> = (props) =
     const { item } = props;
     const { handleSelect } = useDirectoryHandlers(props);
 
+    const selected = useRecoilValue(selectedItemsState);
+
     return (
         <ContextMenu2 tagName="span" content={<DirectoryContextMenu item={item} />}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a href="javascript:void(null);" onClick={handleSelect}>
+            <a
+                href="javascript:void(null);"
+                className={cx("rounded", styles.root, { [styles.selected]: selected.has(item.path) })}
+                onClick={handleSelect}
+            >
                 {item.name}
             </a>
         </ContextMenu2>

@@ -1,8 +1,7 @@
 import { useCreateFile } from "@/atom/workspace";
 import { ListItem } from "@/atom/workspace/items/ListItem";
 import { EditableText, TreeNode } from "@blueprintjs/core";
-import { ComponentProps, FC, useContext, useEffect, useRef } from "react";
-import { ExplorerContext } from "../ExplorerContext";
+import { ComponentProps, FC, useEffect, useRef } from "react";
 
 interface NewFileItemProps extends Partial<ComponentProps<typeof TreeNode>> {
     item: ListItem<false>;
@@ -11,9 +10,7 @@ interface NewFileItemProps extends Partial<ComponentProps<typeof TreeNode>> {
 export const NewFileItem: FC<NewFileItemProps> = (props) => {
     const { item, ...other } = props;
 
-    const { workspace } = useContext(ExplorerContext);
-
-    const handleCreateFile = useCreateFile(workspace.id, item);
+    const handleCreateFile = useCreateFile(item);
     const editor = useRef<EditableText>(null);
 
     useEffect(() => {

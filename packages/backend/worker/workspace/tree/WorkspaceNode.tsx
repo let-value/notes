@@ -2,8 +2,8 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import { createRef } from "react";
 import { combineLatest, map, mergeMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
-import { DirectoryNode } from "./DirectoryNode";
-import { FileRegistryNode } from "./FileRegistryNode";
+import { DirectoryNode } from "./fs/DirectoryNode";
+import { FileRegistryNode } from "./fs/FileRegistryNode";
 import { HyperFormulaNode } from "./HyperFormulaNode";
 import { TreeContext, TreeContextProps, TreeNode } from "./TreeNode";
 

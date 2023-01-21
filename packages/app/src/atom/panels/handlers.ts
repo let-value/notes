@@ -1,4 +1,3 @@
-import { incrementFileNameIfExist } from "@/utils";
 import { DockviewApi } from "dockview";
 import { Item, Workspace } from "models";
 import { useCallback } from "react";
@@ -8,7 +7,6 @@ import { editorsDock$ } from "./editorsDock";
 export const useSetEditorsDock = () =>
     useCallback((api: DockviewApi) => {
         editorsDock$.next(api);
-        api.onDidLayoutChange(() => editorsDock$.next(api));
     }, []);
 
 export const useOpenEditorPanel = (workspace: Workspace) =>
@@ -22,14 +20,10 @@ export const useOpenEditorPanel = (workspace: Workspace) =>
 
             const panel = makeEditorPanelOptions({ workspace, item });
 
-            const existingPanel = api.panels.filter((x) => x.id.startsWith(panel.id));
-            if (existingPanel.length > 0) {
-                panel.id = incrementFileNameIfExist(
-                    panel.id,
-                    existingPanel.map((x) => x.id),
-                );
-                // existingPanel.api.setActive();
-                // return;
+            const existingPanel = api.panels.find((x) => x.id.startsWith(panel.id));
+            if (existingPanel) {
+                existingPanel.api.setActive();
+                return;
             }
 
             api.addPanel(panel);

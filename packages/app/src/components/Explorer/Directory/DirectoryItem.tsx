@@ -1,7 +1,6 @@
 import { ListItem } from "@/atom/workspace/items/ListItem";
 import { Spinner, TreeNode } from "@blueprintjs/core";
 import { ContextMenu2 } from "@blueprintjs/popover2";
-import { Item } from "models";
 import { ComponentProps, FC, Fragment, useMemo } from "react";
 import { CollapsedDirectoryItem } from "./CollapsedDirectoryItem";
 import { DirectoryContextMenu } from "./DirectoryContextMenu";
@@ -10,7 +9,6 @@ import { DirectoryHandlersProps, useDirectoryHandlers } from "./useDirectoryItem
 
 interface DirectoryItemProps extends Partial<ComponentProps<typeof TreeNode>>, DirectoryHandlersProps {
     item: ListItem<true>;
-    onSelect: (item: Item<true>) => void;
 }
 
 export const DirectoryItem: FC<DirectoryItemProps> = (props) => {
@@ -48,9 +46,9 @@ export const DirectoryItem: FC<DirectoryItemProps> = (props) => {
                 depth={item.depth}
                 label={<>{segments}</>}
                 path={[]}
-                onClick={handleSelect}
-                onExpand={handleSelect}
-                onCollapse={handleSelect}
+                onClick={(_, event) => handleSelect(event)}
+                onExpand={(_, event) => handleSelect(event)}
+                onCollapse={(_, event) => handleSelect(event)}
                 {...other}
             />
         </ContextMenu2>

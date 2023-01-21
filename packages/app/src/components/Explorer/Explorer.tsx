@@ -1,14 +1,14 @@
 import { useOpenEditorPanel } from "@/atom/panels";
 import { workspaceTree } from "@/atom/workspace";
+import { expandedItemsState, useToggleExpandItem } from "@/atom/workspace/items/expandedItemsState";
+import { selectedItemsState, useSelectItem, useToggleSelectItem } from "@/atom/workspace/items/selectedItemsState";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import cx from "classnames";
 import { Item, Workspace } from "models";
-import { FC, ReactNode, useCallback, useMemo, useRef } from "react";
-import { useRecoilValueLoadable } from "recoil";
-import { useMap } from "usehooks-ts";
+import { FC, MouseEvent, ReactNode, useCallback, useRef } from "react";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { DirectoryItem } from "./Directory/DirectoryItem";
 import styles from "./Explorer.module.css";
-import { ExplorerContext } from "./ExplorerContext";
 import { ExplorerTitle } from "./ExplorerTitle";
 import { FileItem } from "./File/FileItem";
 
@@ -19,12 +19,14 @@ interface ExplorerProps {
 export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
     const parentRef = useRef<HTMLDivElement>(null);
 
-    const expandState = useMap<string, boolean>();
-    const [expand, { set: expandFolder, remove: collapseFolder }] = expandState;
+    const selected = useRecoilValue(selectedItemsState);
+    const toggleSelectItem = useToggleSelectItem();
+    const selectItem = useSelectItem();
 
-    const tree = useRecoilValueLoadable(
-        workspaceTree({ workspaceId: workspace.id, expanded: Array.from(expand.keys()) }),
-    );
+    const expanded = useRecoilValue(expandedItemsState);
+    const toggleExpand = useToggleExpandItem();
+
+    const tree = useRecoilValueLoadable(workspaceTree({ workspaceId: workspace.id, expanded }));
 
     const rowVirtualizer = useVirtualizer({
         count: tree.contents?.length ?? 0,
@@ -33,67 +35,82 @@ export const Explorer: FC<ExplorerProps> = ({ workspace }) => {
         overscan: 5,
     });
 
-    const handleSelectFile = useOpenEditorPanel(workspace);
-
-    const handleSelectDirectory = useCallback(
-        (item: Item<true>) => {
-            const expanded = expand.get(item.path);
-            if (expanded) {
-                collapseFolder(item.path);
-            } else {
-                expandFolder(item.path, true);
+    const openEditorPanel = useOpenEditorPanel(workspace);
+    const handleSelectFile = useCallback(
+        (item: Item<false>, event: MouseEvent) => {
+            if (event.ctrlKey) {
+                toggleSelectItem(item.path);
+                return;
             }
+
+            openEditorPanel(item);
         },
-        [collapseFolder, expand, expandFolder],
+        [openEditorPanel, toggleSelectItem],
     );
 
-    const context = useMemo(() => ({ workspace, expandState }), [expandState, workspace]);
+    const handleSelectDirectory = useCallback(
+        (item: Item<true>, event: MouseEvent) => {
+            if (event.ctrlKey) {
+                toggleSelectItem(item.path);
+                return;
+            }
+
+            selectItem(item.path, true);
+            toggleExpand(item.path);
+        },
+        [selectItem, toggleExpand, toggleSelectItem],
+    );
 
     if (!workspace || tree.state !== "hasValue") {
         return null;
     }
 
     return (
-        <ExplorerContext.Provider value={context}>
-            <div className="flex flex-col flex-1 h-full w-full overflow-hidden">
-                <ExplorerTitle />
-                <div ref={parentRef} className="flex-1 overflow-y-auto overflow-x-hidden h-full">
-                    <div
-                        className={cx(styles.tree, "relative bp4-tree bp4-tree-node-list bp4-tree-root")}
-                        style={{ height: rowVirtualizer.getTotalSize() }}
-                    >
-                        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                            const item = tree.contents?.[virtualRow.index];
+        <div className="flex flex-col flex-1 h-full w-full overflow-hidden">
+            <ExplorerTitle />
+            <div ref={parentRef} className="flex-1 overflow-y-auto overflow-x-hidden h-full">
+                <div
+                    className={cx(styles.tree, "relative bp4-tree bp4-tree-node-list bp4-tree-root")}
+                    style={{ height: rowVirtualizer.getTotalSize() }}
+                >
+                    {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                        const item = tree.contents?.[virtualRow.index];
 
-                            let children: ReactNode;
+                        let children: ReactNode;
 
-                            if (item.isDirectory) {
-                                children = (
-                                    <DirectoryItem
-                                        item={item}
-                                        isExpanded={expand.get(item.path)}
-                                        onSelect={handleSelectDirectory}
-                                    />
-                                );
-                            }
-
-                            if (!item.isDirectory) {
-                                children = <FileItem item={item} onSelect={handleSelectFile} />;
-                            }
-
-                            return (
-                                <div
-                                    className="absolute whitespace-nowrap top-0 left-0 w-full"
-                                    key={`${item.path}${item.new}`}
-                                    style={{ height: virtualRow.size, transform: `translateY(${virtualRow.start}px)` }}
-                                >
-                                    {children}
-                                </div>
+                        if (item.isDirectory) {
+                            children = (
+                                <DirectoryItem
+                                    item={item}
+                                    isExpanded={expanded.has(item.path)}
+                                    isSelected={selected.has(item.path)}
+                                    onSelect={handleSelectDirectory}
+                                />
                             );
-                        })}
-                    </div>
+                        }
+
+                        if (!item.isDirectory) {
+                            children = (
+                                <FileItem
+                                    item={item}
+                                    isSelected={selected.has(item.path)}
+                                    onSelect={handleSelectFile}
+                                />
+                            );
+                        }
+
+                        return (
+                            <div
+                                className="absolute whitespace-nowrap top-0 left-0 w-full"
+                                key={`${item.path}${item.new}`}
+                                style={{ height: virtualRow.size, transform: `translateY(${virtualRow.start}px)` }}
+                            >
+                                {children}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
-        </ExplorerContext.Provider>
+        </div>
     );
 };

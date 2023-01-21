@@ -8,7 +8,7 @@ import { workspaceRootSelector } from "./workspaceRootSelector";
 
 export interface WorkspaceTreeReqest {
     workspaceId: WorkspaceId;
-    expanded: string[];
+    expanded: Set<string>;
 }
 
 export const workspaceTree = selectorFamily({
@@ -29,7 +29,7 @@ export const workspaceTree = selectorFamily({
                     break;
                 }
 
-                const show = expanded.includes(item.path) || item.depth < 0;
+                const show = expanded.has(item.path) || item.depth < 0;
 
                 if (item?.isDirectory && show && !item.new) {
                     const response = get(noWait(workspaceItemsState({ workspaceId, path: item.path })));

@@ -1,5 +1,5 @@
-import { DirectoryNode } from "./tree/DirectoryNode";
-import { FileNode } from "./tree/FileNode";
+import { DirectoryNode } from "./tree/fs/DirectoryNode";
+import { FileNode } from "./tree/fs/FileNode";
 import { TreeNode } from "./tree/TreeNode";
 import { WorkspaceNode } from "./tree/WorkspaceNode";
 

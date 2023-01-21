@@ -2,6 +2,7 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import Papa from "papaparse";
 import { distinctUntilChanged, map, take } from "rxjs";
 import { DocumentNode } from "../DocumentNode";
+
 interface SheetNodeProps {
     link: string;
     content: string;

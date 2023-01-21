@@ -1,4 +1,4 @@
-import { TreeNode } from "../TreeNode";
+import { TreeNode } from "../../TreeNode";
 import { CsvNode } from "./Csv/CsvNode";
 import { MarkdownNode } from "./Markdown/MarkdownNode";
 

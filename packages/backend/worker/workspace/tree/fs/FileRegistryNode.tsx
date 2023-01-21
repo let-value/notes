@@ -2,9 +2,9 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import { Item } from "models";
 import { format, parse, ParsedPath, sep } from "path";
 import { BehaviorSubject, filter, firstValueFrom, map, mergeMap } from "rxjs";
+import { TreeContextProps, TreeNode } from "../TreeNode";
+import { WorkspaceNode } from "../WorkspaceNode";
 import { FileNode } from "./FileNode";
-import { TreeContextProps, TreeNode } from "./TreeNode";
-import { WorkspaceNode } from "./WorkspaceNode";
 
 type Uri = {
     uri: ParsedPath;
@@ -13,17 +13,21 @@ type Uri = {
 
 export class FileRegistryNode extends TreeNode {
     declare context: TreeContextProps<WorkspaceNode>;
-    files = new BehaviorSubject(new Set<FileNode>());
+    files$ = new BehaviorSubject(new Array<FileNode>());
+
     addFile(node: FileNode) {
-        const files = new Set(this.files.getValue());
-        files.add(node);
-        this.files.next(files);
+        const files = [...this.files$.getValue()];
+        files.push(node);
+        this.files$.next(files);
     }
 
     removeFile(node: FileNode) {
-        const files = new Set(this.files.getValue());
-        files.delete(node);
-        this.files.next(files);
+        const files = [...this.files$.getValue()];
+        const index = files.indexOf(node);
+        if (index !== -1) {
+            files.splice(index, 1);
+        }
+        this.files$.next(files);
     }
 
     deepReady$ = new ReactiveComponentProperty(this, (props$) => props$.pipe(map(() => true)));
@@ -34,7 +38,7 @@ export class FileRegistryNode extends TreeNode {
 
     registry = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            mergeMap(() => this.files),
+            mergeMap(() => this.files$),
             map((files) => Array.from(files.values())),
             map((files) => files.map((file): Uri => ({ uri: parse(file.props.item.path), item: file.props.item }))),
         ),

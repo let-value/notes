@@ -1,7 +1,8 @@
 import { backend, matchQuery } from "messaging";
 
 import { container } from "../../container";
-import { FileNode } from "../../workspace/tree/FileNode";
+import { FileNode } from "../../workspace/tree/fs/FileNode";
+
 import { WorkspaceStore } from "../../workspace/WorkspaceStore";
 
 const mediator = container.get("mediator");

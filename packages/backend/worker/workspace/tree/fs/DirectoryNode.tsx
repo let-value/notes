@@ -2,8 +2,9 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import { Item } from "models";
 import { join } from "path";
 import { combineLatest, map, mergeMap } from "rxjs";
+import { MetadataNode, metadataPrefix } from "../metadata/MetadataNode";
+import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { FileNode } from "./FileNode";
-import { TreeContext, TreeContextProps, TreeNode } from "./TreeNode";
 
 interface DirectoryNodeProps {
     item: Item<true>;
@@ -45,6 +46,10 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
         return (
             <TreeContext.Provider value={this.newContext}>
                 {this.items.value?.map((child) => {
+                    if (child.name.startsWith(metadataPrefix)) {
+                        return <MetadataNode key={child.path} item={child} />;
+                    }
+
                     if (child.isDirectory) {
                         return <DirectoryNode key={child.path} item={child} />;
                     } else {
