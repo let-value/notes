@@ -1,6 +1,7 @@
-import { Item, Workspace } from "models";
+import { ListItem } from "@/atom/workspace";
+import { Workspace } from "models";
 
 export interface EditorPanelProps {
     workspace: Workspace;
-    item: Item<false>;
+    item: ListItem<false>;
 }

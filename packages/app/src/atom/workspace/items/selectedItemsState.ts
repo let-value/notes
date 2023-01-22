@@ -1,10 +1,11 @@
 import { activePanelParams$ } from "@/atom/panels";
 import { setRecoil } from "@/atom/tunnel";
 import { atom, useRecoilCallback } from "recoil";
+import { ListItem } from "./ListItem";
 
-export const selectedItemsState = atom<Set<string>>({
+export const selectedItemsState = atom<Map<string, ListItem>>({
     key: "workspace/items/selected",
-    default: new Set(),
+    default: new Map(),
 });
 
 activePanelParams$.subscribe((x) => {
@@ -12,26 +13,26 @@ activePanelParams$.subscribe((x) => {
         return;
     }
 
-    setRecoil(selectedItemsState, new Set([x.item.path]));
+    setRecoil(selectedItemsState, new Map([[x.item.path, x.item]]));
 });
 
 export const useSelectItem = () =>
-    useRecoilCallback(({ set }) => (path: string, exclusive = false) => {
+    useRecoilCallback(({ set }) => (item: ListItem, exclusive = false) => {
         set(selectedItemsState, (prev) => {
-            const next = new Set(exclusive ? undefined : prev);
-            next.add(path);
+            const next = new Map(exclusive ? undefined : prev);
+            next.set(item.path, item);
             return next;
         });
     });
 
 export const useToggleSelectItem = () =>
-    useRecoilCallback(({ set }) => (path: string) => {
+    useRecoilCallback(({ set }) => (item: ListItem) => {
         set(selectedItemsState, (prev) => {
-            const next = new Set(prev);
-            if (next.has(path)) {
-                next.delete(path);
+            const next = new Map(prev);
+            if (next.has(item.path)) {
+                next.delete(item.path);
             } else {
-                next.add(path);
+                next.set(item.path, item);
             }
             return next;
         });

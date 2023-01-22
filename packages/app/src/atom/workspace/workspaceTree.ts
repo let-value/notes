@@ -19,7 +19,7 @@ export const workspaceTree = selectorFamily({
             const rootItem = await get(noWait(workspaceRootSelector(workspaceId))).toPromise();
             const newItem = get(newItemState);
 
-            const queue: ListItem[] = [{ ...rootItem, depth: -1 }];
+            const queue: ListItem[] = [{ ...rootItem, depth: -1, parents: [] }];
 
             const result: ListItem[] = [];
 
@@ -32,6 +32,7 @@ export const workspaceTree = selectorFamily({
                 const show = expanded.has(item.path) || item.depth < 0;
 
                 if (item?.isDirectory && show && !item.new) {
+                    const parents = [...(item.parents ?? []), item];
                     const response = get(noWait(workspaceItemsState({ workspaceId, path: item.path })));
                     item.loading = response.state === "loading";
 
@@ -51,6 +52,7 @@ export const workspaceTree = selectorFamily({
                                 ...firstItem,
                                 collapsed: [...(item.collapsed ?? []), item],
                                 depth: item.depth,
+                                parents,
                             });
                             continue;
                         }
@@ -62,6 +64,7 @@ export const workspaceTree = selectorFamily({
                         ...orderBy(childs, ["isDirectory", "new", "name"], ["desc", "asc", "asc"]).map((x) => ({
                             ...x,
                             depth: item.depth + 1,
+                            parents,
                         })),
                     );
                 }

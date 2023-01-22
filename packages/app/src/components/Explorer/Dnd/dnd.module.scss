@@ -1,0 +1,6 @@
+@import "@blueprintjs/core/lib/scss/variables";
+
+.over,
+.over > * {
+    background-color: $blue5 !important;
+}

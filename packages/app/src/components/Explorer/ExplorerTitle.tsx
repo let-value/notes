@@ -1,8 +1,10 @@
-import { workspaceRootSelector, workspaceState } from "@/atom/workspace";
+import { ListItem, workspaceRootSelector, workspaceState } from "@/atom/workspace";
 import { useResetExpand } from "@/atom/workspace/items/expandedItemsState";
 import { Button, TreeNode } from "@blueprintjs/core";
+import cx from "classnames";
 import { useRecoilValue } from "recoil";
 import { useDirectoryContextHandlers } from "./Directory/useDirectoryContextHandlers";
+import { useExplorerDnd } from "./Dnd/useExplorerDnd";
 
 export const ExplorerTitle = () => {
     const workspace = useRecoilValue(workspaceState);
@@ -11,10 +13,12 @@ export const ExplorerTitle = () => {
 
     const root = useRecoilValue(workspaceRootSelector(workspace.id));
 
+    const { setRef, className } = useExplorerDnd(root as ListItem, "title", true);
+
     const { handleNewFile, handleNewDirectory, handleRefresh } = useDirectoryContextHandlers(root);
 
     return (
-        <div className="bp4-tree bp4-tree-node-list bp4-tree-root">
+        <div ref={setRef} className={cx(className, "bp4-tree bp4-tree-node-list bp4-tree-root")}>
             <TreeNode
                 id="root"
                 className="group bp4-running-text"

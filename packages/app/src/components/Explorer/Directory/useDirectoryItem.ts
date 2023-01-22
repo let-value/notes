@@ -1,9 +1,9 @@
-import { Item } from "models";
+import { ListItem } from "@/atom/workspace";
 import { MouseEvent, useCallback } from "react";
 
 export interface DirectoryHandlersProps {
-    item: Item<true>;
-    onSelect: (item: Item<true>, event: MouseEvent) => void;
+    item: ListItem<true>;
+    onSelect: (item: ListItem<true>, event: MouseEvent) => void;
 }
 
 export function useDirectoryHandlers({ item, onSelect }: DirectoryHandlersProps) {

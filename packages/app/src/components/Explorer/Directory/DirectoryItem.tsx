@@ -2,6 +2,7 @@ import { ListItem } from "@/atom/workspace/items/ListItem";
 import { Spinner, TreeNode } from "@blueprintjs/core";
 import { ContextMenu2 } from "@blueprintjs/popover2";
 import { ComponentProps, FC, Fragment, useMemo } from "react";
+import { useExplorerDnd } from "../Dnd/useExplorerDnd";
 import { CollapsedDirectoryItem } from "./CollapsedDirectoryItem";
 import { DirectoryContextMenu } from "./DirectoryContextMenu";
 import { NewDirectoryItem } from "./NewDirectoryItem";
@@ -29,6 +30,8 @@ export const DirectoryItem: FC<DirectoryItemProps> = (props) => {
         [item.collapsed, item.name, onSelect],
     );
 
+    const { setRef, className, attributes, listeners } = useExplorerDnd(item);
+
     const { handleSelect } = useDirectoryHandlers(props);
 
     if (item.new) {
@@ -37,20 +40,22 @@ export const DirectoryItem: FC<DirectoryItemProps> = (props) => {
 
     return (
         <ContextMenu2 content={<DirectoryContextMenu item={item} />}>
-            <TreeNode
-                hasCaret
-                id={item.path}
-                isExpanded={isExpanded}
-                secondaryLabel={item.loading ? <Spinner size={5} /> : undefined}
-                icon={isExpanded ? "folder-open" : "folder-close"}
-                depth={item.depth}
-                label={<>{segments}</>}
-                path={[]}
-                onClick={(_, event) => handleSelect(event)}
-                onExpand={(_, event) => handleSelect(event)}
-                onCollapse={(_, event) => handleSelect(event)}
-                {...other}
-            />
+            <div ref={setRef} className={className} {...attributes} {...listeners}>
+                <TreeNode
+                    hasCaret
+                    id={item.path}
+                    isExpanded={isExpanded}
+                    secondaryLabel={item.loading ? <Spinner size={5} /> : undefined}
+                    icon={isExpanded ? "folder-open" : "folder-close"}
+                    depth={item.depth}
+                    label={<>{segments}</>}
+                    path={[]}
+                    onClick={(_, event) => handleSelect(event)}
+                    onExpand={(_, event) => handleSelect(event)}
+                    onCollapse={(_, event) => handleSelect(event)}
+                    {...other}
+                />
+            </div>
         </ContextMenu2>
     );
 };
