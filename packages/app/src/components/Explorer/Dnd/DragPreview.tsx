@@ -1,13 +1,13 @@
 import { ListItem } from "@/atom/workspace";
 import { Tag } from "@blueprintjs/core";
-import { DragCancelEvent, DragEndEvent, DragOverEvent, DragStartEvent, useDndMonitor } from "@dnd-kit/core";
 import { Item } from "models";
-import { createRef, FC, MutableRefObject, useCallback, useState } from "react";
+import { useForceUpdate } from "observable-hooks";
+import { createRef, FC, MutableRefObject, useCallback, useEffect, useState } from "react";
+import { DropTargetHookSpec, useDragDropManager, XYCoord } from "react-dnd";
 import { createPortal } from "react-dom";
-import { useKeyPress } from "react-use";
 import { useRecoilState } from "recoil";
 import { overGroupState } from "./overGroupState";
-import useMouseState from "./useMouseState";
+import { DND_TYPE } from "./useExplorerDnd";
 
 export interface DragPreviewProps {
     items?: Item[];
@@ -17,55 +17,70 @@ const ref = createRef<HTMLElement>();
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 (ref as MutableRefObject<HTMLElement>).current = document.getElementById("root")!;
 
-const tagOffset = 10;
+const tagOffset = 20;
 
 export const DragPreview: FC<DragPreviewProps> = () => {
-    const [altKey] = useKeyPress((event) => event.key === "Alt" || event.altKey);
-    const { x, y } = useMouseState();
+    //const [altKey] = useKeyPress((event) => event.key === "Alt" || event.altKey);
+    const [offset, setOffset] = useState<XYCoord | null>(null);
 
-    const [dragItems, setDragItems] = useState<ListItem[] | undefined>(undefined);
+    const dragDropManager = useDragDropManager();
+
+    const forceUpdate = useForceUpdate();
+
+    const monitor = dragDropManager.getMonitor();
+    const registry = dragDropManager.getRegistry();
+
+    const dragItemType = monitor?.getItemType();
+    const dragItems = monitor?.getItem() as ListItem[];
+
+    const targetId = monitor.getTargetIds().at(-1);
+
+    const target = targetId ? registry.getTarget(targetId) : undefined;
+    const targetSpec = (target as any)?.spec as DropTargetHookSpec<unknown, unknown, unknown>;
+    const group = targetSpec?.options as ListItem;
+
+    //const [dragItems, setDragItems] = useState<ListItem[] | undefined>(undefined);
 
     const [overGroup, setOverGroup] = useRecoilState(overGroupState);
 
-    const handleStart = useCallback((event: DragStartEvent) => {
-        const dragItems = event.active.data.current as ListItem[];
-        setDragItems(dragItems);
-    }, []);
-
-    const handleOver = useCallback(
-        (event: DragOverEvent) => {
-            const group = event.over?.data.current as ListItem;
-            if (dragItems?.every((item) => item.parents.at(-1)?.path === group?.path)) {
-                setOverGroup(undefined);
-                return;
-            }
-
+    useEffect(() => {
+        if (monitor.canDropOnTarget(targetId)) {
             setOverGroup(group);
-        },
-        [dragItems, setOverGroup],
-    );
-
-    const handleEnd = useCallback(
-        (event: DragEndEvent | DragCancelEvent) => {
-            console.log(event);
-            setDragItems(undefined);
+        } else {
             setOverGroup(undefined);
-        },
-        [setOverGroup],
-    );
+        }
+    }, [dragItemType, dragItems, group, monitor, setOverGroup, targetId]);
 
-    useDndMonitor({
-        onDragStart: handleStart,
-        onDragOver: handleOver,
-        onDragEnd: handleEnd,
-        onDragCancel: handleEnd,
-    });
+    const handleEvent = useCallback(() => {
+        forceUpdate();
+    }, [forceUpdate]);
 
-    if (dragItems && ref.current) {
+    const handleOffset = useCallback(() => {
+        const offset = monitor.getClientOffset();
+        setOffset(offset);
+    }, [monitor]);
+
+    useEffect(() => {
+        const unsubscribeState = dragDropManager.getMonitor().subscribeToStateChange(handleEvent);
+        const unsubscribeOffset = dragDropManager.getMonitor().subscribeToOffsetChange(handleOffset);
+
+        return () => {
+            unsubscribeState();
+            unsubscribeOffset();
+        };
+    }, [dragDropManager, handleEvent, handleOffset]);
+
+    if (dragItems && ref.current && offset) {
         return createPortal(
-            <Tag className="absolute" style={{ left: x + tagOffset, top: y + tagOffset }}>
-                {overGroup ? altKey ? <span>Copy </span> : <span>Move </span> : null}
-                {dragItems.length > 1 ? <span>{dragItems.length} items</span> : <span>{dragItems[0].name}</span>}
+            <Tag className="absolute" style={{ left: offset.x + tagOffset, top: offset.y + tagOffset }}>
+                {/* {overGroup ? altKey ? <span>Copy </span> : <span>Move </span> : null} */}
+                {dragItemType === DND_TYPE ? (
+                    dragItems.length > 1 ? (
+                        <span>{dragItems.length} items</span>
+                    ) : (
+                        <span>{dragItems?.[0]?.name}</span>
+                    )
+                ) : null}
                 {overGroup ? <span> to {overGroup.name}</span> : null}
             </Tag>,
             ref.current,

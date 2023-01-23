@@ -1,7 +1,9 @@
 import { Item } from "models";
+import { join } from "path";
 
 import { getLanguage } from "../../../utils/getLanguage";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
+import { DirectoryNode } from "./DirectoryNode";
 import { fileComponent } from "./file";
 
 interface FileNodeProps {
@@ -9,6 +11,7 @@ interface FileNodeProps {
 }
 
 export class FileNode extends TreeNode<FileNodeProps> {
+    declare context: TreeContextProps<DirectoryNode>;
     language = getLanguage(this.props.item);
 
     readFile() {
@@ -17,6 +20,25 @@ export class FileNode extends TreeNode<FileNodeProps> {
 
     writeFile(content: string) {
         return this.context.store.fs.writeFile(this.props.item, content);
+    }
+
+    async moveTo(targetPath: string) {
+        const { item } = this.props;
+        const newDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
+
+        await this.context.store.fs.moveFile(item, { ...item, path: join(newDirectory.props.item.path, item.name) });
+
+        await this.context.parent.refresh();
+        await newDirectory.refresh();
+    }
+
+    async copyTo(targetPath: string) {
+        const { item } = this.props;
+        const newDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
+
+        await this.context.store.fs.copyFile(item, { ...item, path: join(newDirectory.props.item.path, item.name) });
+
+        await newDirectory.refresh();
     }
 
     componentDidMount() {

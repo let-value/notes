@@ -18,7 +18,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Suspense>
                 <WorkerProvider>
                     <HotkeysProvider>
-                        <App />
+                        <Suspense>
+                            <App />
+                        </Suspense>
                     </HotkeysProvider>
                 </WorkerProvider>
             </Suspense>

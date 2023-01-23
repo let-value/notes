@@ -112,7 +112,8 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
     }
 
     async renameFile(oldItem: Item<false>, newItem: Item<false>): Promise<void> {
-        throw new Error("Method not implemented.");
+        await this.writeFile(newItem, await this.readFile(oldItem));
+        await this.deleteFile(oldItem);
     }
 
     async deleteFile(item: Item<false>): Promise<void> {
@@ -126,6 +127,6 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
     }
 
     async copyFile(oldItem: Item<false>, newItem: Item<false>): Promise<void> {
-        throw new Error("Method not implemented.");
+        await this.writeFile(newItem, await this.readFile(oldItem));
     }
 }

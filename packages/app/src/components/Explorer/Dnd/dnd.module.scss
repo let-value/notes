@@ -4,3 +4,7 @@
 .over > * {
     background-color: $blue5 !important;
 }
+
+.cannotDrop {
+    cursor: not-allowed;
+}

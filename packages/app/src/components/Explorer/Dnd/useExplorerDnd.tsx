@@ -1,17 +1,28 @@
 import { ListItem } from "@/atom/workspace";
 import { expandedItemsState, useExpandItem } from "@/atom/workspace/items/expandedItemsState";
 import { selectedItemsState } from "@/atom/workspace/items/selectedItemsState";
-import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { useDropItems } from "@/atom/workspace/items/useDropItems";
 import cx from "classnames";
 import { RefCallback, useCallback, useEffect, useMemo, useRef } from "react";
+import { useDrag, useDrop } from "react-dnd";
+import { NativeTypes } from "react-dnd-html5-backend";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styles from "./dnd.module.scss";
 import { overGroupState } from "./overGroupState";
 
-export const useExplorerDnd = (item: ListItem, idPostfix = "", disableDrag = false) => {
+export const DND_TYPE = "listItems";
+
+interface DropResult {
+    dropEffect: string;
+    target: ListItem<true>;
+}
+
+export const useExplorerDnd = (item: ListItem, disableDrag = false) => {
     const selected = useRecoilValue(selectedItemsState);
     const expanded = useRecoilValue(expandedItemsState);
     const expandItem = useExpandItem();
+
+    const dropItems = useDropItems();
 
     const isSelected = useMemo(() => selected.has(item.path), [item, selected]);
 
@@ -24,12 +35,51 @@ export const useExplorerDnd = (item: ListItem, idPostfix = "", disableDrag = fal
         [overGroup, item],
     );
 
-    const itemGroup = useMemo(() => (item.isDirectory ? item : item.parents?.at(-1)), [item]);
+    const itemGroup = useMemo(() => (item.isDirectory ? item : item.parents?.at(-1) ?? item), [item]);
 
-    const { isOver, setNodeRef: setDropRef } = useDroppable({
-        id: `droppable${item.path}${idPostfix}`,
-        data: itemGroup,
-    });
+    const [{ isOver, canDrop }, drop] = useDrop(
+        () => ({
+            accept: [NativeTypes.FILE, DND_TYPE],
+            options: itemGroup,
+            canDrop(args, monitor) {
+                const type = monitor.getItemType();
+                if (type === NativeTypes.FILE) {
+                    return true;
+                }
+
+                if (type === DND_TYPE) {
+                    const items = args as ListItem[];
+
+                    const sameDirectory = items.every(
+                        (item) => item.parents.at(-1)?.path === itemGroup?.path || item.path === itemGroup?.path,
+                    );
+
+                    const isParent = items.some((item) => itemGroup?.parents?.some((x) => x.path === item.path));
+
+                    return !sameDirectory && !isParent;
+                }
+
+                return true;
+            },
+            collect(monitor) {
+                return { isOver: monitor.isOver({ shallow: true }), canDrop: monitor.canDrop() };
+            },
+            drop(_args, monitor) {
+                if (monitor.didDrop()) {
+                    return;
+                }
+
+                if (monitor.getItemType() === NativeTypes.FILE) {
+                    throw new Error("Not implemented");
+                }
+
+                return {
+                    target: itemGroup,
+                };
+            },
+        }),
+        [itemGroup],
+    );
 
     const timer = useRef<number | undefined>(undefined);
 
@@ -47,27 +97,35 @@ export const useExplorerDnd = (item: ListItem, idPostfix = "", disableDrag = fal
         }
     }, [itemGroup, isOver, setOverGroup, item.isDirectory, item.path, expanded, expandItem]);
 
-    const {
-        attributes,
-        listeners,
-        setNodeRef: setDragRef,
-    } = useDraggable({
-        id: `draggable${item.path}${idPostfix}`,
-        data: dragItem,
-    });
+    const [, drag] = useDrag(
+        () => ({
+            type: DND_TYPE,
+            item: dragItem,
+            end(item, monitor) {
+                const dropResult = monitor.getDropResult() as DropResult;
+
+                if (!dropResult) {
+                    return;
+                }
+
+                dropItems(item, dropResult.target, dropResult?.dropEffect);
+            },
+        }),
+        [dragItem, dropItems],
+    );
 
     const setRef = useCallback<RefCallback<HTMLElement>>(
         (element) => {
-            setDropRef(element);
+            drop(element);
             if (disableDrag) {
                 return;
             }
-            setDragRef(element);
+            drag(element);
         },
-        [disableDrag, setDragRef, setDropRef],
+        [disableDrag, drag, drop],
     );
 
-    const className = cx({ [styles.over]: isOverGroup });
+    const className = cx({ [styles.over]: isOverGroup, [styles.cannotDrop]: isOver && !canDrop });
 
-    return { setRef, className, attributes, listeners };
+    return { setRef, className };
 };

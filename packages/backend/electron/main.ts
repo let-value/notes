@@ -7,7 +7,7 @@ const container = original.upsert({ eventTarget: () => new WorkerEventTarget(sel
 const id = container.get("id");
 
 await import("app/src/editor/setupMonaco");
-await import("backend-worker/features");
+await import("backend-worker/controllers");
 
 const dispatcher = container.get("dispatcher");
 const response = backend.leader.response(id, undefined);

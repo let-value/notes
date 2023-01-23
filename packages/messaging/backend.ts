@@ -14,6 +14,12 @@ export interface CreateItemQuery {
     name: Item["name"];
 }
 
+export interface MoveItemQuery {
+    workspaceId: WorkspaceId;
+    path: Item["path"];
+    targetPath: Item["path"];
+}
+
 export interface SaveFileQuery {
     workspaceId: WorkspaceId;
     path: Item["path"];
@@ -29,9 +35,13 @@ export const backend = {
         items: new Query<Item[], ItemQuery, ItemQuery>("workspace/items"),
         directory: {
             create: new Query<boolean, CreateItemQuery>("workspace/directory/create"),
+            move: new Query<boolean, MoveItemQuery>("workspace/directory/move"),
+            copy: new Query<boolean, MoveItemQuery>("workspace/directory/copy"),
         },
         file: {
             create: new Query<boolean, CreateItemQuery>("workspace/file/create"),
+            move: new Query<boolean, MoveItemQuery>("workspace/file/move"),
+            copy: new Query<boolean, MoveItemQuery>("workspace/file/copy"),
             content: new Query<FileContent, ItemQuery>("workspace/fileContent"),
             tokens: new Query<Token[], ItemQuery>("workspace/readFileTokens"),
             save: new Query<boolean, SaveFileQuery>("workspace/saveContent"),
