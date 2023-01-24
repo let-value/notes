@@ -26,8 +26,7 @@ export function createPropPlugin(node: HyperFormulaNode) {
 for (const language of Object.keys(languages)) {
     try {
         HyperFormula.getLanguage(language).extendFunctions({ [PropFunction]: PropFunction });
-        console.log("ok", language);
     } catch {
-        console.error("error", language);
+        //
     }
 }

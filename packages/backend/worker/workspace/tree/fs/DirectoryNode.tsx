@@ -4,6 +4,7 @@ import { Item } from "models";
 import { join } from "path";
 import { combineLatest, map, mergeMap } from "rxjs";
 import { container } from "../../../container";
+import { TreeNodeExtensions } from "../../TreeNodeExtensions";
 import { MetadataNode, metadataPrefix } from "../metadata/MetadataNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { FileNode } from "./FileNode";
@@ -54,31 +55,41 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
                 path: this.props.item.path,
             }),
         );
+        return items;
     }
 
     async moveTo(targetPath: string) {
         const { item } = this.props;
-        const newDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
+        const targetDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
+
+        const path = join(targetDirectory.props.item.path, item.name);
 
         await this.context.store.fs.moveDirectory(item, {
             ...item,
-            path: join(newDirectory.props.item.path, item.name),
+            path,
         });
 
+        await targetDirectory.refresh();
+        await targetDirectory.deepReady;
+
+        const newDirectory = await TreeNodeExtensions.findNodeByPath(targetDirectory, path);
+
+        this.freezeChildren();
         await this.context.parent.refresh();
-        await newDirectory.refresh();
+
+        this.context.root.updateLinks(this, newDirectory);
     }
 
     async copyTo(targetPath: string) {
         const { item } = this.props;
-        const newDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
+        const targetDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
 
         await this.context.store.fs.copyDirectory(item, {
             ...item,
-            path: join(newDirectory.props.item.path, item.name),
+            path: join(targetDirectory.props.item.path, item.name),
         });
 
-        await newDirectory.refresh();
+        await targetDirectory.refresh();
     }
 
     newContext: TreeContextProps = { ...this.context, parent: this };

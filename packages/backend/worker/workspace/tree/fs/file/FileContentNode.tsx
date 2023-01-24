@@ -12,17 +12,17 @@ export interface FileContentNodeProps {
 }
 
 export class FileContentNode extends DocumentNode<FileContentNodeProps> {
-    content = new ReactiveComponentProperty(this, (props$) =>
+    content$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(mergeMap(() => this.context.parent.readFile())),
     );
 
     render() {
-        if (this.content.value === undefined) {
+        if (this.content$.value === undefined) {
             return null;
         }
 
         const Component = this.props.children;
 
-        return <Component content={this.content.value} />;
+        return <Component content={this.content$.value} />;
     }
 }

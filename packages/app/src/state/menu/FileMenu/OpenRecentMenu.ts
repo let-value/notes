@@ -15,7 +15,6 @@ export class OpenRecentMenu implements MenuItem {
     constructor() {
         makeAutoObservable(this);
         observeRecoilLoadable(workspacesSelector).then((pipe) => {
-            console.log("observeRecoilLoadable", pipe);
             pipe.subscribe((workspaces) =>
                 runInAction(() => {
                     console.log("workspaces", workspaces);

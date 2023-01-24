@@ -1,8 +1,8 @@
-import { ReactiveComponentProperty, ReactiveValue } from "app/src/utils";
+import { ReactiveComponentProperty } from "app/src/utils";
 import { PureComponent } from "react";
 
 import { createContext } from "react";
-import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, mergeMap, scan } from "rxjs";
+import { BehaviorSubject, combineLatest, filter, firstValueFrom, from, map, mergeMap, switchMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { WorkspaceNode } from "./WorkspaceNode";
 
@@ -17,7 +17,6 @@ export const TreeContext = createContext<TreeContextProps>(null);
 export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<TProps, TState> {
     static contextType = TreeContext;
     declare context: TreeContextProps;
-    suspended = new ReactiveValue<boolean>();
     children$ = new BehaviorSubject(new Array<TreeNode>());
 
     ready$ = new ReactiveComponentProperty(this, (props$) => props$.pipe(map(() => true)));
@@ -31,17 +30,29 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
                 return combineLatest([
                     this.ready$.pipeline$,
                     this.children$.pipe(
-                        mergeMap((children) => Array.from(children).map((child) => child.deepReady$.pipeline$)),
-                        mergeMap((x) => x),
-                        scan((acc, val) => acc.concat(val), [] as boolean[]),
+                        switchMap((children) =>
+                            combineLatest(
+                                children.length
+                                    ? Array.from(children).map((child) => child.deepReady$.pipeline$)
+                                    : [from([true])],
+                            ),
+                        ),
+                        map((x) => x.reduce((acc, val) => acc && val, true)),
                     ),
-                ]).pipe(map(([ready, childrenDeepReady]) => ready && childrenDeepReady.every((val) => val)));
+                ]).pipe(map(([ready, childrenDeepReady]) => ready && childrenDeepReady));
             }),
         );
     });
 
     get deepReady() {
         return firstValueFrom(this.deepReady$.pipeline$.pipe(filter((ready) => ready)));
+    }
+
+    private disableChildrenRemoval = false;
+
+    freezeChildren() {
+        this.disableChildrenRemoval = true;
+        firstValueFrom(this.children$).then((children) => children.forEach((child) => child.freezeChildren()));
     }
 
     addChildren(node: TreeNode) {
@@ -51,6 +62,10 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
     }
 
     removeChildren(node: TreeNode) {
+        if (this.disableChildrenRemoval) {
+            return;
+        }
+
         const children = [...this.children$.getValue()];
         const index = children.indexOf(node);
         if (index !== -1) {
@@ -65,5 +80,6 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
 
     componentWillUnmount() {
         this.context?.parent.removeChildren(this);
+        this.children$.complete();
     }
 }

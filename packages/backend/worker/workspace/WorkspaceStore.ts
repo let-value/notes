@@ -23,11 +23,11 @@ export class WorkspaceStore {
     }
 
     async findNodeByPath(path: string) {
-        return await TreeNodeExtensions.findNode(await this.root.lastValue, path);
+        return await TreeNodeExtensions.findNodeByPath(await this.root.lastValue, path);
     }
 
     async findNodeByLink(origin: Item<false>, path: string) {
-        return await TreeNodeExtensions.findNode(await this.root.lastValue, path);
+        return await TreeNodeExtensions.findNodeByPath(await this.root.lastValue, path);
     }
 
     static async getInstance(id: WorkspaceId) {

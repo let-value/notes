@@ -2,14 +2,14 @@ import { linkName } from "app/src/editor/tokens/link";
 import { ReactiveComponentProperty } from "app/src/utils";
 import { Token } from "models";
 import { map } from "rxjs";
+import { LinkNode } from "../../../LinkNode";
 import { DocumentNode } from "../DocumentNode";
-import { MarkdownLink } from "./MarkdownLink";
 
-interface MarkdownLinksProps {
+interface LinksNodeProps {
     tokens: Token[];
 }
 
-export class MarkdownLinks extends DocumentNode<MarkdownLinksProps> {
+export class LinksNode extends DocumentNode<LinksNodeProps> {
     links = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map((props) => props.tokens),
@@ -25,7 +25,7 @@ export class MarkdownLinks extends DocumentNode<MarkdownLinksProps> {
         return (
             <>
                 {this.links.value.map((token, index) => (
-                    <MarkdownLink key={index} token={token} />
+                    <LinkNode key={index} token={token} />
                 ))}
             </>
         );

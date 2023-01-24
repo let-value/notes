@@ -13,22 +13,10 @@ type Uri = {
 
 export class FileRegistryNode extends TreeNode {
     declare context: TreeContextProps<WorkspaceNode>;
-    files$ = new BehaviorSubject(new Array<FileNode>());
+    declare children$: BehaviorSubject<FileNode[]>;
 
-    addFile(node: FileNode) {
-        const files = [...this.files$.getValue()];
-        files.push(node);
-        this.files$.next(files);
-    }
-
-    removeFile(node: FileNode) {
-        const files = [...this.files$.getValue()];
-        const index = files.indexOf(node);
-        if (index !== -1) {
-            files.splice(index, 1);
-        }
-        this.files$.next(files);
-    }
+    declare addChildren: (node: FileNode) => void;
+    declare removeChildren: (node: FileNode) => void;
 
     deepReady$ = new ReactiveComponentProperty(this, (props$) => props$.pipe(map(() => true)));
 
@@ -38,37 +26,42 @@ export class FileRegistryNode extends TreeNode {
 
     registry = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            mergeMap(() => this.files$),
+            mergeMap(() => this.children$),
             map((files) => Array.from(files.values())),
             map((files) => files.map((file): Uri => ({ uri: parse(file.props.item.path), item: file.props.item }))),
         ),
     );
 
-    async resolveLink(origin: Item<false>, path: string) {
+    async resolveLink(link: string) {
         await this.context.parent.deepReady;
 
-        const uri = parse(path);
+        const uri = parse(link);
 
-        const amongst: Uri[] = [];
-        for (const file of this.registry.value) {
-            if (uri.ext && file.uri.ext !== uri.ext) {
-                continue;
-            }
+        return this.registry.pipeline$.pipe(
+            //todo: pause when registry not ready
+            map((registry) => {
+                const amongst: Uri[] = [];
+                for (const file of registry) {
+                    if (uri.ext && file.uri.ext !== uri.ext) {
+                        continue;
+                    }
 
-            if (file.uri.name !== uri.name) {
-                continue;
-            }
+                    if (file.uri.name !== uri.name) {
+                        continue;
+                    }
 
-            if (!file.uri.dir.endsWith(uri.dir)) {
-                continue;
-            }
+                    if (!file.uri.dir.endsWith(uri.dir)) {
+                        continue;
+                    }
 
-            amongst.push(file);
-        }
+                    amongst.push(file);
+                }
 
-        amongst.sort((a, b) => a.uri.dir.localeCompare(b.uri.dir));
+                amongst.sort((a, b) => a.uri.dir.localeCompare(b.uri.dir));
 
-        return amongst?.[0]?.item;
+                return amongst?.[0]?.item;
+            }),
+        );
     }
 
     async getLink(item: Item<false>) {

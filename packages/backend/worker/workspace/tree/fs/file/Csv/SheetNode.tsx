@@ -32,8 +32,8 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
             return null;
         }
 
-        const values = this.context.root.hyperFormula.current.instance.getSheetValues(this.sheet$.value);
-        console.log(values);
+        // const values = this.context.root.hyperFormula.current.instance.getSheetValues(this.sheet$.value);
+        // console.log(values);
 
         return null;
     }

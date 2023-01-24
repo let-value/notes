@@ -4,7 +4,28 @@ import { TreeNode } from "./tree/TreeNode";
 import { WorkspaceNode } from "./tree/WorkspaceNode";
 
 export class TreeNodeExtensions {
-    static async findNode(root: TreeNode, path: string) {
+    static async findNodeByType<TNode extends typeof TreeNode>(
+        root: TreeNode,
+        type: TNode,
+    ): Promise<InstanceType<TNode> | undefined> {
+        const queue: TreeNode[] = [root];
+        while (queue.length > 0) {
+            const node = queue.shift();
+            await node.ready;
+
+            for (const child of node.children$.value.values()) {
+                queue.push(child);
+            }
+
+            if (node.constructor === type) {
+                return node as never;
+            }
+        }
+
+        return undefined;
+    }
+
+    static async findNodeByPath(root: TreeNode, path: string) {
         const queue: TreeNode[] = [root];
         while (queue.length > 0) {
             const node = queue.shift();
@@ -37,6 +58,7 @@ export class TreeNodeExtensions {
                 return node;
             }
         }
+
         return undefined;
     }
 }

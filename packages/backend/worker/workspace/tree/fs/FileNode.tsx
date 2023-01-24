@@ -2,9 +2,11 @@ import { Item } from "models";
 import { join } from "path";
 
 import { getLanguage } from "../../../utils/getLanguage";
+import { TreeNodeExtensions } from "../../TreeNodeExtensions";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { DirectoryNode } from "./DirectoryNode";
 import { fileComponent } from "./file";
+import { FileContentNode } from "./file/FileContentNode";
 
 interface FileNodeProps {
     item: Item<false>;
@@ -18,18 +20,26 @@ export class FileNode extends TreeNode<FileNodeProps> {
         return this.context.store.fs.readFile(this.props.item);
     }
 
-    writeFile(content: string) {
-        return this.context.store.fs.writeFile(this.props.item, content);
+    async writeFile(content: string) {
+        await this.context.store.fs.writeFile(this.props.item, content);
+        (await TreeNodeExtensions.findNodeByType(this, FileContentNode))?.content$.update();
     }
 
     async moveTo(targetPath: string) {
         const { item } = this.props;
-        const newDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
+        const targetDirectory = (await this.context.store.findNodeByPath(targetPath)) as DirectoryNode;
+        const path = join(targetDirectory.props.item.path, item.name);
+        await this.context.store.fs.moveFile(item, { ...item, path });
 
-        await this.context.store.fs.moveFile(item, { ...item, path: join(newDirectory.props.item.path, item.name) });
+        await targetDirectory.refresh();
+        await targetDirectory.deepReady;
+
+        const newFile = await TreeNodeExtensions.findNodeByPath(targetDirectory, path);
+
+        this.freezeChildren();
 
         await this.context.parent.refresh();
-        await newDirectory.refresh();
+        this.context.root.updateLinks(this, newFile);
     }
 
     async copyTo(targetPath: string) {
@@ -43,12 +53,12 @@ export class FileNode extends TreeNode<FileNodeProps> {
 
     componentDidMount() {
         super.componentDidMount();
-        this.context.root.registry.current?.addFile(this);
+        this.context.root.registry.current?.addChildren(this);
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
-        this.context.root.registry.current?.removeFile(this);
+        this.context.root.registry.current?.removeChildren(this);
     }
 
     newContext: TreeContextProps = { ...this.context, parent: this };

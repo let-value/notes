@@ -3,7 +3,7 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import { Token } from "models";
 import { editor, Uri } from "monaco-editor";
 import { ComponentType } from "react";
-import { distinctUntilChanged, map, mergeMap } from "rxjs";
+import { map, mergeMap } from "rxjs";
 import { DocumentNode } from "./DocumentNode";
 
 export interface FileTokensChildrenProps {
@@ -16,10 +16,9 @@ export interface FileTokensNodeProps {
 }
 
 export class FileTokensNode extends DocumentNode<FileTokensNodeProps> {
-    tokens = new ReactiveComponentProperty(this, (props$) =>
+    tokens$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map((props) => props.content),
-            distinctUntilChanged(),
             mergeMap((content) => this.getTokens(content)),
         ),
     );
@@ -29,19 +28,29 @@ export class FileTokensNode extends DocumentNode<FileTokensNodeProps> {
             language,
             props: { item },
         } = this.context.parent;
-        const model = editor.createModel(content, language, Uri.file(item.path));
-        const tokens = parseModelTokens(model);
-        model.dispose();
-        return tokens;
+
+        const uri = Uri.from({ ...Uri.file(item.path), authority: "backend" });
+
+        let model = editor.getModel(uri);
+        if (model) {
+            model.setValue(content);
+        } else {
+            model = editor.createModel(content, language, uri);
+        }
+        try {
+            return parseModelTokens(model);
+        } finally {
+            model.dispose();
+        }
     }
 
     render() {
-        if (this.tokens.value === undefined) {
+        if (this.tokens$.value === undefined) {
             return null;
         }
 
         const Component = this.props.children;
 
-        return <Component tokens={this.tokens.value} />;
+        return <Component tokens={this.tokens$.value} />;
     }
 }

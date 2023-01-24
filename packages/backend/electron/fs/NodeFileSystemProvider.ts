@@ -39,6 +39,7 @@ export class NodeFileSystemProvider implements FileSystemProvider {
 
         return workspace;
     }
+
     async initializeWorkspace(workspace: Workspace): Promise<Item<true>> {
         const workspaceHandle = await getWorkspaceHandle(workspace.id);
 
@@ -48,6 +49,7 @@ export class NodeFileSystemProvider implements FileSystemProvider {
 
         return new Item(workspaceHandle.path, workspace.name, true);
     }
+
     async listDirectory(item: Item<true>): Promise<Item[]> {
         const names = await fsAsync.readdir(item.path, { withFileTypes: true });
         return names.map((entry) => new Item(path.join(item.path, entry.name), entry.name, entry.isDirectory()));
@@ -70,18 +72,13 @@ export class NodeFileSystemProvider implements FileSystemProvider {
     }
 
     async copyDirectory(oldItem: Item<true>, newItem: Item<true>): Promise<void> {
-        const newDirectory = await this.createDirectory(newItem);
-        //TODO: Copy files
-        // const files = await this.listDirectory(oldPath);
-        // for (const file of files) {
-        //     await this.copyFile(`${oldPath}/${file}`, `${newPath}/${file}`);
-        // }
-        return newDirectory;
+        return fsAsync.cp(oldItem.path, newItem.path, { recursive: true });
     }
 
     writeFile(item: Item<false>, data: any): Promise<void> {
         return fsAsync.writeFile(item.path, data);
     }
+
     async readFile(item: Item<false>): Promise<string> {
         const buffer = await fsAsync.readFile(item.path);
         return buffer.toString();

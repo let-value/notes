@@ -4,7 +4,7 @@ import {
     filter,
     lastValueFrom,
     Observable,
-    shareReplay,
+    ReplaySubject,
     Subject,
     Subscription,
     take,
@@ -25,9 +25,10 @@ function findPropertyDescriptor(obj: object, name: string): PropertyDescriptor |
 
 export class ReactiveComponentProperty<TProps, TValue> {
     props$: Subject<TProps>;
-    pipeline$: Observable<TValue>;
+    pipeline$: ReplaySubject<TValue>;
     value?: TValue;
-    subsciption: Subscription;
+    private pipelineSubsciption: Subscription;
+    private valueSubsciption: Subscription;
 
     constructor(
         private readonly component: Component<TProps>,
@@ -37,13 +38,18 @@ export class ReactiveComponentProperty<TProps, TValue> {
 
         const propsPipeline = this.props$.pipe(distinctUntilChanged());
 
-        this.pipeline$ = pipeline(propsPipeline).pipe(
-            filter((value) => value !== undefined),
-            distinctUntilChanged(),
-            shareReplay(1),
-        );
+        this.pipeline$ = new ReplaySubject(1);
 
-        this.subsciption = this.pipeline$.subscribe((value) => {
+        this.pipelineSubsciption = pipeline(propsPipeline)
+            .pipe(
+                filter((value) => value !== undefined),
+                distinctUntilChanged(),
+            )
+            .subscribe((value) => {
+                this.pipeline$.next(value);
+            });
+
+        this.valueSubsciption = this.pipeline$.subscribe((value) => {
             this.value = value;
             this.component.forceUpdate();
         });
@@ -86,6 +92,8 @@ export class ReactiveComponentProperty<TProps, TValue> {
 
     dispose() {
         this.props$.complete();
-        this.subsciption.unsubscribe();
+        this.pipeline$.complete();
+        this.pipelineSubsciption.unsubscribe();
+        this.valueSubsciption.unsubscribe();
     }
 }
