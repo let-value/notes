@@ -26,7 +26,7 @@ export const createDispatcherService = (
     }>,
 ) => ({
     dispatcher: (): DispatcherService => {
-        console.trace("createDispatcherService.dispatcher");
+        console.debug("createDispatcherService.dispatcher");
         const { id, eventTarget, mediator } = services;
 
         mediator.subscribe((message) => {

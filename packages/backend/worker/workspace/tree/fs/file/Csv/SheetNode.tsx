@@ -1,6 +1,6 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import Papa from "papaparse";
-import { distinctUntilChanged, map, take } from "rxjs";
+import { distinctUntilChanged, map, mergeMap, take } from "rxjs";
 import { DocumentNode } from "../DocumentNode";
 
 interface SheetNodeProps {
@@ -14,15 +14,25 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
             map((props) => props.link),
             distinctUntilChanged(),
             map((link) => {
-                const instance = this.context.root.hyperFormula.current.instance;
+                const instance = this.context.root.hyperFormulaRef.current.instance;
                 instance.addSheet(link);
                 return instance.getSheetId(link);
             }),
         ),
     );
 
+    metadata$ = new ReactiveComponentProperty(this, (props$) =>
+        props$.pipe(
+            mergeMap(() => {
+                const metadata = this.context.root.metadataRef.current;
+                const database = metadata.databaseRef.current;
+                return database.getFile(this.props.link);
+            }),
+        ),
+    );
+
     content = this.sheet$.pipeline$.pipe(take(1)).subscribe(async (sheetId) => {
-        const instance = this.context.root.hyperFormula.current.instance;
+        const instance = this.context.root.hyperFormulaRef.current.instance;
         const { data } = Papa.parse(this.props.content);
         instance.setSheetContent(sheetId, data);
     });

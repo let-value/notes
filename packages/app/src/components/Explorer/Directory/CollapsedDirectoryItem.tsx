@@ -16,7 +16,7 @@ export const CollapsedDirectoryItem: FC<CollapsedDirectoryItemProps> = (props) =
 
     const selected = useRecoilValue(selectedItemsState);
 
-    const { setRef, className, attributes, listeners } = useExplorerDnd(item);
+    const { setRef, className } = useExplorerDnd(item);
 
     return (
         <ContextMenu2 tagName="span" content={<DirectoryContextMenu item={item} />}>
@@ -28,8 +28,6 @@ export const CollapsedDirectoryItem: FC<CollapsedDirectoryItemProps> = (props) =
                     [styles.selected]: selected.has(item.path),
                 })}
                 onClick={handleSelect}
-                {...attributes}
-                {...listeners}
             >
                 {item.name}
             </a>

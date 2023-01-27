@@ -1,4 +1,4 @@
-import { BacklinksNode } from "../../../BacklinksNode";
+import { BacklinksNode } from "../../../graph/BacklinksNode";
 import { DocumentNode } from "../DocumentNode";
 import { FileContentNode } from "../FileContentNode";
 import { FileTokensNode } from "../FileTokensNode";

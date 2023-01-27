@@ -2,7 +2,7 @@ import { linkName } from "app/src/editor/tokens/link";
 import { ReactiveComponentProperty } from "app/src/utils";
 import { Token } from "models";
 import { map } from "rxjs";
-import { LinkNode } from "../../../LinkNode";
+import { LinkNode } from "../../../graph/LinkNode";
 import { DocumentNode } from "../DocumentNode";
 
 interface LinksNodeProps {

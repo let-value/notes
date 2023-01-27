@@ -19,7 +19,7 @@ export const FileItem: FC<FileItemProps> = ({ item, onSelect, ...other }) => {
         [item, onSelect],
     );
 
-    const { setRef, className, attributes, listeners } = useExplorerDnd(item);
+    const { setRef, className } = useExplorerDnd(item);
 
     if (item.new) {
         return <NewFileItem item={item} />;
@@ -27,7 +27,7 @@ export const FileItem: FC<FileItemProps> = ({ item, onSelect, ...other }) => {
 
     return (
         <ContextMenu2 content={<FileContextMenu />}>
-            <div ref={setRef} className={className} {...attributes} {...listeners}>
+            <div ref={setRef} className={className}>
                 <TreeNode
                     id={item.path}
                     icon="document"

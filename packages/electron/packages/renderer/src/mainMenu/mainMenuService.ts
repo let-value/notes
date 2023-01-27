@@ -5,7 +5,7 @@ import { ElectronMainMenu } from "./ElectronMainMenu";
 export const electronMainMenuService = (services: MenuContext) => {
     return {
         mainMenu: () => {
-            console.trace("electronMainMenuService.electronMainMenu");
+            console.debug("electronMainMenuService.electronMainMenu");
 
             const mainMenu = mainMenuService(services).mainMenu();
 

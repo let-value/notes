@@ -53,12 +53,12 @@ export class FileNode extends TreeNode<FileNodeProps> {
 
     componentDidMount() {
         super.componentDidMount();
-        this.context.root.registry.current?.addChildren(this);
+        this.context.root.registryRef.current?.addChildren(this);
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
-        this.context.root.registry.current?.removeChildren(this);
+        this.context.root.registryRef.current?.removeChildren(this);
     }
 
     newContext: TreeContextProps = { ...this.context, parent: this };

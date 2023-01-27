@@ -36,7 +36,7 @@ export const SidebarPanel: FC<ISplitviewPanelProps> = ({ api }) => {
         return null;
     }
 
-    return <Explorer workspace={workspace} />;
+    return <Explorer />;
 };
 
 const options: AddSplitviewComponentOptions = {

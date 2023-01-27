@@ -2,7 +2,7 @@ import HyperFormula, { FunctionArgumentType, FunctionPlugin } from "hyperformula
 import * as languages from "hyperformula/es/i18n/languages";
 import { InterpreterState } from "hyperformula/typings/interpreter/InterpreterState";
 import { ProcedureAst } from "hyperformula/typings/parser";
-import type { HyperFormulaNode } from "../workspace/tree/HyperFormulaNode";
+import type { HyperFormulaNode } from "../workspace/tree/database/HyperFormulaNode";
 
 export const PropFunction = "PROP";
 

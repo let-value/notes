@@ -1,8 +1,8 @@
 import { groupBy } from "lodash-es";
 import { BehaviorSubject, combineLatest, map, mergeMap } from "rxjs";
+import { TreeContextProps, TreeNode } from "../TreeNode";
+import { WorkspaceNode } from "../WorkspaceNode";
 import { LinkNode } from "./LinkNode";
-import { TreeContextProps, TreeNode } from "./TreeNode";
-import { WorkspaceNode } from "./WorkspaceNode";
 
 export class GraphNode extends TreeNode {
     declare context: TreeContextProps<WorkspaceNode>;

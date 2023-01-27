@@ -13,7 +13,7 @@ export const ExplorerTitle = () => {
 
     const root = useRecoilValue(workspaceRootSelector(workspace.id));
 
-    const { setRef, className } = useExplorerDnd(root as ListItem, "title", true);
+    const { setRef, className } = useExplorerDnd(root as ListItem, true);
 
     const { handleNewFile, handleNewDirectory, handleRefresh } = useDirectoryContextHandlers(root);
 

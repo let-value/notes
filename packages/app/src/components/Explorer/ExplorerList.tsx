@@ -69,7 +69,7 @@ export const ExplorerList = () => {
         [selectItem, toggleExpand, toggleSelectItem],
     );
 
-    const { setRef, className } = useExplorerDnd(root as ListItem, "list", true);
+    const { setRef, className } = useExplorerDnd(root as ListItem, true);
 
     return (
         <div ref={handleParentRef(setRef)} className={cx(className, "flex-1 overflow-y-auto overflow-x-hidden h-full")}>

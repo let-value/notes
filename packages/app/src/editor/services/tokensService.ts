@@ -143,7 +143,7 @@ export const tokensService = (
     }>,
 ) => ({
     tokensService: () => {
-        console.trace("tokensService");
+        console.debug("tokensService");
 
         const { modelToEditor, editorMeta } = services;
 

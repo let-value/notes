@@ -1,7 +1,8 @@
 import { DockviewApi } from "dockview";
-import { Item, Workspace } from "models";
+import { Workspace } from "models";
 import { useCallback } from "react";
 import { makeEditorPanelOptions } from "../../components/EditorPanel/EditorPanel";
+import { ListItem } from "../workspace";
 import { editorsDock$ } from "./editorsDock";
 
 export const useSetEditorsDock = () =>
@@ -11,7 +12,7 @@ export const useSetEditorsDock = () =>
 
 export const useOpenEditorPanel = (workspace: Workspace) =>
     useCallback(
-        async (item: Item) => {
+        async (item: ListItem<false>) => {
             const api = await editorsDock$.lastValue;
 
             if (!api) {

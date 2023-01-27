@@ -22,6 +22,7 @@ export function useDirectoryContextHandlers(item: Item<true>) {
                     path: item.path,
                     isDirectory: true,
                     depth: 0,
+                    parents: [],
                 });
             },
         [expandDirectory, item.path],
@@ -39,6 +40,7 @@ export function useDirectoryContextHandlers(item: Item<true>) {
                     path: item.path,
                     isDirectory: false,
                     depth: 0,
+                    parents: [],
                 });
             },
         [expandDirectory, item.path],

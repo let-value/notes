@@ -1,11 +1,11 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import { map, mergeMap } from "rxjs";
-import { DocumentNode } from "./fs/file/DocumentNode";
+import { DocumentNode } from "../fs/file/DocumentNode";
 
 export class BacklinksNode extends DocumentNode {
     backlinks$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            mergeMap(() => this.context.root.graph.current.graph$),
+            mergeMap(() => this.context.root.graphRef.current.graph$),
             map((links) => links[this.context.parent.props.item.path]),
         ),
     );

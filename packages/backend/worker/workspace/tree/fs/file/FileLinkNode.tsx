@@ -15,7 +15,7 @@ export class FileLinkNode extends DocumentNode<FileLinkNodeProps> {
     link$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map(() => this.context.parent.props.item),
-            mergeMap((item) => this.context.root.registry.current.getLink(item)),
+            mergeMap((item) => this.context.root.registryRef.current.getLink(item)),
         ),
     );
 

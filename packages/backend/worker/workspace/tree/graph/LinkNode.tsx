@@ -2,7 +2,7 @@ import { parseLink } from "app/src/editor/tokens/link";
 import { ReactiveComponentProperty } from "app/src/utils";
 import { Token } from "models";
 import { combineLatest, map, mergeMap } from "rxjs";
-import { DocumentNode } from "./fs/file/DocumentNode";
+import { DocumentNode } from "../fs/file/DocumentNode";
 
 interface LinkProps {
     token: Token;
@@ -19,7 +19,7 @@ export class LinkNode extends DocumentNode<LinkProps> {
     target$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             mergeMap(() => this.link$.pipeline$),
-            mergeMap((link) => this.context.root.registry.current.resolveLink(link.path)),
+            mergeMap((link) => this.context.root.registryRef.current.resolveLink(link.path)),
             mergeMap((target) => target),
         ),
     );
@@ -36,12 +36,12 @@ export class LinkNode extends DocumentNode<LinkProps> {
 
     componentDidMount() {
         super.componentDidMount();
-        this.context.root.graph.current?.addChildren(this);
+        this.context.root.graphRef.current?.addChildren(this);
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
-        this.context.root.graph.current?.removeChildren(this);
+        this.context.root.graphRef.current?.removeChildren(this);
     }
 
     render() {

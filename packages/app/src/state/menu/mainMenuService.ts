@@ -8,7 +8,7 @@ export const mainMenuService = (services: MenuContext) => {
 
     return {
         mainMenu: () => {
-            console.trace("mainMenuService.mainMenu");
+            console.debug("mainMenuService.mainMenu");
             return new MainMenu();
         },
     };

@@ -2,15 +2,16 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import { backend } from "messaging";
 import { Item } from "models";
 import { join } from "path";
+import { ReactNode } from "react";
 import { combineLatest, map, mergeMap } from "rxjs";
 import { container } from "../../../container";
 import { TreeNodeExtensions } from "../../TreeNodeExtensions";
-import { MetadataNode, metadataPrefix } from "../metadata/MetadataNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { FileNode } from "./FileNode";
 
 interface DirectoryNodeProps {
     item: Item<true>;
+    children?: ReactNode;
 }
 
 const dispatcher = container.get("dispatcher");
@@ -29,7 +30,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
         props$.pipe(
             mergeMap(() =>
                 combineLatest([this.items.pipeline$, this.children$]).pipe(
-                    map(([items, children]) => items.length === children.length),
+                    map(([items, children]) => children.length >= items.length),
                 ),
             ),
         ),
@@ -95,19 +96,17 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
     newContext: TreeContextProps = { ...this.context, parent: this };
 
     render() {
+        const { children } = this.props;
         return (
             <TreeContext.Provider value={this.newContext}>
                 {this.items.value?.map((child) => {
-                    if (child.name.startsWith(metadataPrefix)) {
-                        return <MetadataNode key={child.path} item={child} />;
-                    }
-
                     if (child.isDirectory) {
                         return <DirectoryNode key={child.path} item={child} />;
                     } else {
                         return <FileNode key={child.path} item={child} />;
                     }
                 })}
+                {children}
             </TreeContext.Provider>
         );
     }

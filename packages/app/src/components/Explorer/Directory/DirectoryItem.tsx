@@ -30,7 +30,7 @@ export const DirectoryItem: FC<DirectoryItemProps> = (props) => {
         [item.collapsed, item.name, onSelect],
     );
 
-    const { setRef, className, attributes, listeners } = useExplorerDnd(item);
+    const { setRef, className } = useExplorerDnd(item);
 
     const { handleSelect } = useDirectoryHandlers(props);
 
@@ -40,7 +40,7 @@ export const DirectoryItem: FC<DirectoryItemProps> = (props) => {
 
     return (
         <ContextMenu2 content={<DirectoryContextMenu item={item} />}>
-            <div ref={setRef} className={className} {...attributes} {...listeners}>
+            <div ref={setRef} className={className}>
                 <TreeNode
                     hasCaret
                     id={item.path}
