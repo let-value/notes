@@ -3,6 +3,7 @@ import { join } from "path";
 
 import { getLanguage } from "../../../utils/getLanguage";
 import { TreeNodeExtensions } from "../../TreeNodeExtensions";
+import { BacklinksNode } from "../graph/BacklinksNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { DirectoryNode } from "./DirectoryNode";
 import { fileComponent } from "./file";
@@ -75,6 +76,7 @@ export class FileNode extends TreeNode<FileNodeProps> {
         return (
             <TreeContext.Provider value={this.newContext}>
                 <Component key="component" {...item} language={this.language} />
+                <BacklinksNode />
             </TreeContext.Provider>
         );
     }

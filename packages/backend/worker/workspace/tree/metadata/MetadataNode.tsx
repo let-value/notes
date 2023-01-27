@@ -3,13 +3,13 @@ import { createRef } from "react";
 import { filter, map, switchMap, tap } from "rxjs";
 import { DirectoryNode } from "../fs/DirectoryNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
-import { MetadataDirectoryNode } from "./DatabaseDirectoryNode";
+import { MetadataDirectoryNode } from "./MetadataDirectoryNode";
 
 export const metadataPrefix = ".notes";
 
 export class MetadataNode extends TreeNode {
     declare context: TreeContextProps<DirectoryNode>;
-    directory$ = new ReactiveComponentProperty(this, (props$) =>
+    metaDirectory$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             switchMap(() => this.context.parent.ready$.pipeline$),
             filter((x) => x === true),
@@ -23,7 +23,7 @@ export class MetadataNode extends TreeNode {
         ),
     );
 
-    getDirectory$ = this.directory$.pipeline$.pipe(
+    getMetaDirectory$ = this.metaDirectory$.pipeline$.pipe(
         tap((directory) => {
             if (directory === null) {
                 this.context.parent.createDirectory(metadataPrefix);
@@ -38,7 +38,7 @@ export class MetadataNode extends TreeNode {
     render() {
         return (
             <TreeContext.Provider value={this.newContext}>
-                <MetadataDirectoryNode ref={this.databaseRef} />
+                <MetadataDirectoryNode ref={this.databaseRef} name="database" />
             </TreeContext.Provider>
         );
     }
