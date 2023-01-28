@@ -1,5 +1,5 @@
 import { ReactiveComponentProperty } from "app/src/utils";
-import { distinctUntilChanged, map, mergeMap } from "rxjs";
+import { distinctUntilChanged, map, switchMap } from "rxjs";
 import { DocumentNode } from "../DocumentNode";
 
 interface SheetNodeProps {
@@ -10,13 +10,13 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
     link$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map(() => this.context.parent.props.item),
-            mergeMap((item) => this.context.root.registryRef.current.getLink(item)),
+            switchMap((item) => this.context.root.registryRef.current.getLink(item)),
         ),
     );
 
     metadata$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            mergeMap(() => {
+            switchMap(() => {
                 const metadata = this.context.root.metadataRef.current;
                 const database = metadata.databaseRef.current;
                 return database.getFile(this.props.link);
@@ -26,7 +26,7 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
 
     sheet$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            mergeMap(() => this.link$.pipeline$),
+            switchMap(() => this.link$.pipeline$),
             distinctUntilChanged(),
             map((link) => {
                 const instance = this.context.root.hyperFormulaRef.current.instance;

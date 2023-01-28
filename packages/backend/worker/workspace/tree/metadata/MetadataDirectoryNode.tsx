@@ -1,7 +1,7 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import { format } from "path";
 import { PropsWithChildren } from "react";
-import { filter, firstValueFrom, map, mergeMap, tap } from "rxjs";
+import { filter, firstValueFrom, map, switchMap, tap } from "rxjs";
 import { DirectoryNode } from "../fs/DirectoryNode";
 import { FileNode } from "../fs/FileNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
@@ -16,15 +16,15 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
 
     directory$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            mergeMap(() => this.context.parent.getMetaDirectory$),
-            mergeMap((directory) =>
-                directory.ready$.pipeline$.pipe(
+            switchMap(() => this.context.parent.getMetaDirectory$),
+            switchMap((directory) =>
+                directory.ready$.pipe(
                     filter((x) => x),
                     map(() => directory),
                 ),
             ),
             filter((x) => x !== null),
-            mergeMap((directory) =>
+            switchMap((directory) =>
                 directory.children$.pipe(
                     map(
                         (children) =>
@@ -59,9 +59,9 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
 
         const directory = await firstValueFrom(this.getDirectory$.pipe(filter((x) => x !== null)));
         const file = await firstValueFrom(
-            directory.ready$.pipeline$.pipe(
+            directory.ready$.pipe(
                 filter((x) => x),
-                mergeMap(() => directory.children$),
+                switchMap(() => directory.children$),
                 map(
                     (children) =>
                         (children.find((x) => x instanceof FileNode && x.props.item.name === fileName) as FileNode) ??

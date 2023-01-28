@@ -1,8 +1,8 @@
-import { ReactiveComponentProperty } from "app/src/utils";
+import { createReplaySubject } from "app/src/utils";
 import { PureComponent } from "react";
 
 import { createContext } from "react";
-import { BehaviorSubject, combineLatest, filter, firstValueFrom, from, map, mergeMap, switchMap } from "rxjs";
+import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, Subject, switchMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { WorkspaceNode } from "./WorkspaceNode";
 
@@ -19,33 +19,21 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
     declare context: TreeContextProps;
     children$ = new BehaviorSubject(new Array<TreeNode>());
 
-    ready$ = new ReactiveComponentProperty(this, (props$) => props$.pipe(map(() => true)));
+    ready$: Subject<boolean> = new BehaviorSubject(true);
     get ready() {
-        return firstValueFrom(this.ready$.pipeline$.pipe(filter((ready) => ready)));
+        return firstValueFrom(this.ready$.pipe(filter((ready) => ready)));
     }
 
-    deepReady$: ReactiveComponentProperty<TProps, boolean> = new ReactiveComponentProperty(this, (props$) => {
-        return props$.pipe(
-            mergeMap(() => {
-                return combineLatest([
-                    this.ready$.pipeline$,
-                    this.children$.pipe(
-                        switchMap((children) =>
-                            combineLatest(
-                                children.length
-                                    ? Array.from(children).map((child) => child.deepReady$.pipeline$)
-                                    : [from([true])],
-                            ),
-                        ),
-                        map((x) => x.reduce((acc, val) => acc && val, true)),
-                    ),
-                ]).pipe(map(([ready, childrenDeepReady]) => ready && childrenDeepReady));
-            }),
-        );
-    });
+    deepReady$: Subject<boolean> = createReplaySubject(
+        this.children$.pipe(
+            switchMap((children) => combineLatest([this.ready$, ...children.map((child) => child.deepReady$)])),
+            map((ready) => ready.every((ready) => ready === ready)),
+        ),
+        1,
+    );
 
     get deepReady() {
-        return firstValueFrom(this.deepReady$.pipeline$.pipe(filter((ready) => ready)));
+        return firstValueFrom(this.deepReady$.pipe(filter((ready) => ready)));
     }
 
     private disableChildrenRemoval = false;
@@ -80,6 +68,8 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
 
     componentWillUnmount() {
         this.context?.parent.removeChildren(this);
+        this.ready$.complete();
+        this.deepReady$.complete();
         this.children$.complete();
     }
 }

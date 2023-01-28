@@ -1,6 +1,6 @@
-import { ReactiveComponentProperty } from "app/src/utils";
+import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
 import { createRef } from "react";
-import { combineLatest, map, mergeMap } from "rxjs";
+import { combineLatest, map, switchMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { HyperFormulaNode } from "./database/HyperFormulaNode";
 import { DirectoryNode } from "./fs/DirectoryNode";
@@ -24,7 +24,7 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
     root$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map((props) => props.store.workspace),
-            mergeMap((workspace) => this.props.store.fs.initializeWorkspace(workspace)),
+            switchMap((workspace) => this.props.store.fs.initializeWorkspace(workspace)),
         ),
     );
 
@@ -33,24 +33,21 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
         this.props.store.root.next(this);
     }
 
-    ready$ = new ReactiveComponentProperty(this, (props$) =>
-        props$.pipe(
-            mergeMap(() =>
-                combineLatest([this.root$.pipeline$, this.children$]).pipe(
-                    map(([root, children]) => {
-                        if (!root) {
-                            return false;
-                        }
+    ready$ = createReplaySubject(
+        combineLatest([this.root$.pipeline$, this.children$]).pipe(
+            map(([root, children]) => {
+                if (!root) {
+                    return false;
+                }
 
-                        if (!children.find((x) => x instanceof DirectoryNode)) {
-                            return false;
-                        }
+                if (!children.find((x) => x instanceof DirectoryNode)) {
+                    return false;
+                }
 
-                        return true;
-                    }),
-                ),
-            ),
+                return true;
+            }),
         ),
+        1,
     );
 
     newContext: TreeContextProps = { root: this, store: this.props.store, parent: this };

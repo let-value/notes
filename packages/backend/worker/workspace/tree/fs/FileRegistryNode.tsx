@@ -1,7 +1,7 @@
-import { ReactiveComponentProperty } from "app/src/utils";
+import { createReplaySubject } from "app/src/utils";
 import { Item } from "models";
 import { format, parse, ParsedPath, sep } from "path";
-import { BehaviorSubject, filter, firstValueFrom, map, mergeMap } from "rxjs";
+import { BehaviorSubject, firstValueFrom, map } from "rxjs";
 import { TreeContextProps, TreeNode } from "../TreeNode";
 import { WorkspaceNode } from "../WorkspaceNode";
 import { FileNode } from "./FileNode";
@@ -14,22 +14,16 @@ type Uri = {
 export class FileRegistryNode extends TreeNode {
     declare context: TreeContextProps<WorkspaceNode>;
     declare children$: BehaviorSubject<FileNode[]>;
-
     declare addChildren: (node: FileNode) => void;
     declare removeChildren: (node: FileNode) => void;
 
-    deepReady$ = new ReactiveComponentProperty(this, (props$) => props$.pipe(map(() => true)));
+    deepReady$ = new BehaviorSubject(true);
 
-    get deepReady() {
-        return firstValueFrom(this.deepReady$.pipeline$.pipe(filter((ready) => ready)));
-    }
-
-    registry = new ReactiveComponentProperty(this, (props$) =>
-        props$.pipe(
-            mergeMap(() => this.children$),
-            map((files) => Array.from(files.values())),
+    registry$ = createReplaySubject(
+        this.children$.pipe(
             map((files) => files.map((file): Uri => ({ uri: parse(file.props.item.path), item: file.props.item }))),
         ),
+        1,
     );
 
     async resolveLink(link: string) {
@@ -37,7 +31,7 @@ export class FileRegistryNode extends TreeNode {
 
         const uri = parse(link);
 
-        return this.registry.pipeline$.pipe(
+        return this.registry$.pipe(
             //todo: pause when registry not ready
             map((registry) => {
                 const amongst: Uri[] = [];
@@ -75,8 +69,10 @@ export class FileRegistryNode extends TreeNode {
             name: uri.name,
         });
 
+        const registry = await firstValueFrom(this.registry$);
+
         const amongst: string[] = [];
-        for (const file of this.registry.value) {
+        for (const file of registry) {
             if (file.uri.name !== uri.name) {
                 continue;
             }

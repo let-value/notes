@@ -1,9 +1,9 @@
-import { ReactiveComponentProperty } from "app/src/utils";
+import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
 import { backend } from "messaging";
 import { Item } from "models";
 import { join } from "path";
 import { ReactNode } from "react";
-import { combineLatest, map, mergeMap } from "rxjs";
+import { combineLatest, map, switchMap } from "rxjs";
 import { container } from "../../../container";
 import { TreeNodeExtensions } from "../../TreeNodeExtensions";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
@@ -15,25 +15,23 @@ interface DirectoryNodeProps {
 }
 
 const dispatcher = container.get("dispatcher");
+const queue = container.get("queue");
 
 export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
     declare context: TreeContextProps<DirectoryNode>;
 
-    items = new ReactiveComponentProperty(this, (props$) =>
+    items$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map((props) => props.item),
-            mergeMap((item) => this.context.store.fs.listDirectory(item)),
+            switchMap((item) => queue.add(() => this.context.store.fs.listDirectory(item))),
         ),
     );
 
-    ready$ = new ReactiveComponentProperty(this, (props$) =>
-        props$.pipe(
-            mergeMap(() =>
-                combineLatest([this.items.pipeline$, this.children$]).pipe(
-                    map(([items, children]) => children.length >= items.length),
-                ),
-            ),
+    ready$ = createReplaySubject(
+        combineLatest([this.items$.pipeline$, this.children$]).pipe(
+            map(([items, children]) => children.length >= items.length),
         ),
+        1,
     );
 
     async createFile(name: string) {
@@ -49,7 +47,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
     }
 
     async refresh() {
-        const items = await this.items.update();
+        const items = await this.items$.update();
         await dispatcher.send(
             backend.workspace.items.response(items, undefined, {
                 workspaceId: this.context.store.workspace.id,
@@ -99,7 +97,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
         const { children } = this.props;
         return (
             <TreeContext.Provider value={this.newContext}>
-                {this.items.value?.map((child) => {
+                {this.items$.value?.map((child) => {
                     if (child.isDirectory) {
                         return <DirectoryNode key={child.path} item={child} />;
                     } else {

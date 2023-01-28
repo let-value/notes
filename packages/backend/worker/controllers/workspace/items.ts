@@ -31,7 +31,7 @@ mediator.pipe(matchQuery(backend.workspace.items)).subscribe(async (query) => {
             throw new Error("Not a directory");
         }
 
-        const items = await node.items.update();
+        const items = await node.items$.update();
 
         await dispatcher.send(backend.workspace.items.response(items, query));
     } catch (error) {

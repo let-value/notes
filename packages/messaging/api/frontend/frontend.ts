@@ -1,6 +1,6 @@
 import { Item } from "models";
-import { Command } from "./Command";
-import { Query } from "./Query";
+import { Command } from "../../Command";
+import { Query } from "../../Query";
 
 export const frontend = {
     requestPermission: new Query<PermissionState, FileSystemDirectoryHandle>("requestPermission"),

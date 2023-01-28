@@ -1,8 +1,11 @@
 import { parseLink } from "app/src/editor/tokens/link";
-import { ReactiveComponentProperty } from "app/src/utils";
+import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
 import { Token } from "models";
-import { combineLatest, map, mergeMap } from "rxjs";
+import { combineLatest, map, switchMap } from "rxjs";
+import { container } from "../../../container";
 import { DocumentNode } from "../fs/file/DocumentNode";
+
+const queue = container.get("queue");
 
 interface LinkProps {
     token: Token;
@@ -18,20 +21,15 @@ export class LinkNode extends DocumentNode<LinkProps> {
 
     target$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            mergeMap(() => this.link$.pipeline$),
-            mergeMap((link) => this.context.root.registryRef.current.resolveLink(link.path)),
-            mergeMap((target) => target),
+            switchMap(() => this.link$.pipeline$),
+            switchMap((link) => queue.add(() => this.context.root.registryRef.current.resolveLink(link.path))),
+            switchMap((target) => target),
         ),
     );
 
-    ready$ = new ReactiveComponentProperty(this, (props$) =>
-        props$.pipe(
-            mergeMap(() =>
-                combineLatest([this.link$.pipeline$, this.target$.pipeline$]).pipe(
-                    map(([link, target]) => !!link && !!target),
-                ),
-            ),
-        ),
+    ready$ = createReplaySubject(
+        combineLatest([this.link$.pipeline$, this.target$.pipeline$]).pipe(map(([link, target]) => !!link && !!target)),
+        1,
     );
 
     componentDidMount() {

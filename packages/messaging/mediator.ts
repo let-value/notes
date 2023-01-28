@@ -1,4 +1,4 @@
-import { BehaviorSubject, filter, fromEvent, merge, mergeMap, Subject } from "rxjs";
+import { BehaviorSubject, filter, fromEvent, merge, Subject, switchMap } from "rxjs";
 import { BroadcastMessage } from "./BroadcastMessage";
 import { EventTarget } from "./EventTarget";
 
@@ -7,7 +7,7 @@ export function createMediator(recieverId?: string) {
     const dispatcher = new Subject<BroadcastMessage>();
     const pipeline = source.pipe(
         filter(Boolean),
-        mergeMap((transport) => fromEvent(transport, "message")),
+        switchMap((transport) => fromEvent(transport, "message")),
     );
 
     function dispatch(message: BroadcastMessage) {

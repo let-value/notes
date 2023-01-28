@@ -11,7 +11,7 @@ export class MetadataNode extends TreeNode {
     declare context: TreeContextProps<DirectoryNode>;
     metaDirectory$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            switchMap(() => this.context.parent.ready$.pipeline$),
+            switchMap(() => this.context.parent.ready$),
             filter((x) => x === true),
             switchMap(() => this.context.parent.children$),
             map(

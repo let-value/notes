@@ -3,8 +3,11 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import { Token } from "models";
 import { editor, Uri } from "monaco-editor";
 import { ComponentType } from "react";
-import { map, mergeMap } from "rxjs";
+import { map, switchMap } from "rxjs";
+import { container } from "../../../../container";
 import { DocumentNode } from "./DocumentNode";
+
+const queue = container.get("queue");
 
 export interface FileTokensChildrenProps {
     tokens: Token[];
@@ -19,7 +22,7 @@ export class FileTokensNode extends DocumentNode<FileTokensNodeProps> {
     tokens$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map((props) => props.content),
-            mergeMap((content) => this.getTokens(content)),
+            switchMap((content) => queue.add(() => this.getTokens(content))),
         ),
     );
 

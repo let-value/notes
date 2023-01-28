@@ -1,5 +1,5 @@
 import { Item, Token, Workspace, WorkspaceId } from "models";
-import { Query } from "./Query";
+import { Query } from "../../Query";
 
 export type FileContent = string;
 
@@ -46,6 +46,7 @@ export const backend = {
             tokens: new Query<Token[], ItemQuery>("workspace/readFileTokens"),
             save: new Query<boolean, SaveFileQuery>("workspace/saveContent"),
         },
+        database: {},
     },
     workspaces: new Query<Workspace[]>("workspaces"),
 };

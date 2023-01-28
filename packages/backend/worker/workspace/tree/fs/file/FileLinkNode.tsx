@@ -1,7 +1,10 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import { ComponentType } from "react";
-import { map, mergeMap } from "rxjs";
+import { map, switchMap } from "rxjs";
+import { container } from "../../../../container";
 import { DocumentNode } from "./DocumentNode";
+
+const queue = container.get("queue");
 
 export interface FileLinkChildrenProps {
     link: string;
@@ -15,7 +18,7 @@ export class FileLinkNode extends DocumentNode<FileLinkNodeProps> {
     link$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map(() => this.context.parent.props.item),
-            mergeMap((item) => this.context.root.registryRef.current.getLink(item)),
+            switchMap((item) => queue.add(() => this.context.root.registryRef.current.getLink(item))),
         ),
     );
 

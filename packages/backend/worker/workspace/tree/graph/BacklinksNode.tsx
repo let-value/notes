@@ -1,13 +1,10 @@
-import { ReactiveComponentProperty } from "app/src/utils";
-import { map, mergeMap } from "rxjs";
+import { createReplaySubject } from "app/src/utils";
+import { map } from "rxjs";
 import { DocumentNode } from "../fs/file/DocumentNode";
 
 export class BacklinksNode extends DocumentNode {
-    backlinks$ = new ReactiveComponentProperty(this, (props$) =>
-        props$.pipe(
-            mergeMap(() => this.context.root.graphRef.current.graph$),
-            map((links) => links[this.context.parent.props.item.path]),
-        ),
+    backlinks$ = createReplaySubject(
+        this.context.root.graphRef.current.graph$.pipe(map((links) => links[this.context.parent.props.item.path])),
     );
 
     render() {

@@ -1,18 +1,19 @@
 import { EditorPanelProps } from "@/components/EditorPanel/EditorPanelProps";
 import { ReactiveValue } from "@/utils";
 import { DockviewApi, IDisposable } from "dockview";
-import { fromEventPattern, map, mergeMap, shareReplay } from "rxjs";
+import { fromEventPattern, map, shareReplay } from "rxjs";
+import { switchMap } from "rxjs/internal/operators/switchMap";
 
 export const editorsDock$ = new ReactiveValue<DockviewApi>();
 
 export const editorsLayout$ = editorsDock$.valuePipe.pipe(
-    mergeMap((dock) =>
+    switchMap((dock) =>
         fromEventPattern(
             (handler) => dock.onDidLayoutChange(handler),
             (_, signal: IDisposable) => signal.dispose(),
         ),
     ),
-    mergeMap(() => editorsDock$.valuePipe),
+    switchMap(() => editorsDock$.valuePipe),
 );
 
 export const activePanel$ = editorsLayout$.pipe(

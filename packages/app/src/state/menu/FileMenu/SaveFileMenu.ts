@@ -4,7 +4,7 @@ import { observeRecoilLoadable, recoilAction } from "@/atom/tunnel";
 import { workspaceState } from "@/atom/workspace";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Item, Workspace } from "models";
-import { filter, map, mergeMap, tap } from "rxjs";
+import { filter, map, switchMap, tap } from "rxjs";
 import { MenuItem } from "../MenuItem";
 
 export class SaveFileMenu implements MenuItem {
@@ -35,8 +35,8 @@ export class SaveFileMenu implements MenuItem {
                         this.item = item;
                     }),
                 ),
-                mergeMap((item) => observeRecoilLoadable(isFileHasChanges(item.path))),
-                mergeMap((x) => x),
+                switchMap((item) => observeRecoilLoadable(isFileHasChanges(item.path))),
+                switchMap((x) => x),
             )
             .subscribe((hasChanges) =>
                 runInAction(() => {
