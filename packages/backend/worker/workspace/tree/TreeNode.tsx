@@ -2,7 +2,7 @@ import { createReplaySubject } from "app/src/utils";
 import { PureComponent } from "react";
 
 import { createContext } from "react";
-import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, Subject, switchMap } from "rxjs";
+import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, startWith, Subject, switchMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { WorkspaceNode } from "./WorkspaceNode";
 
@@ -34,6 +34,40 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
 
     get deepReady() {
         return firstValueFrom(this.deepReady$.pipe(filter((ready) => ready)));
+    }
+
+    get progress$(): Subject<[number, number]> {
+        const count$ = this.children$.pipe(
+            map((x) => x.length),
+            startWith(0),
+        );
+
+        const statuses$ = this.children$.pipe(
+            switchMap((children) => combineLatest(children.map((child) => child.ready$))),
+            startWith([] as boolean[]),
+        );
+
+        const ready$ = statuses$.pipe(map((statuses) => statuses.filter((status) => status).length));
+
+        const progresses$ = this.children$.pipe(
+            switchMap((children) => combineLatest(children.map((child) => child.progress$))),
+            map((statuses) =>
+                statuses.reduce(
+                    ([readyAcc, countAcc], [readyChild, countChild]) => [readyAcc + readyChild, countAcc + countChild],
+                    [0, 0],
+                ),
+            ),
+            startWith([0, 0]),
+        );
+
+        const result = combineLatest([ready$, count$, progresses$]).pipe(
+            map(
+                ([ready, count, [readyChild, countChild]]) =>
+                    [ready + readyChild, count + countChild] as [number, number],
+            ),
+        );
+
+        return createReplaySubject(result);
     }
 
     private disableChildrenRemoval = false;

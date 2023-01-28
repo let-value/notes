@@ -58,6 +58,10 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
         console.log("updateLinks", oldNode, newNode);
     }
 
+    progressSubscription = this.progress$.subscribe((progress) => {
+        console.log("progress", progress);
+    });
+
     render() {
         return (
             <TreeContext.Provider value={this.newContext}>

@@ -15,7 +15,7 @@ export class GraphNode extends TreeNode {
 
     graph$ = createReplaySubject(
         this.children$.pipe(
-            throttle(() => interval(5000)),
+            throttle(() => interval(2000)),
             map((children) => children.map((link) => link.target$.pipeline$.pipe(map((target) => ({ link, target }))))),
             switchMap((links) => combineLatest(links)),
             map((links) => groupBy(links, (x) => x.target.path)),

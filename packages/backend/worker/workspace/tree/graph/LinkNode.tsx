@@ -1,7 +1,7 @@
 import { parseLink } from "app/src/editor/tokens/link";
 import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
 import { Token } from "models";
-import { combineLatest, map, switchMap } from "rxjs";
+import { combineLatest, map, startWith, switchMap } from "rxjs";
 import { container } from "../../../container";
 import { DocumentNode } from "../fs/file/DocumentNode";
 
@@ -24,11 +24,14 @@ export class LinkNode extends DocumentNode<LinkProps> {
             switchMap(() => this.link$.pipeline$),
             switchMap((link) => queue.add(() => this.context.root.registryRef.current.resolveLink(link.path))),
             switchMap((target) => target),
+            startWith(null),
         ),
     );
 
     ready$ = createReplaySubject(
-        combineLatest([this.link$.pipeline$, this.target$.pipeline$]).pipe(map(([link, target]) => !!link && !!target)),
+        combineLatest([this.link$.pipeline$, this.target$.pipeline$]).pipe(
+            map(([link, target]) => link !== undefined && target !== undefined),
+        ),
         1,
     );
 
