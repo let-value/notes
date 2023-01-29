@@ -36,39 +36,37 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
         return firstValueFrom(this.deepReady$.pipe(filter((ready) => ready)));
     }
 
-    get progress$(): Subject<[number, number]> {
-        const count$ = this.children$.pipe(
-            map((x) => x.length),
-            startWith(0),
-        );
-
-        const statuses$ = this.children$.pipe(
-            switchMap((children) => combineLatest(children.map((child) => child.ready$))),
-            startWith([] as boolean[]),
-        );
-
-        const ready$ = statuses$.pipe(map((statuses) => statuses.filter((status) => status).length));
-
-        const progresses$ = this.children$.pipe(
-            switchMap((children) => combineLatest(children.map((child) => child.progress$))),
-            map((statuses) =>
-                statuses.reduce(
-                    ([readyAcc, countAcc], [readyChild, countChild]) => [readyAcc + readyChild, countAcc + countChild],
-                    [0, 0],
-                ),
+    progress$: Subject<[number, number]> = createReplaySubject(
+        combineLatest([
+            this.children$.pipe(
+                switchMap((children) => combineLatest(children.map((child) => child.ready$))),
+                startWith([] as boolean[]),
+                map((statuses) => statuses.filter((status) => status).length),
             ),
-            startWith([0, 0]),
-        );
-
-        const result = combineLatest([ready$, count$, progresses$]).pipe(
+            this.children$.pipe(
+                map((x) => x.length),
+                startWith(0),
+            ),
+            this.children$.pipe(
+                switchMap((children) => combineLatest(children.map((child) => child.progress$))),
+                map((statuses) =>
+                    statuses.reduce(
+                        ([readyAcc, countAcc], [readyChild, countChild]) => [
+                            readyAcc + readyChild,
+                            countAcc + countChild,
+                        ],
+                        [0, 0],
+                    ),
+                ),
+                startWith([0, 0]),
+            ),
+        ]).pipe(
             map(
                 ([ready, count, [readyChild, countChild]]) =>
                     [ready + readyChild, count + countChild] as [number, number],
             ),
-        );
-
-        return createReplaySubject(result);
-    }
+        ),
+    );
 
     private disableChildrenRemoval = false;
 
