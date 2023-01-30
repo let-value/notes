@@ -1,21 +1,20 @@
 import { parseLink } from "app/src/editor/tokens/link";
 import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
-import { Token } from "models";
 import { combineLatest, map, startWith, switchMap } from "rxjs";
 import { container } from "../../../container";
-import { DocumentNode } from "../fs/file/DocumentNode";
+import { TreeNode } from "../TreeNode";
 
 const queue = container.get("queue");
 
 interface LinkProps {
-    token: Token;
+    link: string;
 }
 
-export class LinkNode extends DocumentNode<LinkProps> {
+export class LinkNode extends TreeNode<LinkProps> {
     link$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            map((props) => props.token),
-            map((token) => parseLink(token.value)),
+            map((props) => props.link),
+            map((link) => parseLink(link)),
         ),
     );
 
@@ -46,10 +45,6 @@ export class LinkNode extends DocumentNode<LinkProps> {
     }
 
     render() {
-        if (!this.target$.value) {
-            return null;
-        }
-
         return null;
     }
 }

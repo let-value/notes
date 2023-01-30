@@ -2,31 +2,22 @@ import { ReactiveComponentProperty } from "app/src/utils";
 import { distinctUntilChanged, map, switchMap } from "rxjs";
 import { DocumentNode } from "../DocumentNode";
 
-interface SheetNodeProps {
-    link: string;
-}
-
-export class SheetNode extends DocumentNode<SheetNodeProps> {
-    link$ = new ReactiveComponentProperty(this, (props$) =>
-        props$.pipe(
-            map(() => this.context.parent.props.item),
-            switchMap((item) => this.context.root.registryRef.current.getLink(item)),
-        ),
-    );
-
+export class SheetNode extends DocumentNode {
     metadata$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            switchMap(() => {
+            switchMap(() => this.context.parent.link$),
+            distinctUntilChanged(),
+            switchMap((link) => {
                 const metadata = this.context.root.metadataRef.current;
                 const database = metadata.databaseRef.current;
-                return database.getFile(this.props.link);
+                return database.getFile(link);
             }),
         ),
     );
 
     sheet$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
-            switchMap(() => this.link$.pipeline$),
+            switchMap(() => this.context.parent.link$),
             distinctUntilChanged(),
             map((link) => {
                 const instance = this.context.root.hyperFormulaRef.current.instance;
