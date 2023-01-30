@@ -106,10 +106,9 @@ export class FileRegistryNode extends TreeNode {
         }
 
         const identifier = res
-            .filter((token) => token.trim() !== "")
+            .filter((token) => token.trim() !== "" && token !== workspaceUri.name)
             .reverse()
-            .join(sep)
-            .replace(workspaceUri.name, "");
+            .join(sep);
 
         return identifier;
     }

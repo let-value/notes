@@ -1,6 +1,6 @@
 import { parseLink } from "app/src/editor/tokens/link";
 import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
-import { combineLatest, filter, map, startWith, switchMap } from "rxjs";
+import { combineLatest, filter, map, switchMap } from "rxjs";
 import { container } from "../../../container";
 import { TreeNode } from "../TreeNode";
 
@@ -18,15 +18,17 @@ export class LinkNode extends TreeNode<LinkProps> {
         ),
     );
 
-    target$ = new ReactiveComponentProperty(this, (props$) =>
-        props$.pipe(
-            switchMap(() => this.link$.pipeline$),
-            map((link) => link?.path),
-            filter((path) => !!path),
-            switchMap((path) => queue.add(() => this.context.root.registryRef.current.resolveLink(path))),
-            switchMap((target) => target),
-            startWith(null),
-        ),
+    target$ = new ReactiveComponentProperty(
+        this,
+        (props$) =>
+            props$.pipe(
+                switchMap(() => this.link$.pipeline$),
+                map((link) => link?.path),
+                filter((path) => !!path),
+                switchMap((path) => queue.add(() => this.context.root.registryRef.current.resolveLink(path))),
+                switchMap((target) => target),
+            ),
+        null,
     );
 
     ready$ = createReplaySubject(

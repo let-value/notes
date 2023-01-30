@@ -1,6 +1,6 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import { createRef } from "react";
-import { filter, map, switchMap, tap } from "rxjs";
+import { filter, map, shareReplay, switchMap, tap } from "rxjs";
 import { DirectoryNode } from "../fs/DirectoryNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { MetadataDirectoryNode } from "./MetadataDirectoryNode";
@@ -29,6 +29,7 @@ export class MetadataNode extends TreeNode {
                 this.context.parent.createDirectory(metadataPrefix);
             }
         }),
+        shareReplay(1),
     );
 
     databaseRef = createRef<MetadataDirectoryNode>();

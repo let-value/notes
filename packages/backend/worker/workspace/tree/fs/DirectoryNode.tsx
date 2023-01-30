@@ -30,7 +30,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
 
     ready$ = createReplaySubject(
         combineLatest([this.items$.pipeline$, this.children$]).pipe(
-            map(([items, children]) => children.length >= items.length),
+            map(([items, children]) => children.length >= items?.length),
         ),
         1,
     );

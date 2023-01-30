@@ -26,7 +26,7 @@ export class FileNode extends TreeNode<FileNodeProps> {
 
     link$ = this.item$.pipeline$.pipe(
         switchMap((item) => defer(() => queue.add(() => this.context.root.registryRef.current.getLink(item)))),
-        shareReplay(1, 0),
+        shareReplay(1),
     );
 
     updateContent$ = new BehaviorSubject(null);

@@ -6,7 +6,6 @@ import {
     BehaviorSubject,
     combineLatest,
     defer,
-    delay,
     filter,
     firstValueFrom,
     map,
@@ -39,7 +38,6 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
 
     deepReady$: Subject<boolean> = createReplaySubject(
         this.children$.pipe(
-            delay(0),
             switchMap((children) => combineLatest([this.ready$, ...children.map((child) => child.deepReady$)])),
             map((ready) => ready.every((ready) => ready === true)),
         ),
@@ -51,7 +49,7 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
     // });
 
     get deepReady() {
-        return firstValueFrom(this.deepReady$.pipe(filter((ready) => ready)));
+        return firstValueFrom(this.deepReady$.pipe(filter((ready) => ready === true)));
     }
 
     progress$: Observable<[number, number]> = defer(() =>

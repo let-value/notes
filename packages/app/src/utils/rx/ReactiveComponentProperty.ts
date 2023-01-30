@@ -2,12 +2,12 @@ import { Component } from "react";
 import {
     distinctUntilChanged,
     filter,
-    lastValueFrom,
+    firstValueFrom,
     Observable,
     ReplaySubject,
+    skip,
     Subject,
     Subscription,
-    take,
 } from "rxjs";
 
 function findPropertyDescriptor(obj: object, name: string): PropertyDescriptor | undefined {
@@ -33,7 +33,9 @@ export class ReactiveComponentProperty<TProps, TValue> {
     constructor(
         private readonly component: Component<TProps>,
         pipeline: (props$: Observable<TProps>) => Observable<TValue>,
+        defaultValue?: TValue,
     ) {
+        this.value = defaultValue;
         this.props$ = new Subject<TProps>();
 
         const propsPipeline = this.props$.pipe(distinctUntilChanged());
@@ -86,8 +88,9 @@ export class ReactiveComponentProperty<TProps, TValue> {
     }
 
     update() {
+        const result = firstValueFrom(this.pipeline$.pipe(skip(1)));
         this.props$.next({ ...this.component.props });
-        return lastValueFrom(this.pipeline$.pipe(take(2)));
+        return result;
     }
 
     dispose() {

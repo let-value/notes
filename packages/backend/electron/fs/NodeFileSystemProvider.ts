@@ -10,8 +10,6 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { addWorkspaceHandle, getWorkspaceHandle, getWorkspaceHandles } from "../db/repositories";
 
-console.log("NodeFileSystemProvider.ts");
-
 export class NodeFileSystemProvider implements FileSystemProvider {
     constructor(private dispatcher: DispatcherService) {}
     async openWorkspace(): Promise<Workspace> {

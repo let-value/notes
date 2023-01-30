@@ -1,11 +1,11 @@
 import { ReactiveComponentProperty } from "app/src/utils";
 import { format } from "path";
 import { PropsWithChildren } from "react";
-import { filter, firstValueFrom, map, switchMap, tap } from "rxjs";
+import { filter, firstValueFrom, map, shareReplay, switchMap, tap } from "rxjs";
 import { DirectoryNode } from "../fs/DirectoryNode";
 import { FileNode } from "../fs/FileNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
-import { MetadataNode } from "./MetadataNode";
+import { MetadataNode, metadataPrefix } from "./MetadataNode";
 
 interface MetadataDirectoryProps {
     name: string;
@@ -17,6 +17,7 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
     directory$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             switchMap(() => this.context.parent.getMetaDirectory$),
+            filter((x) => x !== null),
             switchMap((directory) =>
                 directory.ready$.pipe(
                     filter((x) => x),
@@ -24,6 +25,7 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
                 ),
             ),
             filter((x) => x !== null),
+
             switchMap((directory) =>
                 directory.children$.pipe(
                     map(
@@ -47,10 +49,12 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
                 );
             }
         }),
+        shareReplay(1),
     );
 
     async getFile(name: string) {
-        const normalizedName = name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_").replaceAll("\\", "_");
+        const normalizedName =
+            metadataPrefix + "_" + name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_").replaceAll("\\", "_");
 
         const fileName = format({
             name: normalizedName,
@@ -58,10 +62,12 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
         });
 
         const directory = await firstValueFrom(this.getDirectory$.pipe(filter((x) => x !== null)));
+
         const file = await firstValueFrom(
             directory.ready$.pipe(
                 filter((x) => x),
                 switchMap(() => directory.children$),
+
                 map(
                     (children) =>
                         (children.find((x) => x instanceof FileNode && x.props.item.name === fileName) as FileNode) ??
