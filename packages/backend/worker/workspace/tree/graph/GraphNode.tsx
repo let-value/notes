@@ -12,6 +12,7 @@ export class GraphNode extends TreeNode {
     declare removeChildren: (node: LinkNode) => void;
 
     deepReady$ = new BehaviorSubject(true);
+    progress$ = new BehaviorSubject([0, 0] as [number, number]);
 
     graph$ = createReplaySubject(
         this.children$.pipe(

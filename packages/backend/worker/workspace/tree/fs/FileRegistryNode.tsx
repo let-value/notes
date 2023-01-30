@@ -18,6 +18,7 @@ export class FileRegistryNode extends TreeNode {
     declare removeChildren: (node: FileNode) => void;
 
     deepReady$ = new BehaviorSubject(true);
+    progress$ = new BehaviorSubject([0, 0] as [number, number]);
 
     registry$ = createReplaySubject(
         this.children$.pipe(
@@ -27,6 +28,7 @@ export class FileRegistryNode extends TreeNode {
     );
 
     async resolveLink(link: string) {
+        await this.context.root.deepReady;
         await this.context.parent.deepReady;
 
         const uri = parse(link);

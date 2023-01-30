@@ -2,7 +2,20 @@ import { createReplaySubject } from "app/src/utils";
 import { PureComponent } from "react";
 
 import { createContext } from "react";
-import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, startWith, Subject, switchMap } from "rxjs";
+import {
+    BehaviorSubject,
+    combineLatest,
+    defer,
+    delay,
+    filter,
+    firstValueFrom,
+    map,
+    Observable,
+    shareReplay,
+    startWith,
+    Subject,
+    switchMap,
+} from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { WorkspaceNode } from "./WorkspaceNode";
 
@@ -26,17 +39,22 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
 
     deepReady$: Subject<boolean> = createReplaySubject(
         this.children$.pipe(
+            delay(0),
             switchMap((children) => combineLatest([this.ready$, ...children.map((child) => child.deepReady$)])),
-            map((ready) => ready.every((ready) => ready === ready)),
+            map((ready) => ready.every((ready) => ready === true)),
         ),
         1,
     );
+
+    // progressSubscription = this.deepReady$.subscribe((deepReady) => {
+    //     console.log("deepReady", this, deepReady);
+    // });
 
     get deepReady() {
         return firstValueFrom(this.deepReady$.pipe(filter((ready) => ready)));
     }
 
-    progress$: Subject<[number, number]> = createReplaySubject(
+    progress$: Observable<[number, number]> = defer(() =>
         combineLatest([
             this.children$.pipe(
                 switchMap((children) => combineLatest(children.map((child) => child.ready$))),
@@ -65,6 +83,7 @@ export class TreeNode<TProps = unknown, TState = unknown> extends PureComponent<
                 ([ready, count, [readyChild, countChild]]) =>
                     [ready + readyChild, count + countChild] as [number, number],
             ),
+            shareReplay(1),
         ),
     );
 

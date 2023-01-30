@@ -68,12 +68,9 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
                 <FileRegistryNode ref={this.registryRef} />
                 <HyperFormulaNode ref={this.hyperFormulaRef} />
                 <GraphNode ref={this.graphRef} />
-
-                {this.root$.value && (
-                    <DirectoryNode ref={this.directoryRef} item={this.root$.value}>
-                        <MetadataNode ref={this.metadataRef} />
-                    </DirectoryNode>
-                )}
+                <DirectoryNode ref={this.directoryRef} item={this.root$.value}>
+                    <MetadataNode ref={this.metadataRef} />
+                </DirectoryNode>
             </TreeContext.Provider>
         );
     }

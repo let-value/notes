@@ -3,14 +3,14 @@ import { backend } from "messaging";
 import { Item } from "models";
 import { join } from "path";
 import { ReactNode } from "react";
-import { combineLatest, map, switchMap } from "rxjs";
+import { combineLatest, filter, map, switchMap } from "rxjs";
 import { container } from "../../../container";
 import { TreeNodeExtensions } from "../../TreeNodeExtensions";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
 import { FileNode } from "./FileNode";
 
 interface DirectoryNodeProps {
-    item: Item<true>;
+    item?: Item<true>;
     children?: ReactNode;
 }
 
@@ -23,6 +23,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
     items$ = new ReactiveComponentProperty(this, (props$) =>
         props$.pipe(
             map((props) => props.item),
+            filter((item) => item !== undefined),
             switchMap((item) => queue.add(() => this.context.store.fs.listDirectory(item))),
         ),
     );
