@@ -5,7 +5,7 @@ import { firstValueFrom } from "rxjs";
 const modelToEditor = container.get("modelToEditor");
 const tokensService = container.get("tokensService");
 
-export class BacklinkLinkProvider implements languages.LinkProvider {
+export class LinkProvider implements languages.LinkProvider {
     provideLinks = async function (model: editor.ITextModel): Promise<languages.ILinksList | null> {
         const editor = modelToEditor.getEditor(model).value;
         if (!editor) {

@@ -253,7 +253,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.9.2":
   version: 7.20.13
   resolution: "@babel/runtime@npm:7.20.13"
   dependencies:
@@ -1880,6 +1880,7 @@ __metadata:
     hyperformula: ^2.3.0
     idb: ^7.1.1
     iti: ^0.6.0
+    json-schema-to-ts: ^2.6.2
     language-detect: ^1.1.0
     language-map: ^1.5.0
     line-column: ^1.0.2
@@ -5474,6 +5475,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json-schema-to-ts@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "json-schema-to-ts@npm:2.6.2"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@types/json-schema": ^7.0.9
+    ts-algebra: ^1.1.1
+    ts-toolbelt: ^9.6.0
+  checksum: e408f8d3d32dda1a001f194cf5514fea7ef0a4dc4ed4f5448b9ea02df3a071119a0517aaffb639de725f4a12102406dfdf7743455e0e30317e231bb551362039
+  languageName: node
+  linkType: hard
+
 "json-schema-traverse@npm:^0.4.1":
   version: 0.4.1
   resolution: "json-schema-traverse@npm:0.4.1"
@@ -8580,10 +8593,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-algebra@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "ts-algebra@npm:1.1.1"
+  dependencies:
+    ts-toolbelt: ^9.6.0
+  checksum: 29fe27215863520377a94a14ccf1e78e921be6a5c514a0a8250dab09e325b006a9571ef1f366875d58e495b59ba880620718a1dd38b6af598cc6ea6de82d4f66
+  languageName: node
+  linkType: hard
+
 "ts-easing@npm:^0.2.0":
   version: 0.2.0
   resolution: "ts-easing@npm:0.2.0"
   checksum: e67ee862acca3b2e2718e736f31999adcef862d0df76d76a0e138588728d8a87dfec9978556044640bd0e90203590ad88ac2fe8746d0e9959b8d399132315150
+  languageName: node
+  linkType: hard
+
+"ts-toolbelt@npm:^9.6.0":
+  version: 9.6.0
+  resolution: "ts-toolbelt@npm:9.6.0"
+  checksum: 9f35fd95d895a5d32ea9fd2e532a695b0bae6cbff6832b77292efa188a0ed1ed6e54f63f74a8920390f3d909a7a3adb20a144686372a8e78b420246a9bd3d58a
   languageName: node
   linkType: hard
 

@@ -60,10 +60,11 @@ export class FileRegistryNode extends TreeNode {
         );
     }
 
-    async getLink(item: Item<false>) {
+    async getLink(path: string) {
+        console.log("getLink", path);
         await this.context.parent.deepReady;
 
-        const uri = parse(item.path);
+        const uri = parse(path);
         const workspaceUri = parse(this.context.parent.root$.value.path);
 
         const forPath = format({

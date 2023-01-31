@@ -1,13 +1,13 @@
 import { AddPanelOptions, IDockviewPanelProps, PanelCollection } from "dockview";
 import { FC, Suspense } from "react";
-import { Document } from "../Document/Document";
+import { Editor } from "../Document/Editor";
 import { EditorPanelProps } from "./EditorPanelProps";
 import { editorTab } from "./EditorTab";
 
 export const EditorPanel: FC<IDockviewPanelProps<EditorPanelProps>> = ({ params: { workspace, item } }) => {
     return (
         <Suspense>
-            <Document workspace={workspace} item={item} />
+            <Editor workspace={workspace} item={item} />
         </Suspense>
     );
 };

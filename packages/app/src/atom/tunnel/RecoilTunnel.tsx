@@ -64,7 +64,6 @@ export function RecoilTunnel() {
                 const subject = new ReactiveValue<T>();
                 const pipe = subject.pipe(
                     finalize(() => {
-                        console.log("finalize", id);
                         subject.complete();
                         actions.remove(id);
                     }),

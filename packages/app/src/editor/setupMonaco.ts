@@ -1,9 +1,20 @@
 import { editor, languages } from "monaco-editor";
 import { markdown } from "./language/markdown";
-import { BacklinkLinkProvider } from "./widgets/backlink/BacklinkLinkProvider";
+import { schema as database } from "./schemas/database.schema";
+import { LinkProvider } from "./widgets/link/LinkProvider";
 
-languages.registerLinkProvider("markdown", new BacklinkLinkProvider());
+languages.registerLinkProvider("markdown", new LinkProvider());
 languages.setMonarchTokensProvider("markdown", markdown);
+languages.json.jsonDefaults.setDiagnosticsOptions({
+    validate: true,
+    schemas: [
+        {
+            uri: database.$id,
+            fileMatch: [".notes/database/**/*.json"],
+            schema: database,
+        },
+    ],
+});
 
 editor.defineTheme("wikilink", {
     base: "vs",

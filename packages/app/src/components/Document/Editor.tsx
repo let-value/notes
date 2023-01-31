@@ -1,5 +1,5 @@
 import { fileContentState } from "@/atom/file";
-import Editor from "@monaco-editor/react";
+import Monaco from "@monaco-editor/react";
 import { Item, Workspace } from "models";
 import { FC } from "react";
 import { useRecoilValue } from "recoil";
@@ -12,14 +12,14 @@ export interface DocumentProps {
     item: Item<false>;
 }
 
-export const Document: FC<DocumentProps> = ({ workspace, item }) => {
+export const Editor: FC<DocumentProps> = ({ workspace, item }) => {
     const content = useRecoilValue(fileContentState({ workspaceId: workspace?.id, path: item?.path }));
 
     const { editor$, handleRef } = useDecorateEditor(workspace.id, item);
 
     return (
         <>
-            <Editor
+            <Monaco
                 keepCurrentModel
                 saveViewState={false}
                 key={item.path}
