@@ -1,6 +1,4 @@
-import { defer, first, isObservable, Observable, shareReplay } from "rxjs";
-import { of } from "rxjs/internal/observable/of";
-import { mergeMap } from "rxjs/internal/operators/mergeMap";
+import { defer, first, isObservable, Observable, of, shareReplay, switchMap } from "rxjs";
 
 export const createCachedSource = <TValue>(source: Observable<TValue>, bufferSize?: number, windowTime?: number) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14,6 +12,6 @@ export const createCachedSource = <TValue>(source: Observable<TValue>, bufferSiz
             null,
             defer(() => createShared(source, bufferSize, windowTime)),
         ),
-        mergeMap((d) => (isObservable(d) ? d : of(d))),
+        switchMap((d) => (isObservable(d) ? d : of(d))),
     );
 };

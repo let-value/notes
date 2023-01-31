@@ -1,6 +1,6 @@
 import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
 import { createRef } from "react";
-import { combineLatest, map, switchMap } from "rxjs";
+import { map, switchMap } from "rxjs";
 import { WorkspaceStore } from "../WorkspaceStore";
 import { HyperFormulaNode } from "./database/HyperFormulaNode";
 import { DirectoryNode } from "./fs/DirectoryNode";
@@ -34,13 +34,9 @@ export class WorkspaceNode extends TreeNode<WorkspaceProps> {
     }
 
     ready$ = createReplaySubject(
-        combineLatest([this.root$.pipeline$, this.children$]).pipe(
-            map(([root, children]) => {
+        this.root$.pipeline$.pipe(
+            map((root) => {
                 if (!root) {
-                    return false;
-                }
-
-                if (!children.find((x) => x instanceof DirectoryNode)) {
                     return false;
                 }
 

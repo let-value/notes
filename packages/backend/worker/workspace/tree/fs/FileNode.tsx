@@ -1,7 +1,7 @@
-import { createCachedSource, ReactiveComponentProperty } from "app/src/utils";
+import { createCachedSource, createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
 import { Item } from "models";
 import { join } from "path";
-import { BehaviorSubject, defer, distinctUntilChanged, map, switchMap } from "rxjs";
+import { BehaviorSubject, defer, distinctUntilChanged, filter, map, switchMap } from "rxjs";
 import { container } from "../../../container";
 
 import { getLanguage } from "../../../utils/getLanguage";
@@ -25,7 +25,9 @@ export class FileNode extends TreeNode<FileNodeProps> {
     item$ = new ReactiveComponentProperty(this, (props$) => props$.pipe(map((props) => props.item)));
 
     link$ = createCachedSource(
-        this.item$.pipeline$.pipe(
+        this.context.root.deepReady$.pipe(
+            filter((ready) => ready),
+            switchMap(() => this.item$.pipeline$),
             map((item) => item.path),
             distinctUntilChanged(),
             switchMap((item) => defer(() => queue.add(() => this.context.root.registryRef.current.getLink(item)))),
@@ -35,14 +37,14 @@ export class FileNode extends TreeNode<FileNodeProps> {
 
     updateContent$ = new BehaviorSubject(null);
 
-    content$ = createCachedSource(
+    content$ = createReplaySubject(
         this.updateContent$.pipe(switchMap(() => defer(() => queue.add(() => this.readFile())))),
         1,
         100,
     );
 
     tokens$ = createCachedSource(
-        defer(() => this.content$).pipe(switchMap((content) => queue.add(() => getTokens(this, content)))),
+        this.content$.pipe(switchMap((content) => queue.add(() => getTokens(this, content)))),
         1,
         100,
     );
