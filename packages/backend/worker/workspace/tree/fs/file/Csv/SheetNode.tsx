@@ -1,22 +1,19 @@
-import { schema } from "app/src/editor/schemas/database.schema";
 import { ReactiveState } from "app/src/utils";
-import { ColumnOption, Info, Options as ParseOptions, parse } from "csv-parse/browser/esm";
-import { Options as StringifyOptions, stringify } from "csv-stringify/browser/esm";
-import { ExportedChange, RawCellContent } from "hyperformula";
-import { FromSchema } from "json-schema-to-ts";
-import { catchError, combineLatest, filter, fromEventPattern, map, of, skipWhile, switchMap, tap } from "rxjs";
+import { ExportedChange } from "hyperformula";
+import {
+    catchError,
+    combineLatest,
+    filter,
+    fromEventPattern,
+    map,
+    of,
+    skipWhile,
+    switchMap,
+    withLatestFrom,
+} from "rxjs";
 import { FileNode } from "../../FileNode";
 import { DocumentNode } from "../DocumentNode";
-type DatabaseMeta = FromSchema<typeof schema>;
-
-type Item = {
-    record: RawCellContent[] | Record<string, RawCellContent>;
-    info: Info;
-};
-
-type ResultInfo = Info & {
-    columns?: ColumnOption[];
-};
+import { DatabaseMeta, parseDatabase, stringifyDatabase } from "./utils";
 
 const defaultMeta: DatabaseMeta = {
     header: false,
@@ -31,8 +28,9 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
     private skipMetaReadFlag = false;
     private skipMetaSaveFlag = true;
     private skipContentReadFlag = false;
-    private skipContentSaveFlag = true;
+    private skipContentSaveFlag = false;
     meta$ = new ReactiveState<DatabaseMeta>();
+    metaPipe$ = this.meta$.pipe(filter((x) => x !== undefined));
 
     private saveMetaSubscription = this.meta$
         .pipe(
@@ -68,44 +66,32 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
             this.meta$.next(meta);
         });
 
-    private updateSheet = combineLatest([this.meta$.pipe(filter((x) => x !== undefined)), this.context.parent.content$])
+    private updateSheetByContent = this.context.parent.content$
         .pipe(
-            tap((x) => console.log(this, "updateSheet", x)),
-            switchMap(async ([meta, content]) => {
-                const options: ParseOptions = meta.header
-                    ? { columns: meta.columns.map((column) => column.name), from_line: 2 }
-                    : { columns: false };
+            skipWhile(() => {
+                if (this.skipContentReadFlag) {
+                    this.skipContentReadFlag = false;
+                    return true;
+                }
+                return false;
+            }),
+            withLatestFrom(this.metaPipe$),
+            switchMap(([content, meta]) => {
+                return parseDatabase(meta, content);
+            }),
+        )
+        .subscribe((result) => {
+            console.log("updateSheet", result);
+            this.skipContentSaveFlag = true;
+            const instance = this.context.root.hyperFormulaRef.current.instance;
+            instance.setSheetContent(this.props.sheetId, result);
+        });
 
-                const { items, info } = await new Promise<{ items: Item[]; info: ResultInfo }>((resolve, reject) => {
-                    parse(content, { ...options, cast: true, cast_date: true, info: true }, (err, items, info) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve({ items, info });
-                        }
-                    });
-                });
-
-                return items.map(({ record }) => {
-                    if (info.columns) {
-                        return info.columns.map((column) => {
-                            const accessor =
-                                typeof column === "object"
-                                    ? column.name
-                                    : typeof column === "string"
-                                    ? column
-                                    : undefined;
-
-                            if (accessor === undefined) {
-                                return undefined;
-                            }
-
-                            return record[accessor];
-                        });
-                    }
-
-                    return record as RawCellContent[];
-                });
+    private updateSheetByMeta = this.meta$
+        .pipe(
+            withLatestFrom(this.context.parent.content$),
+            switchMap(([meta, content]) => {
+                return parseDatabase(meta, content);
             }),
         )
         .subscribe((result) => {
@@ -126,15 +112,29 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
             const firstChange = changes?.[0];
             return firstChange && "address" in firstChange && firstChange.address.sheet === this.props.sheetId;
         }),
+    );
+
+    serialized$ = this.sheet$.pipe(
         map(() => {
             const instance = this.context.root.hyperFormulaRef.current.instance;
             return instance.getSheetSerialized(this.props.sheetId);
         }),
     );
 
+    computed$ = this.sheet$
+        .pipe(
+            map(() => {
+                const instance = this.context.root.hyperFormulaRef.current.instance;
+                return instance.getSheetValues(this.props.sheetId);
+            }),
+        )
+        .subscribe((result) => {
+            console.log("computed", result);
+        });
+
     private saveSheet = combineLatest([
-        this.meta$.pipe(filter((x) => x !== undefined)),
-        this.sheet$.pipe(
+        this.metaPipe$,
+        this.serialized$.pipe(
             skipWhile(() => {
                 if (this.skipContentSaveFlag) {
                     this.skipContentSaveFlag = false;
@@ -144,29 +144,26 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
             }),
         ),
     ]).subscribe(async ([meta, content]) => {
-        const output = await new Promise<string>((resolve, reject) => {
-            const options: StringifyOptions = meta.header
-                ? { header: true, columns: meta.columns.map((column) => column.name) }
-                : { header: false };
+        const output = await stringifyDatabase(meta, content);
 
-            stringify(content, { ...options, quoted: true, quoted_empty: true, quoted_string: true }, (err, output) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(output);
-                }
-            });
-        });
-
+        this.skipContentReadFlag = true;
         console.log("writeFile", output);
+
         //await this.context.parent.writeFile(output)
     });
 
+    componentDidMount() {
+        super.componentDidMount();
+        this.context.root.hyperFormulaRef.current?.addChildren(this);
+    }
+
     componentWillUnmount() {
         super.componentWillUnmount();
+        this.context.root.hyperFormulaRef.current?.removeChildren(this);
         this.saveMetaSubscription.unsubscribe();
         this.readMetaSubscription.unsubscribe();
-        this.updateSheet.unsubscribe();
+        this.updateSheetByContent.unsubscribe();
+        this.updateSheetByMeta.unsubscribe();
         this.saveSheet.unsubscribe();
     }
 
