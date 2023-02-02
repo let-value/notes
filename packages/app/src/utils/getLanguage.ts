@@ -2,7 +2,7 @@ import { languages } from "lang-map";
 import { Item } from "models";
 import { extname } from "path";
 
-export function getLanguage(item: Item): string {
+export function getLanguage(item: Item): string | undefined {
     if (!item || item.isDirectory) {
         return undefined;
     }

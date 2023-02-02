@@ -1,6 +1,6 @@
-import { Item } from "models";
+import { RichItem } from "./workspaceItemsSelector";
 
-export interface ListItem<TDirectory extends boolean = any> extends Item<TDirectory> {
+export interface ListItem<TDirectory extends boolean = any> extends RichItem<TDirectory> {
     new?: boolean;
     loading?: boolean;
     collapsed?: ListItem<true>[];

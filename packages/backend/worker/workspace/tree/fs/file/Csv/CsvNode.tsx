@@ -28,6 +28,12 @@ export class CsvNode extends DocumentNode {
         ),
     );
 
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        const instance = this.context.root.hyperFormulaRef.current.instance;
+        instance.removeSheet(this.sheet$.value);
+    }
+
     render() {
         if (this.metadata$.value === undefined || this.sheet$.value === undefined) {
             return null;

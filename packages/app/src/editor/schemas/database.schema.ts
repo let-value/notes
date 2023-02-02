@@ -3,10 +3,25 @@ export type ColumnType = (typeof columnTypes)[number];
 
 export const viewTypes = ["table", "board", "timeline", "calendar", "list", "gallery"] as const;
 
-export const schema = {
+export const viewSchema = {
+    $id: "http://example.com/schemas/view.json",
+    type: "object",
+    required: ["name", "type"],
+    properties: {
+        name: {
+            type: "string",
+        },
+        type: {
+            enum: viewTypes,
+        },
+    },
+    additionalProperties: false,
+} as const;
+
+export const databaseSchema = {
     $id: "http://example.com/schemas/database.json",
     type: "object",
-    required: ["header"],
+    required: ["header", "views"],
     properties: {
         header: {
             type: "boolean",
@@ -68,17 +83,7 @@ export const schema = {
         views: {
             type: "array",
             items: {
-                type: "object",
-                required: ["name", "type"],
-                properties: {
-                    name: {
-                        type: "string",
-                    },
-                    type: {
-                        enum: viewTypes,
-                    },
-                },
-                additionalProperties: false,
+                ...viewSchema,
             },
         },
     },
@@ -96,8 +101,5 @@ export const schema = {
             },
         },
     ],
-    dependentRequired: {
-        views: ["columns"],
-    },
     additionalProperties: false,
 } as const;

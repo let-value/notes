@@ -3,7 +3,7 @@ import { Item, WorkspaceId } from "models";
 import { noWait, selectorFamily } from "recoil";
 import { ListItem } from "./items/ListItem";
 import { newItemState } from "./items/newItemState";
-import { workspaceItemsState } from "./items/workspaceItemsSelector";
+import { workspaceItemsWithMetaSelector } from "./items/workspaceItemsSelector";
 import { workspaceRootSelector } from "./workspaceRootSelector";
 
 export interface WorkspaceTreeReqest {
@@ -33,7 +33,7 @@ export const workspaceTree = selectorFamily({
 
                 if (item?.isDirectory && show && !item.new) {
                     const parents = [...(item.parents ?? []), item];
-                    const response = get(noWait(workspaceItemsState({ workspaceId, path: item.path })));
+                    const response = get(noWait(workspaceItemsWithMetaSelector({ workspaceId, path: item.path })));
                     item.loading = response.state === "loading";
 
                     const childs: Item[] = [];

@@ -1,10 +1,12 @@
-import { schema } from "app/src/editor/schemas/database.schema";
+import { databaseSchema } from "app/src/editor/schemas/database.schema";
 import { ColumnOption, Info, Options as ParseOptions, parse } from "csv-parse/browser/esm";
 import { Options as StringifyOptions, stringify } from "csv-stringify/browser/esm";
 import { RawCellContent } from "hyperformula";
 import { FromSchema } from "json-schema-to-ts";
 
-export type DatabaseMeta = FromSchema<typeof schema>;
+export type DatabaseMeta = FromSchema<typeof databaseSchema>;
+
+export type DatabaseView = DatabaseMeta["views"][number];
 
 type Item = {
     record: RawCellContent[] | Record<string, RawCellContent>;

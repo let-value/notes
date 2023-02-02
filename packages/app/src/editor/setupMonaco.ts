@@ -1,6 +1,6 @@
 import { editor, languages } from "monaco-editor";
 import { markdown } from "./language/markdown";
-import { schema as database } from "./schemas/database.schema";
+import { databaseSchema, viewSchema } from "./schemas/database.schema";
 import { LinkProvider } from "./widgets/link/LinkProvider";
 
 languages.registerLinkProvider("markdown", new LinkProvider());
@@ -9,9 +9,14 @@ languages.json.jsonDefaults.setDiagnosticsOptions({
     validate: true,
     schemas: [
         {
-            uri: database.$id,
+            uri: viewSchema.$id,
+            fileMatch: [".notes/note/**/*database.json"],
+            schema: viewSchema,
+        },
+        {
+            uri: databaseSchema.$id,
             fileMatch: [".notes/database/**/*.json"],
-            schema: database,
+            schema: databaseSchema,
         },
     ],
 });

@@ -11,12 +11,19 @@ import {
     switchMap,
     withLatestFrom,
 } from "rxjs";
+import { TreeContextProps } from "../../../TreeNode";
 import { FileNode } from "../../FileNode";
 import { DocumentNode } from "../DocumentNode";
 import { DatabaseMeta, parseDatabase, stringifyDatabase } from "./utils";
 
 const defaultMeta: DatabaseMeta = {
     header: false,
+    views: [
+        {
+            name: "Table",
+            type: "table",
+        },
+    ],
 };
 
 interface SheetNodeProps {
@@ -46,6 +53,7 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
             }),
         )
         .subscribe((meta) => {
+            this.skipMetaReadFlag = true;
             this.props.metadata.writeFile(JSON.stringify(meta, null, 4));
         });
 
@@ -166,6 +174,8 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
         this.updateSheetByMeta.unsubscribe();
         this.saveSheet.unsubscribe();
     }
+
+    newContext: TreeContextProps = { ...this.context, parent: this };
 
     render() {
         return null;

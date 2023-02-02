@@ -1,4 +1,6 @@
+import { getLanguage } from "@/utils/getLanguage";
 import { backend, ItemQuery } from "messaging";
+import { Item } from "models";
 import { atomFamily, selectorFamily } from "recoil";
 import { createQueryEffect } from "../../createQueryEffect";
 import { context } from "../../storeServices";
@@ -33,4 +35,35 @@ export const workspaceItemsState = atomFamily({
             (response) => response.meta?.path === query.path && response.meta?.workspaceId === query.workspaceId,
         ),
     ],
+});
+
+export interface RichItem<TDirectory extends boolean = any> extends Item<TDirectory> {
+    language?: string;
+}
+
+export const workspaceItemsWithMetaSelector = selectorFamily({
+    key: "workspace/itemsWithMeta/selector",
+    get:
+        (query: Readonly<ItemQuery>) =>
+        ({ get }) => {
+            const items = get(workspaceItemsState(query));
+
+            const result: RichItem[] = [];
+
+            for (const item of items) {
+                if (item.isDirectory) {
+                    result.push(item);
+                    continue;
+                }
+
+                const language = getLanguage(item);
+
+                result.push({
+                    ...item,
+                    language,
+                });
+            }
+
+            return result;
+        },
 });

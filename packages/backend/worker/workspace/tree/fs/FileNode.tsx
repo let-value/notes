@@ -4,7 +4,7 @@ import { join } from "path";
 import { BehaviorSubject, defer, distinctUntilChanged, filter, map, switchMap } from "rxjs";
 import { container } from "../../../container";
 
-import { getLanguage } from "../../../utils/getLanguage";
+import { getLanguage } from "app/src/utils";
 import { getTokens } from "../../../utils/getTokens";
 import { TreeNodeExtensions } from "../../TreeNodeExtensions";
 import { BacklinksNode } from "../graph/BacklinksNode";

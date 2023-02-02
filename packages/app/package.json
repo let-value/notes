@@ -28,6 +28,7 @@
         "hyperformula": "^2.3.0",
         "idb": "^7.1.1",
         "iti": "^0.6.0",
+        "lang-map": "^0.4.0",
         "language-detect": "^1.1.0",
         "language-map": "^1.5.0",
         "line-column": "^1.0.2",
