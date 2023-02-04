@@ -5,6 +5,8 @@ export interface WorkspaceHandle extends Workspace {
     handle: FileSystemDirectoryHandle;
 }
 
+export const name = "workspaceHandles";
+
 export const workspaceHandles: ReactiveIDBStoreSchema = {
-    name: "workspaceHandles",
+    name,
 };

@@ -1,4 +1,5 @@
-import { Item, Token, Workspace, WorkspaceId } from "models";
+import { FileProvider, gdrive, Item, Token, Workspace, WorkspaceId } from "models";
+import { User } from "oidc-client-ts";
 import { Query } from "../../Query";
 
 export type FileContent = string;
@@ -29,7 +30,7 @@ export interface SaveFileQuery {
 export const backend = {
     leader: new Query<string>("leader"),
     workspace: {
-        openDirectory: new Query<Workspace>("workspace/openDirectory"),
+        openDirectory: new Query<Workspace, FileProvider>("workspace/openDirectory"),
         open: new Query<Workspace, string>("workspace/open"),
         root: new Query<Item<true>, WorkspaceId, WorkspaceId>("workspace/root"),
         items: new Query<Item[], ItemQuery, ItemQuery>("workspace/items"),
@@ -49,4 +50,7 @@ export const backend = {
         database: {},
     },
     workspaces: new Query<Workspace[]>("workspaces"),
+    gdrive: {
+        list: new Query<gdrive.FileList, { directory: gdrive.File; user: User }>("gdrive/list"),
+    },
 };

@@ -13,7 +13,6 @@ export class LinkProvider implements languages.LinkProvider {
         }
 
         const tokens = await firstValueFrom(tokensService.getEditorCompensatedTokens(editor));
-        console.log(tokens);
 
         const links = tokens
             .filter((token) => token.type.includes("wikilink"))

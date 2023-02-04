@@ -10,7 +10,7 @@ export interface DispatcherService {
     send: <TPayload, TType extends BroadcastMessageType>(
         message: BroadcastMessage<TType, TPayload, unknown>,
     ) => Promise<void>;
-    call: <TResult, TArgs = void, TMeta = void>(
+    call: <TResult, TArgs = unknown, TMeta = unknown>(
         method: Query<TResult, TArgs, TMeta>,
         args: TArgs,
         meta?: TMeta | undefined,

@@ -1,29 +1,35 @@
 import { HotkeysProvider } from "@blueprintjs/core";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { RecoilRoot } from "recoil";
-import { App } from "./App";
-import { atomService } from "./atom/storeServices";
-import { RecoilTunnel } from "./atom/tunnel";
-import { container } from "./container";
-import "./index.css";
-import { WorkerProvider } from "./WorkerProvider";
 
-atomService(container as never);
+import { RecoilTunnel } from "./atom/tunnel";
+import { Oidc } from "./components/Oidc/Oidc";
+import "./index.css";
+
+const App = lazy(() => import("./App"));
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <Suspense>
-        <RecoilRoot>
-            <RecoilTunnel />
-            <Suspense>
-                <WorkerProvider>
-                    <HotkeysProvider>
-                        <Suspense>
-                            <App />
-                        </Suspense>
-                    </HotkeysProvider>
-                </WorkerProvider>
-            </Suspense>
-        </RecoilRoot>
-    </Suspense>,
+    <BrowserRouter>
+        <Routes>
+            <Route path="oidc/*" element={<Oidc />} />
+            <Route
+                path="/"
+                element={
+                    <Suspense>
+                        <RecoilRoot>
+                            <RecoilTunnel />
+
+                            <HotkeysProvider>
+                                <Suspense>
+                                    <App />
+                                </Suspense>
+                            </HotkeysProvider>
+                        </RecoilRoot>
+                    </Suspense>
+                }
+            />
+        </Routes>
+    </BrowserRouter>,
 );

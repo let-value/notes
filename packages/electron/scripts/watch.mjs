@@ -18,7 +18,6 @@ const logLevel = "warn";
  */
 function setupMainPackageWatcher({ resolvedUrls }) {
     process.env.VITE_DEV_SERVER_URL = resolvedUrls.local[0];
-    console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
 
     /** @type {ChildProcess | null} */
     let electronApp = null;

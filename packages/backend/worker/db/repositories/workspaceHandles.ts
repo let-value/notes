@@ -1,12 +1,12 @@
 import { concatMap, firstValueFrom, lastValueFrom } from "rxjs";
 import { database } from "../database";
-import { WorkspaceHandle } from "../stores/workspaceHandles";
+import { name, WorkspaceHandle } from "../stores/workspaceHandles";
 
 export function getWorkspaceHandle(id: string) {
     return firstValueFrom(
         database.pipe(
-            concatMap((db) => db.transaction$(["workspaceHandles"], "readonly")),
-            concatMap((transaction) => transaction.objectStore<WorkspaceHandle>("workspaceHandles").get$(id)),
+            concatMap((db) => db.transaction$([name], "readonly")),
+            concatMap((transaction) => transaction.objectStore<WorkspaceHandle>(name).get$(id)),
         ),
     );
 }
@@ -14,8 +14,8 @@ export function getWorkspaceHandle(id: string) {
 export function getWorkspaceHandles() {
     return firstValueFrom(
         database.pipe(
-            concatMap((db) => db.transaction$(["workspaceHandles"], "readonly")),
-            concatMap((transaction) => transaction.objectStore<WorkspaceHandle>("workspaceHandles").getAll$()),
+            concatMap((db) => db.transaction$([name], "readonly")),
+            concatMap((transaction) => transaction.objectStore<WorkspaceHandle>(name).getAll$()),
         ),
     );
 }
@@ -23,10 +23,8 @@ export function getWorkspaceHandles() {
 export function addWorkspaceHandle(workspace: WorkspaceHandle) {
     return lastValueFrom(
         database.pipe(
-            concatMap((db) => db.transaction$(["workspaceHandles"], "readwrite")),
-            concatMap((transaction) =>
-                transaction.objectStore<WorkspaceHandle>("workspaceHandles").add$(workspace, workspace.id),
-            ),
+            concatMap((db) => db.transaction$([name], "readwrite")),
+            concatMap((transaction) => transaction.objectStore<WorkspaceHandle>(name).add$(workspace, workspace.id)),
         ),
     );
 }

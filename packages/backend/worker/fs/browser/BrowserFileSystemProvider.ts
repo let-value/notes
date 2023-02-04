@@ -4,10 +4,10 @@ import { DispatcherService, frontend } from "messaging";
 import { FileProvider, Item, Workspace } from "models";
 import * as path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { addWorkspaceHandle, getWorkspaceHandle, getWorkspaceHandles } from "../db/repositories/workspaceHandles";
-import { addWorkspace, getWorkspaces } from "../db/repositories/workspaces";
+import { addWorkspaceHandle, getWorkspaceHandle, getWorkspaceHandles } from "../../db/repositories/workspaceHandles";
+import { addWorkspace, getWorkspaces } from "../../db/repositories/workspaces";
+import { FileSystemProvider } from "../FileSystemProvider";
 import { BrowserFileSystemHandlesHelper } from "./BrowserFileSystemHandlesHelper";
-import { FileSystemProvider } from "./FileSystemProvider";
 
 export class BrowserFileSystemProvider implements FileSystemProvider {
     handles = new BrowserFileSystemHandlesHelper();
@@ -15,7 +15,7 @@ export class BrowserFileSystemProvider implements FileSystemProvider {
 
     async openWorkspace(): Promise<Workspace> {
         const id = uuidv4();
-        const handle = await this.dispatcher.call(frontend.pickDirectory, undefined);
+        const handle = await this.dispatcher.call(frontend.pickDirectory.local, undefined);
 
         const workspaces = await getWorkspaces();
         const workspaceHandles = await getWorkspaceHandles();

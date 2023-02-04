@@ -8,18 +8,15 @@ import { WorkspaceNode } from "./tree/WorkspaceNode";
 import { TreeNodeExtensions } from "./TreeNodeExtensions";
 import { WorkspaceParseHelper } from "./WorkspaceParseHelper";
 
-const fs = container.get("fs");
+const fileSystems = container.get("fileSystems");
 const workspaceStores = new Map<WorkspaceId, WorkspaceStore>();
 
 export class WorkspaceStore {
     root: ReactiveValue<WorkspaceNode>;
     parse: WorkspaceParseHelper;
-    fs: FileSystemProvider;
-
-    constructor(public workspace: Workspace) {
+    constructor(public workspace: Workspace, public fs: FileSystemProvider) {
         this.root = new ReactiveValue<WorkspaceNode>();
         this.parse = new WorkspaceParseHelper(this);
-        this.fs = fs;
     }
 
     async findNodeByPath(path: string) {
@@ -37,7 +34,8 @@ export class WorkspaceStore {
             if (!workspace) {
                 throw new Error("Workspace not found");
             }
-            workspaceStore = new WorkspaceStore(workspace);
+            const fs = await fileSystems.get(workspace.provider, workspace);
+            workspaceStore = new WorkspaceStore(workspace, fs);
             workspaceStores.set(id, workspaceStore);
         }
         return workspaceStore;

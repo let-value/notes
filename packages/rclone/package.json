@@ -4,6 +4,10 @@
     "main": "index.ts",
     "type": "module",
     "scripts": {
-        "build": "cross-env GOARCH=wasm GOOS=js go build -o rclone.wasm"
+        "build": "cross-env GOARCH=wasm GOOS=js go build -o rclone.wasm",
+        "build:js": "cross-env GOARCH=ecmascript GOOS=js gopherjs build -o rclone.wasm"
+    },
+    "devDependencies": {
+        "cross-env": "^7.0.3"
     }
 }

@@ -5,10 +5,11 @@ import { WorkspaceStore } from "../../workspace/WorkspaceStore";
 
 const mediator = container.get("mediator");
 const dispatcher = container.get("dispatcher");
-const fs = container.get("fs");
+const fileSystems = container.get("fileSystems");
 
 mediator.pipe(matchQuery(backend.workspace.openDirectory)).subscribe(async (query) => {
     try {
+        const fs = await fileSystems.get(query.payload);
         const workspace = await fs.openWorkspace();
         await dispatcher.send(backend.workspace.openDirectory.response(workspace, query));
     } catch (error) {

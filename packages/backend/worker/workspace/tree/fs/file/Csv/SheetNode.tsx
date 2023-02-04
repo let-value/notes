@@ -1,4 +1,4 @@
-import { ReactiveState } from "app/src/utils";
+import { ReactiveComponentProperty, ReactiveState } from "app/src/utils";
 import { ExportedChange } from "hyperformula";
 import {
     catchError,
@@ -15,6 +15,7 @@ import { TreeContextProps } from "../../../TreeNode";
 import { FileNode } from "../../FileNode";
 import { DocumentNode } from "../DocumentNode";
 import { DatabaseMeta, parseDatabase, stringifyDatabase } from "./utils";
+import { ViewNode } from "./ViewNode";
 
 const defaultMeta: DatabaseMeta = {
     header: false,
@@ -35,9 +36,10 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
     private skipMetaReadFlag = false;
     private skipMetaSaveFlag = true;
     private skipContentReadFlag = false;
-    private skipContentSaveFlag = false;
+    private skipContentSaveFlag = true;
     meta$ = new ReactiveState<DatabaseMeta>();
     metaPipe$ = this.meta$.pipe(filter((x) => x !== undefined));
+    metaProperty$ = new ReactiveComponentProperty(this, () => this.meta$);
 
     private saveMetaSubscription = this.meta$
         .pipe(
@@ -70,19 +72,22 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
             catchError(() => of(defaultMeta)),
         )
         .subscribe((meta) => {
-            this.skipMetaReadFlag = true;
+            this.skipMetaSaveFlag = true;
             this.meta$.next(meta);
         });
 
-    private updateSheetByContent = this.context.parent.content$
+    private contentPipe$ = this.context.parent.content$.pipe(
+        skipWhile(() => {
+            if (this.skipContentReadFlag) {
+                this.skipContentReadFlag = false;
+                return true;
+            }
+            return false;
+        }),
+    );
+
+    private updateSheetByContent = this.contentPipe$
         .pipe(
-            skipWhile(() => {
-                if (this.skipContentReadFlag) {
-                    this.skipContentReadFlag = false;
-                    return true;
-                }
-                return false;
-            }),
             withLatestFrom(this.metaPipe$),
             switchMap(([content, meta]) => {
                 return parseDatabase(meta, content);
@@ -97,7 +102,7 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
 
     private updateSheetByMeta = this.meta$
         .pipe(
-            withLatestFrom(this.context.parent.content$),
+            withLatestFrom(this.contentPipe$),
             switchMap(([meta, content]) => {
                 return parseDatabase(meta, content);
             }),
@@ -155,9 +160,7 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
         const output = await stringifyDatabase(meta, content);
 
         this.skipContentReadFlag = true;
-        console.log("writeFile", output);
-
-        //await this.context.parent.writeFile(output)
+        await this.context.parent.writeFile(output);
     });
 
     componentDidMount() {
@@ -178,6 +181,13 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
     newContext: TreeContextProps = { ...this.context, parent: this };
 
     render() {
-        return null;
+        const meta = this.metaProperty$.value;
+        if (!meta) {
+            return null;
+        }
+
+        const views = meta.views?.map((view, index) => <ViewNode key={index} view={view} />) as never;
+
+        return views;
     }
 }

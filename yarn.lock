@@ -756,6 +756,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@maxim_mazurok/gapi.client.drive@npm:^3.0.20220731":
+  version: 3.0.20220731
+  resolution: "@maxim_mazurok/gapi.client.drive@npm:3.0.20220731"
+  dependencies:
+    "@types/gapi.client": "*"
+  checksum: 643930f0dd758cbc9074d97c267f934981bee5afc56b71a164445ef608d47646dddc9ae4c62da8e6c05f1aeb01cf467d424502eeb0f05a7397b0e32e1b103fa8
+  languageName: node
+  linkType: hard
+
 "@monaco-editor/loader@npm:^1.3.2":
   version: 1.3.2
   resolution: "@monaco-editor/loader@npm:1.3.2"
@@ -909,6 +918,13 @@ __metadata:
   peerDependencies:
     "@redis/client": ^1.0.0
   checksum: a5fca079deb04a2f204a7f9a375a6ff698a119d5dd53f7581fa8fd9e3bacacf1ecb0253b97fada484a012fea7a98014bc0f4f79707d4e92ff61c00318f2bfe04
+  languageName: node
+  linkType: hard
+
+"@remix-run/router@npm:1.3.1":
+  version: 1.3.1
+  resolution: "@remix-run/router@npm:1.3.1"
+  checksum: c91cba100b13fbb83cdaf43ca66b0d9fc1ab9dfe0bc58ac80ff2a4889488bf518a111267c790350eac8c7f764cc7809402430de15bdf70282d0bd60acf06d9de
   languageName: node
   linkType: hard
 
@@ -1185,6 +1201,20 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: add79e212acd5ac76b97b9045834e03a7996aef60a814185e0459088fd290519a3c1620865d588fa36c4498bf614210d2a703af5cf80aa1dbc125db78f6edac3
+  languageName: node
+  linkType: hard
+
+"@types/gapi.client@npm:*":
+  version: 1.0.5
+  resolution: "@types/gapi.client@npm:1.0.5"
+  checksum: 2e85b381b45e290de13052e108e4281c0966065db085c3b4294cd801c9425f8ad37b38f76f6a1f404a963fa326564bed953db3352c933c4f417fa209ff4d3c0c
+  languageName: node
+  linkType: hard
+
+"@types/gapi@npm:^0.0.44":
+  version: 0.0.44
+  resolution: "@types/gapi@npm:0.0.44"
+  checksum: 72f01d266e374383e40f2a2007b3bdbde048f665e945593fcf9ada09c0272bef8306915032c7ec644669a538b81797384554fec79e5ea337f91da0315689b693
   languageName: node
   linkType: hard
 
@@ -1896,6 +1926,7 @@ __metadata:
     models: "workspace:^"
     monaco-editor: ^0.34.1
     observable-hooks: ^4.2.1
+    oidc-client-ts: ^2.2.1
     p-queue: ^7.3.0
     path-browserify: ^1.0.1
     postcss: ^8.4.21
@@ -1906,6 +1937,7 @@ __metadata:
     react-dnd-scrolling: ^1.3.3
     react-dom: ^18.2.0
     react-reverse-portal: ^2.1.1
+    react-router-dom: ^6.8.0
     react-use: ^17.4.0
     recoil: ^0.7.6
     rxjs: ^7.8.0
@@ -3056,7 +3088,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-env@npm:7.0.3":
+"cross-env@npm:7.0.3, cross-env@npm:^7.0.3":
   version: 7.0.3
   resolution: "cross-env@npm:7.0.3"
   dependencies:
@@ -3095,6 +3127,13 @@ __metadata:
     randombytes: ^2.0.0
     randomfill: ^1.0.3
   checksum: c1609af82605474262f3eaa07daa0b2140026bd264ab316d4bf1170272570dbe02f0c49e29407fe0d3634f96c507c27a19a6765fb856fed854a625f9d15618e2
+  languageName: node
+  linkType: hard
+
+"crypto-js@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "crypto-js@npm:4.1.1"
+  checksum: b3747c12ee3a7632fab3b3e171ea50f78b182545f0714f6d3e7e2858385f0f4101a15f2517e033802ce9d12ba50a391575ff4638c9de3dd9b2c4bc47768d5425
   languageName: node
   linkType: hard
 
@@ -5606,6 +5645,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jwt-decode@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "jwt-decode@npm:3.1.2"
+  checksum: 20a4b072d44ce3479f42d0d2c8d3dabeb353081ba4982e40b83a779f2459a70be26441be6c160bfc8c3c6eadf9f6380a036fbb06ac5406b5674e35d8c4205eeb
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^4.0.0":
   version: 4.5.2
   resolution: "keyv@npm:4.5.2"
@@ -6271,6 +6317,9 @@ __metadata:
 "models@workspace:^, models@workspace:packages/models":
   version: 0.0.0-use.local
   resolution: "models@workspace:packages/models"
+  dependencies:
+    "@maxim_mazurok/gapi.client.drive": ^3.0.20220731
+    "@types/gapi": ^0.0.44
   languageName: unknown
   linkType: soft
 
@@ -6666,6 +6715,16 @@ __metadata:
     react-dom: ">=16.8.0"
     rxjs: ">=6.0.0"
   checksum: 2390fb3010d2249278e2280b9e87b565ea051eb810da393f2ef0886ed9415ab40e372f3d848e405b446b82684b6cf9cdec733e2afd84140bbd708d24a08a3094
+  languageName: node
+  linkType: hard
+
+"oidc-client-ts@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "oidc-client-ts@npm:2.2.1"
+  dependencies:
+    crypto-js: ^4.1.1
+    jwt-decode: ^3.1.2
+  checksum: 83bc815d59a1221bdf2a39aff505941f1bf9aba542a59cc9cbe677b85fc06d4f555d55c1b0a6ad8ca76c57bacc423e1b03de5b7cef3d93c403126143f1152943
   languageName: node
   linkType: hard
 
@@ -7296,6 +7355,8 @@ __metadata:
 "rclone@workspace:packages/rclone":
   version: 0.0.0-use.local
   resolution: "rclone@workspace:packages/rclone"
+  dependencies:
+    cross-env: ^7.0.3
   languageName: unknown
   linkType: soft
 
@@ -7421,6 +7482,30 @@ __metadata:
     react: ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: 2daccae3ac089606acee3a13fa5cde07ef90668de775bcc49edceb3f472f82e133f0673bb3b82dc53687c3ebd781c578f81eb4368c6028acd9c4625e71964394
+  languageName: node
+  linkType: hard
+
+"react-router-dom@npm:^6.8.0":
+  version: 6.8.0
+  resolution: "react-router-dom@npm:6.8.0"
+  dependencies:
+    "@remix-run/router": 1.3.1
+    react-router: 6.8.0
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: a10419023267014bdad20f50b5be04dffda49ebeb06c52ce9567795769dc0dc9b4e2fa61b52b5d70b61df4d17f85bae8f9c7e94c73d25d16974e46fd47765ced
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.8.0":
+  version: 6.8.0
+  resolution: "react-router@npm:6.8.0"
+  dependencies:
+    "@remix-run/router": 1.3.1
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 6e258c47f6cbbd0b0c7c9fd7bbaf7cd5cd60472935512fbe97c91e4bbd9b1717f0dee231f5d7206bedfbccdbc21ab77eaf336ba971ea5d8c6b1277045a7b958a
   languageName: node
   linkType: hard
 

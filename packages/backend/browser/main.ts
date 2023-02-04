@@ -1,5 +1,5 @@
-import { container } from "backend-worker/container";
-import { backend } from "messaging";
+const { container } = await import("backend-worker/container");
+const { backend } = await import("messaging");
 
 export { container };
 const id = container.get("id");
