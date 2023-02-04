@@ -38,13 +38,13 @@ export class FileNode extends TreeNode<FileNodeProps> {
     updateContent$ = new BehaviorSubject(null);
 
     content$ = createReplaySubject(
-        this.updateContent$.pipe(switchMap(() => defer(() => queue.add(() => this.readFile())))),
+        this.updateContent$.pipe(switchMap(() => defer(() => queue.add(() => this.readFile(), { priority: 3 })))),
         1,
         100,
     );
 
     tokens$ = createCachedSource(
-        this.content$.pipe(switchMap((content) => queue.add(() => getTokens(this, content)))),
+        this.content$.pipe(switchMap((content) => queue.add(() => getTokens(this, content), { priority: 2 }))),
         1,
         100,
     );

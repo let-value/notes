@@ -14,7 +14,8 @@ export const fileContentState = atomFamily({
 
             try {
                 return await context.dispatcher.call(backend.workspace.file.content, query as ItemQuery);
-            } catch {
+            } catch (error) {
+                console.error(error);
                 return undefined;
             }
         },

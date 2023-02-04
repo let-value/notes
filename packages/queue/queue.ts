@@ -18,6 +18,7 @@ export class Queue extends PQueue<QueueLine, LineOptions> {
         this.line = line!;
     }
     add<TResult>(task: Task<TResult>, options?: Partial<LineOptions>): Promise<TResult> {
+        //console.trace("Queue.add", task);
         if (options?.type) {
             const promise = this.pendingPromises.get(options.type);
             if (promise) {

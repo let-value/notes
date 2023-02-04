@@ -30,7 +30,7 @@ export class TreeNodeExtensions {
         while (queue.length > 0) {
             const node = queue.shift();
             if (node instanceof WorkspaceNode && node.constructor === WorkspaceNode) {
-                await node.ready;
+                await node.deepReady;
                 for (const child of node.children$.value.values()) {
                     queue.push(child);
                 }
@@ -40,7 +40,7 @@ export class TreeNodeExtensions {
             if (
                 node instanceof DirectoryNode &&
                 node.constructor === DirectoryNode &&
-                path.includes(node.props.item.path)
+                path.includes(node.props.item?.path)
             ) {
                 await node.ready;
 

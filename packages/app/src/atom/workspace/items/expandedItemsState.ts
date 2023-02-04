@@ -1,8 +1,16 @@
+import { localStorageEffect } from "@/atom/localStorageEffect";
 import { atom, useRecoilCallback } from "recoil";
 
 export const expandedItemsState = atom<Set<string>>({
     key: "workspace/items/expanded",
     default: new Set(),
+    effects: [
+        localStorageEffect(
+            "workspace/items/expanded",
+            (x) => [...x],
+            (x) => new Set(x),
+        ),
+    ],
 });
 
 export const useToggleExpandItem = () =>

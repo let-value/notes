@@ -24,7 +24,7 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
         props$.pipe(
             map((props) => props.item),
             filter((item) => item !== undefined),
-            switchMap((item) => queue.add(() => this.context.store.fs.listDirectory(item))),
+            switchMap((item) => queue.add(() => this.context.store.fs.listDirectory(item), { priority: 4 })),
         ),
     );
 

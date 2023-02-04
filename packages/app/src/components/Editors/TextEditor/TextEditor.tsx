@@ -4,7 +4,6 @@ import { FC } from "react";
 import { useRecoilValue } from "recoil";
 import { DateCodeLens } from "../../../editor/codeLens/date/DateCodeLens";
 import { EditorProps } from "../EditorProps";
-import defaultValue from "./defaultValue.md?raw";
 import { useDecorateEditor } from "./useDecorateEditor";
 
 export const TextEditor: FC<EditorProps> = ({ workspace, item }) => {
@@ -22,7 +21,7 @@ export const TextEditor: FC<EditorProps> = ({ workspace, item }) => {
                 height="100%"
                 width="100%"
                 path={item?.path ?? "default.md"}
-                defaultValue={content ?? defaultValue}
+                defaultValue={content}
                 theme="wikilink"
             />
             <DateCodeLens workspaceId={workspace.id} item={item} editor$={editor$} />

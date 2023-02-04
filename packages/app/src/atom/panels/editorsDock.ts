@@ -1,7 +1,7 @@
 import { EditorPanelProps } from "@/components/EditorPanel/EditorPanelProps";
 import { ReactiveValue } from "@/utils";
 import { DockviewApi, IDisposable } from "dockview";
-import { fromEventPattern, map, shareReplay } from "rxjs";
+import { filter, fromEventPattern, map, race, shareReplay, take } from "rxjs";
 import { switchMap } from "rxjs/internal/operators/switchMap";
 
 export const editorsDock$ = new ReactiveValue<DockviewApi>();
@@ -15,6 +15,26 @@ export const editorsLayout$ = editorsDock$.valuePipe.pipe(
     ),
     switchMap(() => editorsDock$.valuePipe),
 );
+
+race(editorsDock$, editorsLayout$)
+    .pipe(
+        filter((x) => x !== undefined),
+        take(1),
+    )
+    .subscribe((dock) => {
+        const layout = localStorage.getItem("editorsLayout");
+        if (layout && dock) {
+            dock.fromJSON(JSON.parse(layout));
+        }
+    });
+
+editorsLayout$.subscribe((dock) => {
+    if (!dock) {
+        return;
+    }
+    const layout = dock.toJSON();
+    localStorage.setItem("editorsLayout", JSON.stringify(layout));
+});
 
 export const activePanel$ = editorsLayout$.pipe(
     map((dock) => dock?.activePanel),
