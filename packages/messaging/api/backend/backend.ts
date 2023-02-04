@@ -1,4 +1,5 @@
-import { FileProvider, gdrive, Item, Token, Workspace, WorkspaceId } from "models";
+import { CellValue } from "hyperformula";
+import { DatabaseMeta, FileProvider, gdrive, Item, Token, Workspace, WorkspaceId } from "models";
 import { User } from "oidc-client-ts";
 import { Query } from "../../Query";
 
@@ -7,6 +8,10 @@ export type FileContent = string;
 export interface ItemQuery {
     workspaceId: WorkspaceId;
     path: Item["path"];
+}
+
+export interface ViewQuery extends ItemQuery {
+    view: string;
 }
 
 export interface CreateItemQuery {
@@ -47,7 +52,10 @@ export const backend = {
             tokens: new Query<Token[], ItemQuery>("workspace/readFileTokens"),
             save: new Query<boolean, SaveFileQuery>("workspace/saveContent"),
         },
-        database: {},
+        database: {
+            meta: new Query<DatabaseMeta, ItemQuery>("workspace/database/get"),
+            view: new Query<CellValue[][], ViewQuery, ViewQuery>("workspace/database/get"),
+        },
     },
     workspaces: new Query<Workspace[]>("workspaces"),
     gdrive: {

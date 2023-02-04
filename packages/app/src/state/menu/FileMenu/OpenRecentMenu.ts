@@ -33,7 +33,7 @@ export class OpenRecentMenu implements MenuItem {
         return this.workspaces?.map(
             (workspace): MenuItem => ({
                 type: "normal",
-                label: workspace.name,
+                label: `${workspace.name} (${workspace.provider})`,
                 handler: () => this.itemHandler(workspace.id),
             }),
         );

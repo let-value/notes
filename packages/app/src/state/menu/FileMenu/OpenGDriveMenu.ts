@@ -6,7 +6,7 @@ import { context } from "../mainMenuService";
 import { MenuItem } from "../MenuItem";
 
 export class OpenGDriveMenu implements MenuItem {
-    label = "Open GDrive";
+    label = "Google Drive";
     type = "normal" as const;
     async handler() {
         const workspace = await context.dispatcher.call(backend.workspace.openDirectory, FileProvider.GDrive);

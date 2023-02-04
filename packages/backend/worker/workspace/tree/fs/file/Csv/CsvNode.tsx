@@ -1,5 +1,5 @@
-import { ReactiveComponentProperty } from "app/src/utils";
-import { distinctUntilChanged, map, switchMap } from "rxjs";
+import { createReplaySubject, ReactiveComponentProperty } from "app/src/utils";
+import { distinctUntilChanged, filter, firstValueFrom, map, switchMap } from "rxjs";
 import { DocumentNode } from "../DocumentNode";
 import { SheetNode } from "./SheetNode";
 
@@ -27,6 +27,16 @@ export class CsvNode extends DocumentNode {
             }),
         ),
     );
+
+    sheetReady$ = createReplaySubject(
+        this.context.parent.children$.pipe(
+            map((children) => children.some((child) => child.constructor === SheetNode)),
+        ),
+        1,
+    );
+    get sheetReady() {
+        return firstValueFrom(this.sheetReady$.pipe(filter((ready) => ready)));
+    }
 
     componentWillUnmount() {
         super.componentWillUnmount();

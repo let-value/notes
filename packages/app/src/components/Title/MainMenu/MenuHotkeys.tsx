@@ -36,7 +36,6 @@ export const MenuHotkeys = observer(({ parent, items }: MenuHotkeysProps) => {
                 if (item.items) {
                     return <MenuHotkeys key={index} parent={item} items={item.items} />;
                 }
-                return null;
             })}
         </>
     );

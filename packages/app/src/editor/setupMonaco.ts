@@ -1,6 +1,6 @@
+import { databaseSchema, viewSchema } from "models";
 import { editor, languages } from "monaco-editor";
 import { markdown } from "./language/markdown";
-import { databaseSchema, viewSchema } from "./schemas/database.schema";
 import { LinkProvider } from "./widgets/link/LinkProvider";
 
 languages.registerLinkProvider("markdown", new LinkProvider());

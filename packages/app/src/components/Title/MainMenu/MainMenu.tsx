@@ -5,7 +5,6 @@ import { MenuItem2, Popover2, Popover2Props } from "@blueprintjs/popover2";
 import cx from "classnames";
 import { observer } from "mobx-react-lite";
 import { ComponentProps, useCallback } from "react";
-import { MenuHotkeys } from "./MenuHotkeys";
 import { RenderMenu } from "./RenderMenu";
 
 const popoverProps: Popover2Props = {
@@ -22,7 +21,7 @@ export const MainMenu = observer(({ TargetProps, ItemProps, ...other }: MainMenu
     const mainMenu = container.get("mainMenu");
 
     const renderTarget = useCallback(
-        (item: MenuItem, { className, ...other }: any) => (
+        (item: MenuItem, { className, isOpen, ...other }: any) => (
             <span {...TargetProps} {...other} className={cx(className, TargetProps?.className)}>
                 <Button minimal {...ItemProps}>
                     {item.label}
@@ -81,7 +80,7 @@ export const MainMenu = observer(({ TargetProps, ItemProps, ...other }: MainMenu
                 visibleItemRenderer={renderItem}
                 {...other}
             />
-            <MenuHotkeys items={mainMenu.items} />
+            {/* <MenuHotkeys items={mainMenu.items} /> */}
         </>
     );
 });

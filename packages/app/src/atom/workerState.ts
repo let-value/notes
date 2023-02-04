@@ -8,8 +8,8 @@ export const workerState = atom<string>({
     key: "worker",
     default: selector({
         key: "worker/initial",
-        get: async () => {
-            return await context.dispatcher.call(backend.leader, undefined);
+        get: () => {
+            return context.dispatcher.call(backend.leader, undefined);
         },
     }),
     effects: [createQueryEffect(backend.leader)],

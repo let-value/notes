@@ -9,8 +9,8 @@ interface AtomContext {
 
 export let context: AtomContext;
 
-export const atomService = (container: Container<AtomContext, {}>) => {
-    async function updateStoreServices() {
+export const subscriveAtoms = (container: Container<AtomContext, {}>) => {
+    function updateStoreServices() {
         const dispatcher = container.get("dispatcher");
         const mediator = container.get("mediator");
         context = {

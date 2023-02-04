@@ -1,6 +1,8 @@
 import { ReactiveComponentProperty, ReactiveState } from "app/src/utils";
 import { ExportedChange } from "hyperformula";
+import { DatabaseMeta } from "models";
 import {
+    BehaviorSubject,
     catchError,
     combineLatest,
     filter,
@@ -14,7 +16,7 @@ import {
 import { TreeContextProps } from "../../../TreeNode";
 import { FileNode } from "../../FileNode";
 import { DocumentNode } from "../DocumentNode";
-import { DatabaseMeta, parseDatabase, stringifyDatabase } from "./utils";
+import { parseDatabase, stringifyDatabase } from "./utils";
 import { ViewNode } from "./ViewNode";
 
 const defaultMeta: DatabaseMeta = {
@@ -33,6 +35,10 @@ interface SheetNodeProps {
 }
 
 export class SheetNode extends DocumentNode<SheetNodeProps> {
+    declare children$: BehaviorSubject<ViewNode[]>;
+    declare addChildren: (node: ViewNode) => void;
+    declare removeChildren: (node: ViewNode) => void;
+
     private skipMetaReadFlag = false;
     private skipMetaSaveFlag = true;
     private skipContentReadFlag = false;
@@ -134,16 +140,12 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
         }),
     );
 
-    computed$ = this.sheet$
-        .pipe(
-            map(() => {
-                const instance = this.context.root.hyperFormulaRef.current.instance;
-                return instance.getSheetValues(this.props.sheetId);
-            }),
-        )
-        .subscribe((result) => {
-            console.log("computed", result);
-        });
+    computed$ = this.sheet$.pipe(
+        map(() => {
+            const instance = this.context.root.hyperFormulaRef.current.instance;
+            return instance.getSheetValues(this.props.sheetId);
+        }),
+    );
 
     private saveSheet = combineLatest([
         this.metaPipe$,
