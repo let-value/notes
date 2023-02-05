@@ -1,10 +1,11 @@
-import { ReactiveComponentProperty, ReactiveState } from "app/src/utils";
+import { createReplaySubject, ReactiveComponentProperty, ReactiveState } from "app/src/utils";
 import { ExportedChange } from "hyperformula";
 import { DatabaseMeta } from "models";
 import {
     BehaviorSubject,
     catchError,
     combineLatest,
+    distinctUntilChanged,
     filter,
     fromEventPattern,
     map,
@@ -46,6 +47,17 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
     meta$ = new ReactiveState<DatabaseMeta>();
     metaPipe$ = this.meta$.pipe(filter((x) => x !== undefined));
     metaProperty$ = new ReactiveComponentProperty(this, () => this.meta$);
+
+    ready$ = createReplaySubject(
+        combineLatest([this.metaPipe$, this.children$]).pipe(
+            map(([meta, children]) =>
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                meta.views?.every((view) => children.some((child) => child.props?.view.name === view.name)),
+            ),
+            distinctUntilChanged(),
+        ),
+        1,
+    );
 
     private saveMetaSubscription = this.meta$
         .pipe(

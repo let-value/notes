@@ -54,7 +54,7 @@ export const backend = {
         },
         database: {
             meta: new Query<DatabaseMeta, ItemQuery>("workspace/database/get"),
-            view: new Query<CellValue[][], ViewQuery, ViewQuery>("workspace/database/get"),
+            view: new Query<CellValue[][], ViewQuery, ViewQuery>("workspace/database/view"),
         },
     },
     workspaces: new Query<Workspace[]>("workspaces"),

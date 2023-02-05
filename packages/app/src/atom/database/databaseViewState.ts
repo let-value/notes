@@ -9,7 +9,7 @@ export const databaseViewState = atomFamily({
     default: selectorFamily({
         key: "database/view/initial",
         get: (query: Readonly<Partial<ViewQuery>>) => async () => {
-            if (!query.workspaceId || !query.path) {
+            if (!query.workspaceId || !query.path || !query.view) {
                 return undefined;
             }
 

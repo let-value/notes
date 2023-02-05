@@ -10,7 +10,13 @@ export interface ViewProps extends EditorProps {
 }
 
 export const View: FC<ViewProps> = ({ workspace, item, view }) => {
-    const meta = useRecoilValue(databaseViewState({ workspaceId: workspace.id, path: item.path }));
+    const data = useRecoilValue(databaseViewState({ workspaceId: workspace.id, path: item.path, view: view.name }));
 
-    return <>{view.name}</>;
+    return (
+        <>
+            {view.name}
+            <br />
+            {JSON.stringify(data)}
+        </>
+    );
 };
