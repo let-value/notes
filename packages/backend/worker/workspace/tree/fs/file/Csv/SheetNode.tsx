@@ -13,7 +13,7 @@ import {
     switchMap,
     withLatestFrom,
 } from "rxjs";
-import { TreeContextProps } from "../../../TreeNode";
+import { TreeContext, TreeContextProps } from "../../../TreeNode";
 import { FileNode } from "../../FileNode";
 import { DocumentNode } from "../DocumentNode";
 import { parseDatabase, stringifyDatabase } from "./utils";
@@ -190,6 +190,6 @@ export class SheetNode extends DocumentNode<SheetNodeProps> {
 
         const views = meta.views?.map((view, index) => <ViewNode key={index} view={view} />) as never;
 
-        return views;
+        return <TreeContext.Provider value={this.newContext}>{views}</TreeContext.Provider>;
     }
 }

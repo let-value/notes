@@ -3,7 +3,7 @@ import { backend } from "messaging";
 import { Item } from "models";
 import { join } from "path";
 import { ReactNode } from "react";
-import { combineLatest, filter, map, switchMap } from "rxjs";
+import { combineLatest, distinctUntilChanged, filter, map, switchMap } from "rxjs";
 import { container } from "../../../container";
 import { TreeNodeExtensions } from "../../TreeNodeExtensions";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
@@ -30,7 +30,11 @@ export class DirectoryNode extends TreeNode<DirectoryNodeProps> {
 
     ready$ = createReplaySubject(
         combineLatest([this.items$.pipeline$, this.children$]).pipe(
-            map(([items, children]) => children.length >= items?.length),
+            map(([items, children]) =>
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                items?.every((item) => children.some((child) => (child.props as any)?.item?.path === item.path)),
+            ),
+            distinctUntilChanged(),
         ),
         1,
     );

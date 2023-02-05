@@ -1,7 +1,7 @@
-import { ReactiveComponentProperty } from "app/src/utils";
+import { ReactiveComponentProperty, tapOnce } from "app/src/utils";
 import { format } from "path";
 import { PropsWithChildren } from "react";
-import { filter, firstValueFrom, map, shareReplay, switchMap, tap } from "rxjs";
+import { filter, firstValueFrom, map, shareReplay, switchMap, tap, withLatestFrom } from "rxjs";
 import { DirectoryNode } from "../fs/DirectoryNode";
 import { FileNode } from "../fs/FileNode";
 import { TreeContext, TreeContextProps, TreeNode } from "../TreeNode";
@@ -25,7 +25,6 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
                 ),
             ),
             filter((x) => x !== null),
-
             switchMap((directory) =>
                 directory.children$.pipe(
                     map(
@@ -40,15 +39,13 @@ export class MetadataDirectoryNode extends TreeNode<PropsWithChildren<MetadataDi
     );
 
     getDirectory$ = this.directory$.pipeline$.pipe(
-        tap((directory) => {
+        withLatestFrom(this.context.parent.getMetaDirectory$),
+        tapOnce(([directory, parentDirectory]) => {
             if (directory === null) {
-                firstValueFrom(this.context.parent.getMetaDirectory$.pipe(filter((x) => x !== null))).then(
-                    (parentDirectory) => {
-                        parentDirectory?.createDirectory(this.props.name);
-                    },
-                );
+                parentDirectory?.createDirectory(this.props.name);
             }
         }),
+        map(([directory]) => directory),
         shareReplay(1),
     );
 

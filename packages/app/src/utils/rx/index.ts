@@ -4,3 +4,4 @@ export * from "./ReactiveComponentProperty";
 export * from "./ReactiveMap";
 export * from "./ReactiveState";
 export * from "./ReactiveValue";
+export * from "./tapOnce";

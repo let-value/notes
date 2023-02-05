@@ -8,6 +8,7 @@ import { WorkspaceNode } from "./tree/WorkspaceNode";
 import { TreeNodeExtensions } from "./TreeNodeExtensions";
 import { WorkspaceParseHelper } from "./WorkspaceParseHelper";
 
+const queue = container.get("queue");
 const fileSystems = container.get("fileSystems");
 const workspaceStores = new Map<WorkspaceId, WorkspaceStore>();
 
@@ -28,16 +29,21 @@ export class WorkspaceStore {
     }
 
     static async getInstance(id: WorkspaceId) {
-        let workspaceStore = workspaceStores.get(id);
-        if (!workspaceStore) {
-            const workspace = await getWorkspace(id);
-            if (!workspace) {
-                throw new Error("Workspace not found");
-            }
-            const fs = await fileSystems.get(workspace.provider, workspace);
-            workspaceStore = new WorkspaceStore(workspace, fs);
-            workspaceStores.set(id, workspaceStore);
-        }
-        return workspaceStore;
+        return queue.add(
+            async () => {
+                let workspaceStore = workspaceStores.get(id);
+                if (!workspaceStore) {
+                    const workspace = await getWorkspace(id);
+                    if (!workspace) {
+                        throw new Error("Workspace not found");
+                    }
+                    const fs = await fileSystems.get(workspace.provider, workspace);
+                    workspaceStore = new WorkspaceStore(workspace, fs);
+                    workspaceStores.set(id, workspaceStore);
+                }
+                return workspaceStore;
+            },
+            { priority: 5, type: `getWorkspace${id}` },
+        );
     }
 }

@@ -104,9 +104,15 @@ export class GDriveFileSystemProvider implements FileSystemProvider {
     }
 
     async createDirectory(item: Item<true>): Promise<void> {
+        let file = this.handles.get(item.path);
+
+        if (file) {
+            return;
+        }
+
         const parentFile = this.handles.get(dirname(item.path));
 
-        const file: gdrive.File = {
+        file = {
             name: item.name,
             mimeType: directoryMimeType,
             parents: [parentFile.id],
