@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactiveValue } from "@/utils";
 import { Suspense, useEffect, useMemo } from "react";
+import { useMap } from "react-use";
 import { CallbackInterface, Loadable, RecoilState, RecoilValue, useRecoilCallback } from "recoil";
 import { finalize, Observable } from "rxjs";
-import { useMap } from "usehooks-ts";
 import { ObserverState } from "./ObserverState";
 import { RecoilTunnelObserver } from "./RecoilTunnelObserver";
 
@@ -55,7 +55,7 @@ export function RecoilTunnel() {
     );
     const reset = useRecoilCallback(({ reset }) => reset, []);
 
-    const [observers, actions] = useMap<number, ObserverState>([]);
+    const [observers, actions] = useMap<Record<number, ObserverState>>();
 
     const observe = useRecoilCallback(
         () =>
@@ -85,7 +85,7 @@ export function RecoilTunnel() {
 
     return (
         <>
-            {Array.from(observers.values()).map((subscribtion) => (
+            {Array.from(Object.values(observers)).map((subscribtion) => (
                 <Suspense key={subscribtion.id}>
                     <RecoilTunnelObserver {...subscribtion} />
                 </Suspense>

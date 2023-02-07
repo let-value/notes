@@ -1,7 +1,7 @@
 import { MenuItem } from "@/state/menu/MenuItem";
 import { MenuDivider } from "@blueprintjs/core";
 import { MenuItem2 } from "@blueprintjs/popover2";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 
 interface RenderMenuProps {
     item: MenuItem;

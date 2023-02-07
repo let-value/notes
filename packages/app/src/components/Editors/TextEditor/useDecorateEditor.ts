@@ -5,10 +5,12 @@ import { ReactiveValue } from "@/utils";
 import { Monaco } from "@monaco-editor/react";
 import { Item, WorkspaceId } from "models";
 import { editor } from "monaco-editor";
+import { MonacoMarkdownExtension } from "monaco-markdown";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const modelToEditor = container.get("modelToEditor");
 const editorMeta = container.get("editorMeta");
+const markdownExtension = new MonacoMarkdownExtension();
 
 export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
     const registerEditor = useRegisterEditor(item.path);
@@ -47,6 +49,8 @@ export function useDecorateEditor(workspaceId: WorkspaceId, item: Item<false>) {
             editor.current = ref;
             editor$.next(ref);
             registerEditor(ref);
+
+            markdownExtension.activate(ref as never);
 
             const commandId = ref.addCommand(
                 0,

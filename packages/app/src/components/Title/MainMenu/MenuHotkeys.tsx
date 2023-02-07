@@ -1,6 +1,6 @@
 import { MenuItem } from "@/state/menu/MenuItem";
 import { HotkeyConfig, useHotkeys } from "@blueprintjs/core";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useMemo } from "react";
 
 interface MenuHotkeysProps {

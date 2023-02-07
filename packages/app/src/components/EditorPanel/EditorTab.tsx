@@ -4,15 +4,15 @@ import cx from "classnames";
 import { IDockviewPanelHeaderProps, PanelCollection } from "dockview";
 import { useObservable, useObservableState } from "observable-hooks";
 import { FC, MouseEvent, useCallback, useRef } from "react";
+import { useHoverDirty } from "react-use";
 import { useRecoilValue } from "recoil";
 import { fromEventPattern } from "rxjs";
-import { useHover } from "usehooks-ts";
 import { EditorPanelProps } from "./EditorPanelProps";
 import styles from "./EditorTab.module.css";
 
 const EditorTab: FC<IDockviewPanelHeaderProps<EditorPanelProps>> = ({ api, params: { item } }) => {
     const tabRef = useRef<HTMLDivElement>(null);
-    const hover = useHover(tabRef);
+    const hover = useHoverDirty(tabRef);
 
     const hasChanges = useRecoilValue(isFileHasChanges(item.path));
 

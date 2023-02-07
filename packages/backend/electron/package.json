@@ -4,14 +4,8 @@
     "description": "",
     "main": "electron.ts",
     "dependencies": {
-        "@creasource/reactive-idb": "^1.2.1",
         "app": "workspace:^",
         "backend-worker": "workspace:^",
-        "iti": "^0.6.0",
-        "messaging": "workspace:^",
-        "models": "workspace:^",
-        "notes-electron": "workspace:^",
-        "rxjs": "^7.8.0",
-        "uuid": "^9.0.0"
+        "notes-electron": "workspace:^"
     }
 }

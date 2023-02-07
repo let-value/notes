@@ -4,7 +4,6 @@
     "description": "",
     "main": "main.ts",
     "dependencies": {
-        "backend-worker": "workspace:^",
-        "messaging": "workspace:^"
+        "backend-worker": "workspace:^"
     }
 }

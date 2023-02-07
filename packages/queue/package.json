@@ -4,6 +4,6 @@
     "description": "",
     "main": "index.ts",
     "dependencies": {
-        "p-queue": "^7.3.0"
+        "p-queue": "^7.3.4"
     }
 }

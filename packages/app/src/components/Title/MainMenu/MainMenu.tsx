@@ -3,7 +3,7 @@ import { MenuItem } from "@/state/menu/MenuItem";
 import { Button, ButtonProps, Menu, OverflowList, OverflowListProps } from "@blueprintjs/core";
 import { MenuItem2, Popover2, Popover2Props } from "@blueprintjs/popover2";
 import cx from "classnames";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { ComponentProps, useCallback } from "react";
 import { RenderMenu } from "./RenderMenu";
 
