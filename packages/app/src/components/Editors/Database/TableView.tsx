@@ -1,10 +1,15 @@
 import { databaseMetaState } from "@/atom/database/databaseMetaState";
 import { Intent } from "@blueprintjs/core";
-import { Column, EditableCell2, Table2 } from "@blueprintjs/table";
+import { Column, EditableCell2, RowHeaderCellProps, Table2 } from "@blueprintjs/table";
 import { FC, useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { databaseViewState } from "../../../atom/database/databaseViewState";
 import type { ViewProps } from "./View";
+
+const RowHeader = (rowIndex: number) =>
+    function RowHeaderCell({ children }: RowHeaderCellProps) {
+        return <>{children}</>;
+    };
 
 export const TableView: FC<ViewProps> = ({ workspace, item, view }) => {
     const meta = useRecoilValue(databaseMetaState({ workspaceId: workspace.id, path: item.path }));
@@ -29,7 +34,15 @@ export const TableView: FC<ViewProps> = ({ workspace, item, view }) => {
     }
 
     return (
-        <Table2 numRows={data?.length} enableRowResizing={false}>
+        <Table2
+            enableColumnReordering
+            enableRowReordering
+            enableColumnInteractionBar
+            enableRowHeader
+            enableMultipleSelection
+            numRows={data?.length}
+            enableRowResizing={false}
+        >
             {Array.from({ length: columns }).map((_, i) => (
                 <Column
                     key={i}
