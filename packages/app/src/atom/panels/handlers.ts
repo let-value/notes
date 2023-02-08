@@ -12,14 +12,14 @@ export const useSetEditorsDock = () =>
 
 export const useOpenEditorPanel = (workspace: Workspace) =>
     useCallback(
-        async (item: ListItem<false>) => {
+        async (item: ListItem<false>, editor?: string) => {
             const api = await editorsDock$.lastValue;
 
             if (!api) {
                 return;
             }
 
-            const panel = makeEditorPanelOptions({ workspace, item });
+            const panel = makeEditorPanelOptions({ workspace, item, editor });
 
             const existingPanel = api.panels.find((x) => x.id.startsWith(panel.id));
             if (existingPanel) {

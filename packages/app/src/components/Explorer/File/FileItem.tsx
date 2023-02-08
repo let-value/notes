@@ -26,7 +26,7 @@ export const FileItem: FC<FileItemProps> = ({ item, onSelect, ...other }) => {
     }
 
     return (
-        <ContextMenu2 content={<FileContextMenu />}>
+        <ContextMenu2 content={<FileContextMenu item={item} />}>
             <div ref={setRef} className={className}>
                 <TreeNode
                     id={item.path}

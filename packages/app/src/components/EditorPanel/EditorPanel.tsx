@@ -1,6 +1,6 @@
 import { AddPanelOptions, IDockviewPanelProps, PanelCollection } from "dockview";
 import { FC, Suspense } from "react";
-import { resolveEditor } from "../Editors/editorsRegistry";
+import { defaultEditor, resolveEditor } from "../Editors/editorsRegistry";
 import { EditorPanelProps } from "./EditorPanelProps";
 import { editorTab } from "./EditorTab";
 
@@ -16,7 +16,7 @@ export const EditorPanel: FC<IDockviewPanelProps<EditorPanelProps>> = ({ params:
 const id = "editor";
 
 export const makeEditorPanelOptions = (params: EditorPanelProps): AddPanelOptions => ({
-    id: params.item.path,
+    id: `${params.item.path}|${params.editor ?? defaultEditor}`,
     component: id,
     params,
     tabComponent: editorTab.id,

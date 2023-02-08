@@ -1,12 +1,14 @@
-import { RichItem } from "@/atom/workspace";
+import { ListItem } from "@/atom/workspace";
+import { ComponentType } from "react";
 import { Database } from "./Database/Database";
 import { EditorProps } from "./EditorProps";
 import { Note } from "./Note/Note";
 import { TextEditor } from "./TextEditor/TextEditor";
 
-const registry = {
+type LanguageEditors = Record<string, ComponentType<EditorProps>>;
+
+const registry: Record<string, LanguageEditors> = {
     markdown: {
-        default: Note,
         preview: Note,
     },
     csv: {
@@ -15,8 +17,22 @@ const registry = {
     },
 };
 
-export function resolveEditor(item: RichItem<false>, requestedEditor = "default"): React.ComponentType<EditorProps> {
-    const editor = registry?.[item.language as never]?.[requestedEditor];
+export const defaultEditor = "default";
+
+export function resolveEditors(item: ListItem<false>): LanguageEditors {
+    return {
+        default: TextEditor,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        ...registry?.[item.language!],
+    };
+}
+
+export function resolveEditor(
+    item: ListItem<false>,
+    requestedEditor = defaultEditor,
+): React.ComponentType<EditorProps> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const editor = registry?.[item.language!]?.[requestedEditor];
 
     return editor ?? TextEditor;
 }
