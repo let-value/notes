@@ -4,6 +4,10 @@
 @import "@blueprintjs/table/lib/css/table.css";
 @import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 
+.dockview-theme-light {
+    --dv-background-color: white;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

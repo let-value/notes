@@ -5,7 +5,7 @@ import { EventTarget } from "messaging";
 export const browserBackend = {
     eventTarget: () => {
         console.debug("browserBackend.eventTarget");
-        import("../../backend/browser/main").then(({ container }) => container.upsert({ tabId: id }));
+        import("backend-browser").then(({ container }) => container.upsert({ tabId: id })).catch(console.error);
 
         return createBroadcastChannel() as EventTarget;
     },

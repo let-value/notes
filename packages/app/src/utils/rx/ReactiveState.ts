@@ -1,4 +1,4 @@
-import produce, { Draft } from "immer";
+import { Draft, produce } from "immer";
 import { BehaviorSubject } from "rxjs";
 
 export class ReactiveState<TState> extends BehaviorSubject<TState | undefined> {

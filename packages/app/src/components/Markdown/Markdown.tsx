@@ -23,7 +23,7 @@ export const Markdown: FC<MarkdownProps> = ({
     rehypeFilterOptions = undefined,
     options = {},
 }) => {
-    //const remarkProcessor = useRemarkProcessor(unified(), remarkPlugins);
+    const remarkProcessor = useRemarkProcessor(unified(), remarkPlugins);
     const processor = useRehypeProcessor(
         useRemarkProcessor(unified(), remarkPlugins),
         remarkRehypeOptions,
@@ -31,10 +31,10 @@ export const Markdown: FC<MarkdownProps> = ({
         rehypeFilterOptions,
     );
 
-    //const mdastNode = processMarkdown(remarkProcessor, children);
+    const mdastNode = processMarkdown(remarkProcessor, children);
     const hastNode = processMarkdown(processor, children);
 
-    //console.log(mdastNode, hastNode);
+    console.log(mdastNode, hastNode);
 
     if (hastNode.type !== "root") {
         throw new TypeError("Expected a `root` node");

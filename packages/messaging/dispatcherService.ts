@@ -3,8 +3,8 @@ import { filter, take } from "rxjs";
 import { BroadcastMessage } from "./BroadcastMessage";
 import { BroadcastMessageType } from "./BroadcastMessageType";
 import { EventTarget } from "./EventTarget";
-import { MediatorService } from "./messagingService";
 import { Query } from "./Query";
+import { MediatorService } from "./messagingService";
 
 export interface DispatcherService {
     send: <TPayload, TType extends BroadcastMessageType>(
@@ -30,12 +30,12 @@ export const createDispatcherService = (
         const { id, eventTarget, mediator } = services;
 
         mediator.subscribe((message) => {
-            //console.log(id, "recieved", message);
+            console.trace(id, "recieved", message);
         });
 
         const send = <TPayload, TType extends BroadcastMessageType>(message: BroadcastMessage<TType, TPayload>) => {
             message.senderId = id;
-            //console.log(id, "send", message);
+            console.trace(id, "send", message);
             return eventTarget.postMessage(message);
         };
 

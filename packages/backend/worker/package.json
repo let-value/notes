@@ -7,8 +7,8 @@
         "@ampproject/worker-dom": "^0.34.0",
         "@creasource/reactive-idb": "^1.2.1",
         "app": "workspace:^",
-        "csv-parse": "^5.3.4",
-        "csv-stringify": "^6.2.3",
-        "immer": "^9.0.19"
+        "csv-parse": "^5.3.9",
+        "csv-stringify": "^6.3.3",
+        "immer": "^10.0.1"
     }
 }

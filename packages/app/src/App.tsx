@@ -1,11 +1,11 @@
 import { ISplitviewPanelProps, PanelCollection, SplitviewReact, SplitviewReadyEvent } from "dockview";
 import { Suspense, useCallback } from "react";
+import { WorkerProvider } from "./WorkerProvider";
 import { subscriveAtoms } from "./atom/storeServices";
 import { editorsPanel } from "./components/EditorsPanel";
 import { sidebarPanel } from "./components/SidebarPanel";
 import { ContentWrapper, Title } from "./components/Title/Title";
 import { container } from "./container";
-import { WorkerProvider } from "./WorkerProvider";
 
 await import("./features");
 await import("./editor/setupMonacoEditor");
